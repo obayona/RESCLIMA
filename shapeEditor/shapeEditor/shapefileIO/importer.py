@@ -73,6 +73,7 @@ def import_data(shapefile, character_encoding):
 	                        src_spatial_ref.ExportToWkt(),
 	                      geom_type=geometry_name,
 	                      encoding=character_encoding)
+
 	shapefile.save()
 
 	attributes = []

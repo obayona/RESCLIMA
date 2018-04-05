@@ -64,8 +64,8 @@ def export_data(shapefile):
 
 	"""
 	shapefile_name = os.path.splitext(shapefile.filename)[0]
-	shutil.make_archive(join("/tmp",shapefile_name), 'zip', dst_dir);
-	temp = open(join("/tmp",shapefile_name),"r")
+	shutil.make_archive(os.path.join("/tmp",shapefile_name), 'zip', dst_dir);
+	temp = open(os.path.join("/tmp",shapefile_name+".zip"),"r")
 	f = FileWrapper(temp)
 	response = HttpResponse(f, content_type="application/zip")
 	response['Content-Disposition'] = "attachment; filename=" + shapefile_name + ".zip"

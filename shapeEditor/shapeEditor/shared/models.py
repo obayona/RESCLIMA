@@ -2,7 +2,7 @@ from django.contrib.gis.db import models
 
 class ShapeFile(models.Model):
 	filename = models.CharField(max_length= 255)
-	srs_wkt = models.CharField(max_length= 255)
+	srs_wkt = models.TextField(max_length= 500)
 	geom_type = models.CharField(max_length= 50)
 	encoding = models.CharField(max_length= 20)
 

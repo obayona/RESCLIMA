@@ -70,6 +70,8 @@ def getOGRFeatureAttribute(attr, feature, encoding):
         value = "%d,%d,%d,%d,%d,%d,%d,%d" % (year,month,day,
                                              hour,minute,
                                              second,tzone)
+    elif attr.type== ogr.OFTInteger64:
+        value = str(feature.GetFieldAsInteger64(attr_name))
     else:
         return (False, "Unsupported attribute type: " +
                        str(attr.type))
