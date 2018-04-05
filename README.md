@@ -7,7 +7,7 @@ Es un proyecto en Django con la implementacion del upload y download de un shape
 
 En ShapeEditor/datos
 
-Hay shapefiles (zipped) para probar el upload. Los shapefiles se pueden abrir con QGIS. En el upload no funciona el archivo indonesia.zip (voy a revisar el error)
+Hay shapefiles (zipped) para probar el upload. Los shapefiles se pueden abrir con QGIS. El upload del archivo indonesia.zip funciona, pero hay que probar si se guardaron bien los datos, porque tiene atributos de tipo OFTInteger64. 
 
 -------------------------
 Instrucciones para shapeEditor:
