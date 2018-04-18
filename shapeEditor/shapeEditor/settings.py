@@ -83,7 +83,8 @@ DATABASES = {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'shapeeditor',
         'USER':'obayona',
-        'PASSWORD':'EloyEcuador93'
+        'PASSWORD':'EloyEcuador93',
+        'HOST': 'localhost',
     }
 }
 
