@@ -1,19 +1,19 @@
 <html>
   <head>
-    <title>ShapeEditor</title>
+    <title>RESCLIMA DURAN</title>
   </head>
   <body>
-    <h1>Import Shapefile</h1>
+    <h1>Importar Shapefile</h1>
 {% if err_msg %}
     <b><i>{{ err_msg }}</i></b>
 {% endif %}
     <form enctype="multipart/form-data" method="post"
           action="import">
       {{ form.as_p }}
-      <input type="submit" value="Submit"/>
+      <input type="submit" value="Subir"/>
       <button type="button"
               onClick='window.location="/editor";'>
-        Cancel
+        Cancelar
       </button>
     </form>
   </body>

@@ -1,6 +1,6 @@
 from osgeo import ogr
 from django.contrib.gis.geos.collections import MultiPolygon, MultiLineString
-
+import datetime
 
 def ogr_type_to_geometry_name(ogr_type):
     return {ogr.wkbUnknown            : 'Unknown',
@@ -142,3 +142,56 @@ def set_ogr_feature_attribute(attr, value, feature, encoding):
         tzone = int(parts[6])
         feature.SetField(attr_name, year, month, day, hour, minute, second, tzone)
         
+
+        
+
+def getAttrValue(attr, value, encoding):
+    attr_name = str(attr.name)
+    if value == None:
+        return value
+    if attr.type == ogr.OFTInteger:
+        return int(value);
+    elif attr.type == ogr.OFTIntegerList:
+        integers = eval(value)
+        return integers
+    elif attr.type == ogr.OFTReal:
+        return float(value)
+    elif attr.type == ogr.OFTRealList:
+        floats = []
+        for s in eval(value):
+            floats.append(eval(s))
+        return floats
+    elif attr.type == ogr.OFTString:
+        return value.encode(encoding)
+    elif attr.type == ogr.OFTStringList:
+        strings = []
+        for s in eval(value):
+            strings.append(s.encode(encoding))
+        return strings
+    elif attr.type == ogr.OFTDate:
+        parts = value.split(",")
+        year = int(parts[0])
+        month = int(parts[1])
+        day = int(parts[2])
+        tzone = int(parts[3])
+        result = datetime.datetime(year=year,month=month,day=day,tzinfo=tzone);
+        return result
+    elif attr.type == ogr.OFTTime:
+        parts = value.split(",")
+        hour = int(parts[0])
+        minute = int(parts[1])
+        second = int(parts[2])
+        tzone = int(parts[3])
+        result = datetime.datetime(hour=hour,minute=minute,second=second,tzinfo=tzone);
+        return result
+    elif attr.type == ogr.OFTDateTime:
+        parts = value.split(",")
+        year  = int(parts[0])
+        month = int(parts[1])
+        day = int(parts[2])
+        hour = int(parts[3])
+        minute = int(parts[4])
+        second = int(parts[5])
+        tzone = int(parts[6])
+        result = datetime.datetime(year=year,month=month,day=day,hour=hour,minute=minute,second=second,tzinfo=tzone)
+        return result;

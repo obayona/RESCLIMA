@@ -7,6 +7,7 @@ from django.contrib.gis.geos.geometry import GEOSGeometry
 from osgeo import osr
 from django.http import HttpResponse
 from django.core.servers.basehttp import FileWrapper
+import json
 
 
 def export_data(vectorfile):
@@ -75,3 +76,32 @@ def export_data(vectorfile):
 	
 
 	return response
+
+
+def export_geojson(vectorfile):
+	geojson = {}
+	geojson["type"] = "FeatureCollection";
+	geojson["crs"] = {"type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }}
+	geojson["features"] = []
+
+		
+	geom_field = utils.calc_geometry_field(vectorfile.geom_type)
+	for feature in vectorfile.feature_set.all():
+		geometry = getattr(feature, geom_field)
+		geometry = utils.unwrap_geos_geometry(geometry)
+		dst_geometry = ogr.CreateGeometryFromWkt(geometry.wkt)
+		feature_json = {}
+		feature_json["type"]="Feature";
+		geometry_json = dst_geometry.ExportToJson();
+		feature_json["geometry"] = json.loads(geometry_json);
+		feature_json["properties"] = {};
+		geojson["features"].append(feature_json);
+
+		for attr_value in feature.attributevalue_set.all():
+			value = attr_value.value;
+			attr = attr_value.attribute;
+			attr_name = attr_value.attribute.name;
+			value = utils.getAttrValue(attr,value,vectorfile.encoding)
+			feature_json["properties"][attr_name] = value;
+			
+	return geojson

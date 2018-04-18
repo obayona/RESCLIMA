@@ -4,7 +4,7 @@ from models import VectorFile
 from django.http import HttpResponseRedirect
 from forms import ImportShapefileForm
 import importer, exporter
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 
 def import_shapefile(request):
     if request.method == "GET":
@@ -36,7 +36,15 @@ def export_shapefile(request, shapefile_id):
 	return exporter.export_data(vectorfile)
 
 def list_vectorfiles(request):
-  print VectorFile.objects.all()
   vectorfiles = VectorFile.objects.all().order_by("filename");
-  print vectorfiles
   return render(request,"list_vectorfiles.html",{'vectorfiles':vectorfiles})
+
+def export_geojson(request, vectorfile_id):
+  try:
+    vectorfile = VectorFile.objects.get(id=vectorfile_id)
+  except VectorFile.DoesNotExist:
+    return HttpResponseNotFound()
+  geojson = exporter.export_geojson(vectorfile)
+  return JsonResponse(geojson)
+
+
