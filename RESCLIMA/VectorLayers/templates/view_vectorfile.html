@@ -1,0 +1,67 @@
+{% load static %}
+
+<html lang="es">
+	<head>
+		<title></title>
+		<meta charset="utf-8">
+		<meta name="description" content="Clasifica secciones de la hoja de banano">
+		<link rel="stylesheet" type= "text/css" href="/css/bootstrap.min.css" >
+		<script src="{% static "jquery.js" %}" type= "text/javascript"></script>
+		<script src="{% static "OpenLayers.js" %}" type= "text/javascript"></script>
+	</head>
+	<body>
+		<div id="map" style="width:100%;height: 700px;">
+
+		</div>
+		
+	</body>
+	<script>
+		var vectorfile_id = {{vectorfile_id}};
+
+		function renderMap(featurecollection){
+
+			console.log(featurecollection)
+			var map = new OpenLayers.Map("map",{projection: new OpenLayers.Projection("EPSG:900913")});
+
+			var layer = new OpenLayers.Layer.OSM();
+
+			var lon = 107.206742;
+            var lat = -4.933280;
+	        var zoom = 5;
+            var geojson_format = new OpenLayers.Format.GeoJSON();
+			var vector_layer = new OpenLayers.Layer.Vector({projection: new OpenLayers.Projection("EPSG:900913")});
+			var features = geojson_format.read(featurecollection);
+			
+			for (i=0; i<features.length; i++){
+				feature = features[i];
+				feature.geometry.transform('EPSG:4326','EPSG:900913');
+           	}
+
+           	vector_layer.addFeatures(features);
+
+           	map.addLayers([layer,vector_layer]);
+           	
+           	
+
+           	map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326','EPSG:900913'), zoom);
+
+           	
+		}
+
+		function init(){
+
+			var url = "/vector/geojson/"+vectorfile_id;
+			console.log(url)		
+			var request = $.get(url);
+			var featurecollection = null;
+			request.done(function(data){
+				featurecollection = data;
+				console.log(data)	
+				renderMap(featurecollection);
+			});			
+
+		}
+
+		window.addEventListener("load",init);
+	</script>
+</html>

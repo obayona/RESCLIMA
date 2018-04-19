@@ -47,4 +47,5 @@ def export_geojson(request, vectorfile_id):
   geojson = exporter.export_geojson(vectorfile)
   return JsonResponse(geojson)
 
-
+def view_vectorfile(request,vectorfile_id):
+  return render(request,"view_vectorfile.html",{"vectorfile_id":vectorfile_id});  
