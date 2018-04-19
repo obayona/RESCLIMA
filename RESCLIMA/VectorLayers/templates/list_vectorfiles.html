@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Capas vectoriales</title>
+  </head>
+  <body>
+    <h1>RESCLIMA DURAN</h1>
+    {% if vectorfiles %}
+      <b>Capas vectoriales:</b>
+      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
+        {% for vectorfile in vectorfiles %}
+          <tr>
+            <td>
+              <span style="font-family:monospace">{{ vectorfile.filename}}</span>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/vector/geojson/{{ vectorfile.id }}">View</a>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/vector/export/{{ vectorfile.id }}">Export</a>
+            </td>
+            <td>&nbsp;</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+    <button type="button" onClick='window.location="/vector/import";'>Importar Shapefile</button>
+  </body>
+</html>

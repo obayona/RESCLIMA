@@ -1,0 +1,20 @@
+<html>
+  <head>
+    <title>RESCLIMA DURAN</title>
+  </head>
+  <body>
+    <h1>Importar Shapefile</h1>
+{% if err_msg %}
+    <b><i>{{ err_msg }}</i></b>
+{% endif %}
+    <form enctype="multipart/form-data" method="post"
+          action="import">
+      {{ form.as_p }}
+      <input type="submit" value="Subir"/>
+      <button type="button"
+              onClick='window.location="/editor";'>
+        Cancelar
+      </button>
+    </form>
+  </body>
+</html>
