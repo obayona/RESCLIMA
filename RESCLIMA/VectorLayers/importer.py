@@ -1,17 +1,17 @@
 import os, os.path, tempfile, zipfile
 import shutil, traceback
 from osgeo import ogr
-from models import VectorFile, Attribute, Feature, AttributeValue
+from models import VectorLayer, Attribute, Feature, AttributeValue
 import utils
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from osgeo import osr
 
 
-def import_data(vectorfile, character_encoding):
+def import_data(vectorlayer, character_encoding):
 	fd,fname = tempfile.mkstemp(suffix=".zip")
 	os.close(fd)
 	f = open(fname, "wb")
-	for chunk in vectorfile.chunks():
+	for chunk in vectorlayer.chunks():
 		f.write(chunk)
 		f.close()
 
@@ -37,14 +37,14 @@ def import_data(vectorfile, character_encoding):
 			os.remove(fname)
 			return "Archive missing required "+suffix+" file."
 
-	vectorfile_name = None
+	vectorlayer_name = None
 	dst_dir = tempfile.mkdtemp()
 	for info in zip.infolist():
 		print "-----",info.filename
 
 	for info in zip.infolist():
 		if info.filename.endswith(".shp"):
-			vectorfile_name = info.filename
+			vectorlayer_name = info.filename
 
 		dst_file = os.path.join(dst_dir, info.filename)
 		print "************",dst_file
@@ -54,33 +54,33 @@ def import_data(vectorfile, character_encoding):
 	zip.close()
 
 	try:
-		datasource  = ogr.Open(os.path.join(dst_dir,vectorfile_name))
+		datasource  = ogr.Open(os.path.join(dst_dir,vectorlayer_name))
 		layer       = datasource.GetLayer(0)
-		vectorfileOK = True
+		vectorlayerOK = True
 	except:
 		traceback.print_exc()
-		vectorfileOK = False
-	if not vectorfileOK:
+		vectorlayerOK = False
+	if not vectorlayerOK:
 		os.remove(fname)
 		shutil.rmtree(dst_dir)
-		return "Not a valid vectorfile."
+		return "Not a valid vectorlayer."
 
 	src_spatial_ref = layer.GetSpatialRef()
 	geometry_type = layer.GetLayerDefn().GetGeomType()
 	geometry_name = utils.ogr_type_to_geometry_name(geometry_type)
-	vectorfile = VectorFile(filename=vectorfile_name,
+	vectorlayer = VectorLayer(filename=vectorlayer_name,
 	                      srs_wkt=
 	                        src_spatial_ref.ExportToWkt(),
 	                      geom_type=geometry_name,
 	                      encoding=character_encoding)
 
-	vectorfile.save()
+	vectorlayer.save()
 
 	attributes = []
 	layer_def = layer.GetLayerDefn()
 	for i in range(layer_def.GetFieldCount()):
 		field_def = layer_def.GetFieldDefn(i)
-		attr = Attribute(vectorfile=vectorfile,
+		attr = Attribute(vectorlayer=vectorlayer,
 	                     name=field_def.GetName(),
 	                     type=field_def.GetType(),
 	                     width=field_def.GetWidth(),
@@ -100,7 +100,7 @@ def import_data(vectorfile, character_encoding):
 		geometry = utils.wrap_geos_geometry(geometry)
 		geometry_field = utils.calc_geometry_field(geometry_name)
 		args = {}
-		args['vectorfile'] = vectorfile
+		args['vectorlayer'] = vectorlayer
 		args[geometry_field] = geometry
 		feature = Feature(**args)
 		feature.save()
@@ -110,7 +110,7 @@ def import_data(vectorfile, character_encoding):
 			if not success:
 				os.remove(fname)
 				shutil.rmtree(dst_dir)
-				vectorfile.delete()
+				vectorlayer.delete()
 				return result
 			attr_value = AttributeValue(feature=feature,attribute=attr,value=result)
 			attr_value.save()

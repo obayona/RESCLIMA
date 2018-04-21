@@ -4,21 +4,21 @@
   </head>
   <body>
     <h1>RESCLIMA DURAN</h1>
-    {% if vectorfiles %}
+    {% if vectorlayers %}
       <b>Capas vectoriales:</b>
       <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
-        {% for vectorfile in vectorfiles %}
+        {% for vectorlayer in vectorlayers %}
           <tr>
             <td>
-              <span style="font-family:monospace">{{ vectorfile.filename}}</span>
+              <span style="font-family:monospace">{{ vectorlayer.filename}}</span>
             </td>
             <td>&nbsp;</td>
             <td>
-              <a href="/vector/view/{{ vectorfile.id }}">View</a>
+              <a href="/vector/view/{{ vectorlayer.id }}">View</a>
             </td>
             <td>&nbsp;</td>
             <td>
-              <a href="/vector/export/{{ vectorfile.id }}">Export</a>
+              <a href="/vector/export/{{ vectorlayer.id }}">Export</a>
             </td>
             <td>&nbsp;</td>
           </tr>

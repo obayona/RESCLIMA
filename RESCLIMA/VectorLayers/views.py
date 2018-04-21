@@ -1,15 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from models import VectorFile
+from models import VectorLayer
 from django.http import HttpResponseRedirect
 from forms import ImportShapefileForm
 import importer, exporter
 from django.http import HttpResponseNotFound, JsonResponse
 
+
+def list_vectorlayers(request):
+  vectorlayers = VectorLayer.objects.all().order_by("filename");
+  return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
+
 def import_shapefile(request):
     if request.method == "GET":
         form = ImportShapefileForm()
-        return render(request, "import_shapefiles.html",
+        return render(request, "import_shapefile.html",
                       {'form'    : form,
                        'err_msg' : None})
     elif request.method == "POST":
@@ -24,28 +29,25 @@ def import_shapefile(request):
                 return HttpResponseRedirect("/vector")
         else:
             err_msg = None
-        return render(request, "import_shapefiles.html",
+        return render(request, "import_shapefile.html",
                       {'form'    : form,
                        'err_msg' : err_msg})
 
-def export_shapefile(request, shapefile_id):
+def export_shapefile(request, vectorlayer_id):
 	try:
-		vectorfile = VectorFile.objects.get(id=shapefile_id)
-	except VectorFile.DoesNotExist:
+		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
+	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
-	return exporter.export_data(vectorfile)
+	return exporter.export_data(vectorlayer)
 
-def list_vectorfiles(request):
-  vectorfiles = VectorFile.objects.all().order_by("filename");
-  return render(request,"list_vectorfiles.html",{'vectorfiles':vectorfiles})
 
-def export_geojson(request, vectorfile_id):
+def export_geojson(request, vectorlayer_id):
   try:
-    vectorfile = VectorFile.objects.get(id=vectorfile_id)
-  except VectorFile.DoesNotExist:
+    vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
+  except VectorLayer.DoesNotExist:
     return HttpResponseNotFound()
-  geojson = exporter.export_geojson(vectorfile)
+  geojson = exporter.export_geojson(vectorlayer)
   return JsonResponse(geojson)
 
-def view_vectorfile(request,vectorfile_id):
-  return render(request,"view_vectorfile.html",{"vectorfile_id":vectorfile_id});  
+def view_vectorlayer(request,vectorlayer_id):
+  return render(request,"view_vectorlayer.html",{"vectorlayer_id":vectorlayer_id});  

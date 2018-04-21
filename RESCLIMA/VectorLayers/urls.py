@@ -1,9 +1,9 @@
 from django.conf.urls import patterns, url
 
 urlpatterns = patterns('VectorLayers.views',
-	url(r'^$','list_vectorfiles'),
+	url(r'^$','list_vectorlayers'),
 	url(r'^import$', 'import_shapefile'),
-	url(r'^export/(?P<vectorfile_id>\d+)$', 'export_shapefile'),
-	url(r'^view/(?P<vectorfile_id>\d+)$', 'view_vectorfile'),
-	url(r'^geojson/(?P<vectorfile_id>\d+)$', 'export_geojson'),
+	url(r'^export/(?P<vectorlayer_id>\d+)$', 'export_shapefile'),
+	url(r'^geojson/(?P<vectorlayer_id>\d+)$', 'export_geojson'),
+	url(r'^view/(?P<vectorlayer_id>\d+)$', 'view_vectorlayer'),
 )

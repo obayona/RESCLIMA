@@ -16,7 +16,7 @@
 		
 	</body>
 	<script>
-		var vectorfile_id = {{vectorfile_id}};
+		var vectorlayer_id = {{vectorlayer_id}};
 
 		function renderMap(featurecollection){
 
@@ -50,13 +50,12 @@
 
 		function init(){
 
-			var url = "/vector/geojson/"+vectorfile_id;
+			var url = "/vector/geojson/" + vectorlayer_id;
 			console.log(url)		
 			var request = $.get(url);
 			var featurecollection = null;
 			request.done(function(data){
 				featurecollection = data;
-				console.log(data)	
 				renderMap(featurecollection);
 			});			
 
