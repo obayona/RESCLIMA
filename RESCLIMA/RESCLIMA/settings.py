@@ -38,6 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'VectorLayers',
+    'TimeSeries',
+    'RasterLayer',
 )
 
 MIDDLEWARE_CLASSES = (
