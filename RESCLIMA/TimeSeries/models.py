@@ -2,11 +2,11 @@ from django.db import models
 
 class Sensor(models.Model):
     #atributos
-    numSerie = models.CharField(max_length=255)
-    marca = models.CharField(max_length=255)
-    modelo = models.CharField(max_length=255)
+    serialNum = models.CharField(max_length=255)
+    brand = models.CharField(max_length=255)
+    model = models.CharField(max_length=255)
     #Falta definir tipo de dato de ubicacion
-    ubicacion = models.CharField(max_length=50)
+    location = models.CharField(max_length=50)
 
     #metodos
     def __unicode__(self):
@@ -16,13 +16,12 @@ class Sensor(models.Model):
 
     class Meta:
         verbose_name = "Sensor"
-        verbose_name_plural = "Sensores"
+        verbose_name_plural = "Sensors"
 
 class Variable(models.Model):
     #atributos
-    nombre = models.CharField(max_length=255)
-    descripcion = models.TextField()
-    sensores = models.ManyToManyField(Sensor)
+    name = models.CharField(max_length=255)#Falta definir tipo de dato de ubicacion
+    description = models.TextField()
 
     #metodos
     def __unicode__(self):
@@ -47,15 +46,15 @@ class SensorVariable(models.Model):
 
     class Meta:
         verbose_name = "SensorVariable"
-        verbose_name_plural = "SensoresVariables"
+        verbose_name_plural = "SensorsVariables"
 
-class Medida(models.Model):
+class Measurement(models.Model):
     #relaciones
     id_sensorVariable = models.ForeignKey(SensorVariable, on_delete=models.CASCADE)
 
     #atributos
     date_time = models.DateTimeField()
-    valor = models.FloatField()
+    value = models.FloatField()
 
     #metodos
     def __unicode__(self):
@@ -64,7 +63,7 @@ class Medida(models.Model):
         return "%s %s" % (self.date_time, self.valor)
 
     class Meta:
-        verbose_name = "Medida"
-        verbose_name_plural = "Medidas"
+        verbose_name = "Measurement"
+        verbose_name_plural = "Measurements"
 
 
