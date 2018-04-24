@@ -6,13 +6,11 @@ class SensorForm(forms.ModelForm):
         model = Sensor
         fields = [
             'serialNum',
-            'brand',
             'model',
             'location',
         ]
         labels = {
             'serialNum': 'Numero de serie',
-            'brand': 'Marca del sensor',
             'model': 'Modelo del sensor',
             'location': 'Ubicacion',
         }
@@ -20,11 +18,8 @@ class SensorForm(forms.ModelForm):
             'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum',
                                              'placeholder': 'Numero de serie aquí'}),
 
-            'brand': forms.TextInput(attrs={'class': 'form-control', 'id': 'brand',
-                                             'placeholder': 'Marca del sensor aquí'}),
-
-            'model': forms.TextInput(attrs={'class': 'form-control', 'id': 'model',
-                                               'placeholder': 'Modelo del sensor aquí'}),
+            'model': forms.Select(attrs={'class':'form-control','id':'model',
+                                            'placeholder':'Seleccione modelo del sensor'}),
 
             'location': forms.TextInput(attrs={'class': 'form-control', 'id': 'location',
                                                 'placeholder': 'Ubicacion del sensor aquí'}),

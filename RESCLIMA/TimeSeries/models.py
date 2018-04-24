@@ -3,8 +3,8 @@ from django.db import models
 class Sensor(models.Model):
     #atributos
     serialNum = models.CharField(max_length=255)
-    brand = models.CharField(max_length=255)
-    model = models.CharField(max_length=255)
+    model = models.CharField(max_length=50, choices=(("BLOOMSKY", "Bloomsky - Sky2"),("NIPONCF", "NEI - CF200"),
+                                                     ("HOBO", "Hobo")))
     #Falta definir tipo de dato de ubicacion
     location = models.CharField(max_length=50)
 
