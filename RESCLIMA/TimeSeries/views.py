@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from TimeSeries.forms import *
 
 def newSensor(request):
     if request.method == "POST":

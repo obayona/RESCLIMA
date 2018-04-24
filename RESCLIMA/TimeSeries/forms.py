@@ -1,5 +1,9 @@
 from django import forms
-from .models import *
+from TimeSeries.models import *
+
+CHARACTER_ENCODINGS = [("ascii",  "ASCII"),
+                       ("latin1", "Latin-1"),
+                       ("utf8",   "UTF-8")]
 
 class SensorForm(forms.ModelForm):
     class Meta:
@@ -15,13 +19,10 @@ class SensorForm(forms.ModelForm):
             'location': 'Ubicacion',
         }
         widgets = {
-            'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum',
-                                             'placeholder': 'Numero de serie aquí'}),
+            'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum','placeholder': 'Numero de serie aqui'}),
 
-            'model': forms.Select(attrs={'class':'form-control','id':'model',
-                                            'placeholder':'Seleccione modelo del sensor'}),
+            'model': forms.Select(attrs={'class':'form-control','id':'model','placeholder':'Seleccione modelo del sensor'}),
 
-            'location': forms.TextInput(attrs={'class': 'form-control', 'id': 'location',
-                                                'placeholder': 'Ubicacion del sensor aquí'}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'id': 'location','placeholder': 'Ubicacion del sensor aqui'}),
         }
 
