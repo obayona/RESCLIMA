@@ -49,3 +49,9 @@ ir a localhost:8000/editor
 Click en el boton "Import New Shapefile" 
 
 Para descargar un shapefile, click en el link: "Export"
+
+MapWidget/
+
+Para poder usar el Google Map Point Field Widget es necesario tener instalado Django Map Widgets
+
+pip install django-map-widgets

@@ -1,18 +1,18 @@
 from django.db import models
+from django.contrib.gis.db import models
 
 class Sensor(models.Model):
     #atributos
     serialNum = models.CharField(max_length=255)
     model = models.CharField(max_length=50, choices=(("BLOOMSKY", "Bloomsky - Sky2"),("NIPONCF", "NEI - CF200"),
                                                      ("HOBO", "Hobo")))
-    #Falta definir tipo de dato de ubicacion
-    location = models.CharField(max_length=50)
+    #location = models.PointField(srid=4326)
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.numSerie,self.marca,self.ubicacion)
+        return "%s %s" % (self.numSerie,self.marca)
     def __str__(self):
-        return "%s %s" % (self.numSerie,self.marca,self.ubicacion)
+        return "%s %s" % (self.numSerie,self.marca)
 
     class Meta:
         verbose_name = "Sensor"
@@ -20,14 +20,15 @@ class Sensor(models.Model):
 
 class Variable(models.Model):
     #atributos
-    name = models.CharField(max_length=255)#Falta definir tipo de dato de ubicacion
-    description = models.TextField()
+    name = models.CharField(max_length=255)
+    description = models.TextField(null=True)
+    unit = models.CharField(max_length=100)
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.nombre,self.descripcion)
+        return "%s %s" % (self.nombre,self.descripcion,self.unit)
     def __str__(self):
-        return "%s %s" % (self.nombre,self.descripcion)
+        return "%s %s" % (self.nombre,self.descripcion,self.unit)
 
     class Meta:
         verbose_name = "Variable"
