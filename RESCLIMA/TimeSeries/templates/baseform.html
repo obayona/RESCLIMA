@@ -1,18 +1,25 @@
+<html>
+  <head>
+    <title>Series de tiempo</title>
+  </head>
+  <body>
+    <h1>RESCLIMA DURAN</h1>
+    
+    {% block content2 %}
+    <main class="container" role='main'>
 
-{% block content2 %}
+      <form method="post">
 
-<main class="container" role='main'>
+        {% csrf_token %}
+        {{ form }}
 
-  <form method="post">
+      </form>
 
-    {% csrf_token %}
-    {{ form }}
+    </main>
+    {% endblock content2 %}
 
     <br><button type="submit" class="btn btn-success">Guardar</button>
-    <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
+        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
 
-  </form>
-
-</main>
-
-{% endblock content2 %}
+  </body>
+</html>

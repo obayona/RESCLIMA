@@ -49,6 +49,7 @@ ir a localhost:8000/editor
 Click en el boton "Import New Shapefile" 
 
 Para descargar un shapefile, click en el link: "Export"
+-------------------------
 
 MapWidget/
 

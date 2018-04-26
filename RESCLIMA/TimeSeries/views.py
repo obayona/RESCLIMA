@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from TimeSeries.forms import *
 
-def newSensor(request):
+def show_options(request):
+  return render(request,"home.html")
+
+def new_sensor(request):
     if request.method == "POST":
         form = SensorForm(request.POST)
         if form.is_valid():
@@ -12,3 +15,12 @@ def newSensor(request):
         return render(request, 'baseform.html', {'accion': 'Ingreso',
                                                 'objeto': 'Sensor',
                                                 'form': form,})
+
+def upload_file(request):
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            print('holi')
+    else:
+        form = UploadFileForm()
+    return render(request, 'baseform.html', {'form': form})
