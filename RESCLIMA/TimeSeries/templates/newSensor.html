@@ -1,0 +1,35 @@
+{% load staticfiles %}
+
+<html>
+  <head>
+    {{ form.media }}
+    <title>Series de tiempo</title>
+
+    <script src="{% static 'js/MapWidget.js' %}"></script>
+    <script>
+      {% block extra_js %}
+      {% endblock extra_js %}
+    </script>
+
+  </head>
+  <body>
+    <h1>RESCLIMA DURAN</h1>
+    
+    {% block content2 %}
+    <main class="container" role='main'>
+
+      <form method="post">
+
+        {% csrf_token %}
+        {{ form.as_p }}
+
+      </form>
+
+    </main>
+    {% endblock content2 %}
+
+    <br><button type="submit" class="btn btn-success">Guardar</button>
+        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
+
+  </body>
+</html>

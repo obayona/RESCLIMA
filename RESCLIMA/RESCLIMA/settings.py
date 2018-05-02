@@ -37,7 +37,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+    'floppyforms',
     'VectorLayers',
+    'TimeSeries',
+    'RasterLayer',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,6 +89,16 @@ DATABASES = {
     }
 }
 
+#Map Widget 
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", "duran"),
+        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'ec'}}),
+        ("markerFitZoom", 12),
+    ),
+    "GOOGLE_MAP_API_KEY": "AIzaSyC2rFWRbUJOntwZtperaKHIJMDNvNShWP0"
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

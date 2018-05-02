@@ -19,4 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^vector/', include("VectorLayers.urls")),
+    url(r'^series/', include("TimeSeries.urls")),
 ]
