@@ -4,15 +4,14 @@ from django.contrib.gis.db import models
 class Sensor(models.Model):
     #atributos
     serialNum = models.CharField(max_length=255)
-    model = models.CharField(max_length=50, choices=(("BLOOMSKY", "Bloomsky - Sky2"),("NIPONCF", "NEI - CF200"),
-                                                     ("HOBO", "Hobo")))
-    #location = models.PointField(srid=4326)
+    model = models.CharField(max_length=50)
+    location = models.PointField(srid=4326)
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.numSerie,self.marca)
+        return "%s %s" % (self.serialNum,self.model,self.location)
     def __str__(self):
-        return "%s %s" % (self.numSerie,self.marca)
+        return "%s %s" % (self.serialNum,self.model,self.location)
 
     class Meta:
         verbose_name = "Sensor"
@@ -26,9 +25,9 @@ class Variable(models.Model):
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.nombre,self.descripcion,self.unit)
+        return "%s %s" % (self.name,self.description,self.unit)
     def __str__(self):
-        return "%s %s" % (self.nombre,self.descripcion,self.unit)
+        return "%s %s" % (self.name,self.description,self.unit)
 
     class Meta:
         verbose_name = "Variable"
@@ -59,9 +58,9 @@ class Measurement(models.Model):
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.date_time,self.valor)
+        return "%s %s" % (self.date_time,self.value)
     def __str__(self):
-        return "%s %s" % (self.date_time, self.valor)
+        return "%s %s" % (self.date_time, self.value)
 
     class Meta:
         verbose_name = "Measurement"

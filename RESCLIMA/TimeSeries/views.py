@@ -12,7 +12,7 @@ def new_sensor(request):
         return redirect('home')
     elif request.method == "GET":
         form = SensorForm()
-        return render(request, 'baseform.html', {'accion': 'Ingreso',
+        return render(request, 'newSensor.html', {'accion': 'Ingreso',
                                                 'objeto': 'Sensor',
                                                 'form': form,})
 
