@@ -1,10 +1,20 @@
 from django.contrib.gis.db import models
 
+
+
 class VectorLayer(models.Model):
+
 	filename = models.CharField(max_length= 255)
 	srs_wkt = models.TextField(max_length= 500)
 	geom_type = models.CharField(max_length= 50)
 	encoding = models.CharField(max_length= 20)
+	title = models.CharField(max_length=50,null=True)
+	abstract = models.TextField(max_length=500,null=True)
+	centroid = models.PointField(srid=4326,null=True)
+	data_date = models.DateField(blank=True,null=True)
+	upload_date = models.DateTimeField(auto_now_add=True)
+	#bbox
+	#owner
 
 class Attribute(models.Model):
 	vectorlayer = models.ForeignKey(VectorLayer)
@@ -28,3 +38,8 @@ class AttributeValue(models.Model):
 	feature = models.ForeignKey(Feature)
 	attribute = models.ForeignKey(Attribute)
 	value = models.CharField(max_length=255,blank=True,null=True)
+
+class Style(models.Model):
+	#file_path = models.FileField()
+	title = models.CharField(max_length=50)
+	vectorlayer = models.ForeignKey(VectorLayer)

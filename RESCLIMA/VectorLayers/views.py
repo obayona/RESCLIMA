@@ -21,10 +21,8 @@ def import_shapefile(request):
         form = ImportShapefileForm(request.POST,
                                    request.FILES)
         if form.is_valid():
-            shapefile = request.FILES['import_file']
-            encoding  = request.POST['character_encoding']
-            err_msg = importer.import_data(shapefile,
-                                                encoding)
+            
+            err_msg = importer.import_data(request)
             if err_msg == None:
                 return HttpResponseRedirect("/vector")
         else:
