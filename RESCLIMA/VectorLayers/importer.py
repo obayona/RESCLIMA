@@ -13,10 +13,8 @@ from osgeo import osr
 
 
 def get_data_date(request):
-	year = int(request.POST["data_date_year"])
-	month = int(request.POST["data_date_month"])
-	day = int(request.POST["data_date_day"])
-	return datetime.datetime(year=year,month=month,day=day)
+	date_text = request.POST["data_date"]
+	return datetime.datetime.strptime(date_text, '%Y-%m-%d')
 
 @transaction.atomic
 def import_data(request):
@@ -26,7 +24,6 @@ def import_data(request):
 	title = request.POST["title"]
 	abstract = request.POST["abstract"]
 	data_date = get_data_date(request)
-
 	# se verifica que esten todos los archivos requeridos
 	required_suffixes = [".shp", ".shx", ".dbf", ".prj"]
 	has_suffix = {}

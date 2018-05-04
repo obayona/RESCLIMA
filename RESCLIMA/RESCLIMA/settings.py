@@ -38,9 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'floppyforms',
+    #'floppyforms',
     'VectorLayers',
-    'TimeSeries',
+    #'TimeSeries',
     'RasterLayer',
 )
 
