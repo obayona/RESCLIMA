@@ -118,3 +118,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STYLE_FILES_PATH = "/home_local/obayona/RESCLIMA/styles/"

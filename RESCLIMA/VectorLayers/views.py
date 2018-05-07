@@ -44,3 +44,11 @@ def export_geojson(request, vectorlayer_id):
 
 def view_vectorlayer(request,vectorlayer_id):
   return render(request,"view_vectorlayer.html",{"vectorlayer_id":vectorlayer_id});  
+
+
+def edit_vectorlayer(request,vectorlayer_id):
+  if request.method == "GET":
+    HttpResponse("Editar capa");
+  elif request.method == "POST":
+    HttpResponse("Editar capa");
+  return HttpResponse("Editar capa");
