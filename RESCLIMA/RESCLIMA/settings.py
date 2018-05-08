@@ -38,9 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'floppyforms',
+    #'floppyforms',
     'VectorLayers',
-    'TimeSeries',
+    #'TimeSeries',
     'RasterLayer',
 )
 
@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'resclima',
         'USER':'obayona',
         'PASSWORD':'EloyEcuador93',
-        'HOST': 'localhost',
+        #'HOST': 'localhost',
     }
 }
 
@@ -118,3 +118,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STYLE_FILES_PATH = "/home_local/obayona/RESCLIMA/styles/"

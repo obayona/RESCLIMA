@@ -6,4 +6,5 @@ urlpatterns = patterns('VectorLayers.views',
 	url(r'^export/(?P<vectorlayer_id>\d+)$', 'export_shapefile'),
 	url(r'^geojson/(?P<vectorlayer_id>\d+)$', 'export_geojson'),
 	url(r'^view/(?P<vectorlayer_id>\d+)$', 'view_vectorlayer'),
+	url(r'^edit/(?P<vectorlayer_id>\d+)$', 'edit_vectorlayer'),
 )

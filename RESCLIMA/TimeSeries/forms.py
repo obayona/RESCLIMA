@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.gis import forms
 #from mapwidgets.widgets import GooglePointFieldWidget
 from TimeSeries.models import *
-import floppyforms.__future__ as forms
+#import floppyforms.__future__ as forms
 
 CHARACTER_ENCODINGS = [("ascii",  "ASCII"),
                        ("latin1", "Latin-1"),

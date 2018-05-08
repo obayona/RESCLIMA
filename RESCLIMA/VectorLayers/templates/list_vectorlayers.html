@@ -10,15 +10,19 @@
         {% for vectorlayer in vectorlayers %}
           <tr>
             <td>
-              <span style="font-family:monospace">{{ vectorlayer.filename}}</span>
+              <span style="font-family:monospace">{{ vectorlayer.title}}</span>
             </td>
             <td>&nbsp;</td>
             <td>
-              <a href="/vector/view/{{ vectorlayer.id }}">View</a>
+              <a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
             </td>
             <td>&nbsp;</td>
             <td>
-              <a href="/vector/export/{{ vectorlayer.id }}">Export</a>
+              <a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
             </td>
             <td>&nbsp;</td>
           </tr>

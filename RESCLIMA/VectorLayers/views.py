@@ -14,24 +14,17 @@ def list_vectorlayers(request):
 def import_shapefile(request):
     if request.method == "GET":
         form = ImportShapefileForm()
-        return render(request, "import_shapefile.html",
-                      {'form'    : form,
-                       'err_msg' : None})
+        return render(request, "import_shapefile.html",{'form':form})
     elif request.method == "POST":
-        form = ImportShapefileForm(request.POST,
-                                   request.FILES)
+        form = ImportShapefileForm(request.POST,request.FILES)
+        
         if form.is_valid():
-            shapefile = request.FILES['import_file']
-            encoding  = request.POST['character_encoding']
-            err_msg = importer.import_data(shapefile,
-                                                encoding)
+            err_msg = importer.import_data(request)
             if err_msg == None:
-                return HttpResponseRedirect("/vector")
+                return HttpResponse("OK")
         else:
-            err_msg = None
-        return render(request, "import_shapefile.html",
-                      {'form'    : form,
-                       'err_msg' : err_msg})
+            err_msg = "Error en el formulario"
+        return HttpResponse(err_msg);
 
 def export_shapefile(request, vectorlayer_id):
 	try:
@@ -51,3 +44,11 @@ def export_geojson(request, vectorlayer_id):
 
 def view_vectorlayer(request,vectorlayer_id):
   return render(request,"view_vectorlayer.html",{"vectorlayer_id":vectorlayer_id});  
+
+
+def edit_vectorlayer(request,vectorlayer_id):
+  if request.method == "GET":
+    HttpResponse("Editar capa");
+  elif request.method == "POST":
+    HttpResponse("Editar capa");
+  return HttpResponse("Editar capa");
