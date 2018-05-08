@@ -36,7 +36,6 @@ class SensorForm(forms.ModelForm):
         }
 
 class UploadFileForm(forms.Form):
-    title = forms.CharField(max_length=255)
     select = forms.CharField(widget=forms.Select(choices=SENSOR_CHOICES))
     file = forms.FileField()
     
