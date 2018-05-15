@@ -10,3 +10,4 @@ class ImportShapefileForm(forms.Form):
     encoding = forms.ChoiceField(choices=CHARACTER_ENCODINGS,label=u"Codificación") 
     title = forms.CharField(label=u"Título")
     abstract = forms.CharField(widget=forms.Textarea(attrs={'width':"100%", 'cols' : "40", 'rows': "10", }),label=u"Resumen")
+    

@@ -51,7 +51,7 @@ Click en el boton "Import New Shapefile"
 Para descargar un shapefile, click en el link: "Export"
 
 -------------------------
-MapWidget/
+MapWidget
 
 Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
 

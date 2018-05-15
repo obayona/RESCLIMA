@@ -5,7 +5,7 @@ class Sensor(models.Model):
     #atributos
     serialNum = models.CharField(max_length=255)
     model = models.CharField(max_length=50)
-    location = models.PointField(srid=4326)
+    location = models.PointField(srid=4326, null=True)
 
     #metodos
     def __unicode__(self):

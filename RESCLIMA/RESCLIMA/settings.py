@@ -38,9 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    #'floppyforms',
+    'floppyforms',
     'VectorLayers',
-    #'TimeSeries',
+    'TimeSeries',
     'RasterLayer',
 )
 
@@ -85,7 +85,7 @@ DATABASES = {
         'NAME': 'resclima',
         'USER':'obayona',
         'PASSWORD':'EloyEcuador93',
-        #'HOST': 'localhost',
+        'HOST': 'localhost',
     }
 }
 

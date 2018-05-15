@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from models import VectorLayer
+from django.http import HttpResponseNotFound, JsonResponse
 from django.http import HttpResponseRedirect
+from models import VectorLayer
 from forms import ImportShapefileForm
 import importer, exporter
-from django.http import HttpResponseNotFound, JsonResponse
-
+from django.views.generic.edit import UpdateView
 
 def list_vectorlayers(request):
   vectorlayers = VectorLayer.objects.all().order_by("filename");
@@ -45,10 +45,8 @@ def export_geojson(request, vectorlayer_id):
 def view_vectorlayer(request,vectorlayer_id):
   return render(request,"view_vectorlayer.html",{"vectorlayer_id":vectorlayer_id});  
 
-
-def edit_vectorlayer(request,vectorlayer_id):
-  if request.method == "GET":
-    HttpResponse("Editar capa");
-  elif request.method == "POST":
-    HttpResponse("Editar capa");
-  return HttpResponse("Editar capa");
+class VectorLayerUpdate(UpdateView):
+    model = VectorLayer
+    fields = ['title','abstract']
+    template_name_suffix = '_update_form'
+    success_url = '/vector/'
