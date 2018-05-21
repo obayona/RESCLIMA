@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'floppyforms',
     'VectorLayers',
     'TimeSeries',
-    'RasterLayer',
+    'RasterLayers',
 )
 
 MIDDLEWARE_CLASSES = (

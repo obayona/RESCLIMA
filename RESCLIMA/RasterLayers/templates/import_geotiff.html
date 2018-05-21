@@ -1,0 +1,73 @@
+{% load static %}
+<html>
+  <head>
+    <title>RESCLIMA DURAN</title>
+    <script src="{% static "jquery.js" %}" type= "text/javascript"></script>
+  </head>
+  <body>
+    <h1>Importar Geotiff</h1>
+    <div id="errorMsg"></div>
+    <form enctype="multipart/form-data" method="post"
+          action="import" id="geotiffForm">
+      {{ form.as_p }}
+      <button type="button" id="Cancel" onClick='window.location="/raster";'>Cancelar</button>
+    </form>
+    <div>
+    <h3 id="uploadPercent"></h3>
+    <div>
+  </body>
+  <script>
+    var form = $("#geotiffForm");
+    function createXHR(){
+      var xhr = new window.XMLHttpRequest();
+      xhr.upload.addEventListener("progress",function(evt){
+        if (evt.lengthComputable) {
+          var percentComplete = evt.loaded / evt.total;
+          percentComplete = parseInt(percentComplete * 100);
+          if (percentComplete === 100){
+            uploadPercent.innerHTML = "Completado, espere por favor"
+            return;
+          }
+          uploadPercent.innerHTML = "Subido " + String(percentComplete) + "% ..."
+        }
+      },false);
+      return xhr;
+    }
+    function successHandler(data){
+      if(data=="OK"){
+        window.location = "/raster"
+      }
+      else{
+        console.log("No fue OK")
+        errorMsg.innerHTML = "<b><i>"+data+"</i></b>"
+        uploadPercent.innerHTML = "";
+      }
+    }
+    function errorHandler(data){
+      console.error(data)
+      status = String(data.status);
+      msg = "<b><i>Ha ocurrido un error " + status+ " en el servidor</i></b>"
+      errorMsg.innerHTML = msg;
+      uploadPercent.innerHTML = "";
+    }
+    
+    function formSubmit(){
+      var data = new FormData(form.get(0));
+      $.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: data,
+        processData: false,
+        contentType: false,
+        xhr: createXHR,
+        success: successHandler,
+        error: errorHandler
+      });
+      return false;
+    }
+    $(document).ready(function() {
+      form.submit(formSubmit);
+    });
+ 
+  </script>
+</html>
