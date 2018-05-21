@@ -7,5 +7,8 @@ def import_data(request):
 	print title
 	print abstract
 
+	
 	for i in list_files:
 		print i
+
+	return None

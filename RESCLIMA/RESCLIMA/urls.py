@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^vector/', include("VectorLayers.urls")),
     url(r'^series/', include("TimeSeries.urls")),
+    url(r'^raster/', include("RasterLayers.urls")),
 ]
