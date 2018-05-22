@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'VectorLayers',
     'TimeSeries',
     'RasterLayers',
+    'tms',
 )
 
 MIDDLEWARE_CLASSES = (
