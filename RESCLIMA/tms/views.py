@@ -15,8 +15,7 @@ def root(request):
 		xml = []
 		xml.append('<?xml version="1.0" encoding="utf-8" ?>')
 		xml.append('<Services>')
-		xml.append('  <TileMapService ' +
-		       'title="ShapeEditor Tile Map Service" ' +
+		xml.append('<TileMapService title="RESCLIMA TMS" ' +
 		       'version="1.0" href="' + baseURL + '1.0"/>')
 		xml.append('</Services>')
 		return HttpResponse("\n".join(xml), content_type="text/xml")
@@ -31,20 +30,17 @@ def service(request, version):
 		baseURL = request.build_absolute_uri()
 		xml = []
 		xml.append('<?xml version="1.0" encoding="utf-8" ?>')
-		xml.append('<TileMapService version="1.0" services="' +
-		       baseURL + '">')
-		xml.append('  <Title>ShapeEditor Tile Map Service' +
-		       '</Title>')
-		xml.append('  <Abstract></Abstract>')
-		xml.append('  <TileMaps>')
+		xml.append('<TileMapService version="1.0" services="' + baseURL + '">')
+		xml.append('<Title>RESCLIMA TMS</Title>')
+		xml.append('<Abstract></Abstract>')
+		xml.append('<TileMaps>')
 		
 		id = str(1)
-		xml.append('    <TileMap title="' +
-			           "Prect" + '"')
-		xml.append('             srs="EPSG:4326"')
-		xml.append('             href="'+baseURL+'/'+id+'"/>')
+		xml.append('<TileMap title="' + "Prect" + '"')
+		xml.append('srs="EPSG:4326"')
+		xml.append('href="'+baseURL+'/'+id+'"/>')
 		
-		xml.append('  </TileMaps>')
+		xml.append('</TileMaps>')
 		xml.append('</TileMapService>')
 		return HttpResponse("\n".join(xml), content_type="text/xml")
 	except:
@@ -61,23 +57,23 @@ def tileMap(request, version, shapefile_id):
 		xml.append('<?xml version="1.0" encoding="utf-8" ?>')
 		xml.append('<TileMap version="1.0" ' +
 		           'tilemapservice="' + baseURL + '">')
-		xml.append('  <Title>' + "prect" + '</Title>')
-		xml.append('  <Abstract></Abstract>')
-		xml.append('  <SRS>EPSG:4326</SRS>')
-		xml.append('  <BoundingBox minx="-180" miny="-90" ' +
-		           'maxx="180" maxy="90"/>')
-		xml.append('  <Origin x="-180" y="-90"/>')
-		xml.append('  <TileFormat width="' + str(TILE_WIDTH) +
+		xml.append('<Title>' + "prect" + '</Title>')
+		xml.append('<Abstract></Abstract>')
+		xml.append('<SRS>EPSG:4326</SRS>')
+		xml.append('<BoundingBox minx="-180" miny="-90" maxx="180" maxy="90"/>')
+		xml.append('<Origin x="-180" y="-90"/>')
+		xml.append('<TileFormat width="' + str(TILE_WIDTH) +
 		           '" height="' + str(TILE_HEIGHT) + '" ' +
 		           'mime-type="image/png" extension="png"/>')
-		xml.append('  <TileSets profile="global-geodetic">')
+		xml.append('<TileSets profile="global-geodetic">')
+		
 		for zoomLevel in range(0, MAX_ZOOM_LEVEL+1):
 			unitsPerPixel = _unitsPerPixel(zoomLevel)
-			xml.append('    <TileSet href="' + 
+			xml.append('<TileSet href="' + 
 			           baseURL + '/' + str(zoomLevel) +
 			           '" units-per-pixel="'+str(unitsPerPixel) +
 			           '" order="' + str(zoomLevel) + '"/>')
-		xml.append('  </TileSets>')
+		xml.append('</TileSets>')
 		xml.append('</TileMap>')
 		return HttpResponse("\n".join(xml), content_type="text/xml")
 	except:

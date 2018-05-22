@@ -21,3 +21,7 @@ def import_geotiff(request):
             else:
                 err_msg = "Error en el formulario"
             return HttpResponse(err_msg);
+
+
+def view_geotiff(request):
+    return render(request,"view_geotiff.html")

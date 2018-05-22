@@ -26,6 +26,8 @@ def import_data(request):
 			f.write(chunk)
 		f.close()
 
+	return None
+
 """
 	ts = time.time()
 	timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
@@ -57,4 +59,3 @@ def import_data(request):
 	print resp.status_code, resp.content
 
 """
-	return None
