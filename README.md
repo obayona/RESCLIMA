@@ -21,12 +21,19 @@ Es un proyecto en Django con la implementacion del upload y download de un shape
 
 -------------------------
 # Dependencias
+
 Django 1.8
+
 postgres
+
 postgis
+
 gdal
+
 mapnik
+
 lxml
+
 floppyforms
 
 # Instrucciones instalacion de gdal:
