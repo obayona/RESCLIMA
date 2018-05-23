@@ -1,29 +1,41 @@
 # RESCLIMA
 
-ShapeEditor/ 
+Plataforma para el manejo de datos geo-espaciales, series de tiempo y movilidad
 
-Es un proyecto en Django con la implementacion del upload y download de un shapefile
+Contenido:
+
+- RESCLIMA/ 
+
+Aplicacion web hecha en Django. 
 
 
-En ShapeEditor/datos
+- data/
 
-Hay shapefiles (zipped) para probar el upload. Los shapefiles se pueden abrir con QGIS. El upload del archivo indonesia.zip funciona, pero hay que probar si se guardaron bien los datos, porque tiene atributos de tipo OFTInteger64. 
+Carpeta con datos de prueba
+
+
+- ShapeEditor/
+
+Es un proyecto en Django con la implementacion del upload y download de un shapefile (Va a ser eliminado)
+
 
 -------------------------
-Instrucciones para shapeEditor:
+# Dependencias
+Django 1.8
+postgres
+postgis
+gdal
+mapnik
+lxml
+floppyforms
 
-Instalar las dependencias de GeoDjango, las mas importantes son: postgres con postgis, gdal
-
-Crear un usuario en postgres; user: obayona, password: EloyEcuador93
-
--------------------------
-Pasos para instalar gdal:
+# Instrucciones instalacion de gdal:
 
 $ sudo apt-get build-dep gdal
 
-Descomprimir el archivo gdal-2.1.0.tar.gz
+Descomprimir el archivo gdal-2.1.0.tar.gz (ubicado en el directorio raiz)
 
-$ cd gdal-2.1.0.tar.gz
+$ cd gdal-2.1.0/
 
 $ ./configure  --prefix=/usr/ --with-python
 
@@ -39,22 +51,26 @@ Para comprobar si la instalacion fue correcta, en el interprete de python import
 
 from osgeo import ogr
 
---------------
-Probar proyecto ShapeEditor:
+# Configurar postgres
 
-$ python manage runserver
+Crear un usuario en postgres; user: obayona, password: EloyEcuador93
 
-ir a localhost:8000/editor
+Crear una base de datos "resclima"
 
-Click en el boton "Import New Shapefile" 
+Agregarle la extencion postgis
 
-Para descargar un shapefile, click en el link: "Export"
+\c resclima;
 
--------------------------
-MapWidget
+CREATE EXTENSION postgis;
 
-Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
+# Instalacion floppyforms
+MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
 
 $ pip install -U django-floppyforms
 
-Add floppyforms to your INSTALLED_APPS
+# Instalacion Mapnik
+
+$ sudo pip install mapnik
+
+
+
