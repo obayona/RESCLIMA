@@ -50,3 +50,11 @@ class VectorLayerUpdate(UpdateView):
     fields = ['title','abstract']
     template_name_suffix = '_update_form'
     success_url = '/vector/'
+
+
+
+# Styles
+def import_style(request):
+  if request.method == "GET":
+    form = ImportStyleForm()
+    return render(request,"import_syle.html",{"form":form});
