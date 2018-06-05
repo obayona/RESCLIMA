@@ -13,30 +13,55 @@ SENSOR_CHOICES = (
     ("NIPONCF", "NEI - CF200"),
     ("HOBO", "Hobo"),
 )
+BRAND_CHOICES = (
+    ("BLOOMSKY", "Bloomsky"),
+    ("NIPONCF", "NIPONCF"),
+    ("HOBO", "Hobo"),
+)
+MODEL_CHOICES = (
+    ("SKY2", "Sky2"),
+    ("NEI - CF200", "NEI - CF200"),
+    ("HOBO", "Hobo"),
+)
 
-class SensorForm(forms.ModelForm):
+class StationTypeForm(forms.ModelForm):
     class Meta:
-        model = Sensor
+        model = StationType
         fields = [
-            'serialNum',
+            'brand',
             'model',
-            'location',
         ]
         labels = {
-            'serialNum': 'Numero de serie',
-            'model': 'Modelo del sensor',
-            'location': 'Ubicacion',
+            'brand': 'Marca de la estacion',
+            'model': 'Modelo de la estacion',
         }
         widgets = {
-            'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum','placeholder': 'Numero de serie aqui'}),
-
-            'model': forms.Select(attrs={'class':'form-control','id':'model','placeholder':'Seleccione modelo del sensor'}, choices=SENSOR_CHOICES),
+            'brand': forms.Select(attrs={'class':'form-control','id':'brand','placeholder':'Seleccione la marca de la estacion'}, choices=BRAND_CHOICES),
+            'model': forms.Select(attrs={'class':'form-control','id':'model','placeholder':'Seleccione modelo de la estacion'}, choices=MODEL_CHOICES),
 
             #'location': forms.gis.PointField(attrs={'class': 'form-control', 'id': 'location'}),
         }
 
-class UploadFileForm(forms.Form):
-    select = forms.CharField(widget=forms.Select(choices=SENSOR_CHOICES))
-    file = forms.FileField()
-    
+class StationForm(forms.ModelForm):
+    class Meta:
+        model = StationType
+        fields = [
+            'brand',
+            'model',
+        ]
+        labels = {
+            'serialNum': 'Numero de serie de la estacion',
+            'brand': 'Marca de la estacion',
+            'model': 'Modelo de la estacion',
+#            'location' : 'Ubicacion de la estacion'
+        }
+        widgets = {
+            'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum','placeholder': 'Numero de serie de la estacion'}),
+            'brand': forms.Select(attrs={'class':'form-control','id':'brand','placeholder':'Seleccione la marca de la estacion'}, choices=BRAND_CHOICES),
+            'model': forms.Select(attrs={'class':'form-control','id':'model','placeholder':'Seleccione modelo de la estacion'}, choices=MODEL_CHOICES),
+#            'location': forms.gis.PointField(attrs={'class': 'form-control', 'id': 'location'}),
+        }
 
+class UploadFileForm(forms.Form):
+    select = forms.CharField(widget=forms.Select(choices=MODEL_CHOICES))
+    file = forms.FileField()
