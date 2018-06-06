@@ -5,6 +5,7 @@ import traceback
 import math
 import mapnik
 import gdal
+import utils
 
 MAX_ZOOM_LEVEL = 10
 TILE_WIDTH     = 256
@@ -142,6 +143,10 @@ def _unitsPerPixel(zoomLevel):
     return 156544.3066/math.pow(2,zoomLevel)
 
 def tile(request, version, shapefile_id, zoom, x, y):
+	sld = open("/home_local/obayona/RESCLIMA/RESCLIMA/tms/estilo.xml");
+	sld = sld.read()
+	colorMap = utils.parseRasterSLD(sld)
+
 	try:
 
 		if version != "1.0":
@@ -170,11 +175,26 @@ def tile(request, version, shapefile_id, zoom, x, y):
 		map.background = mapnik.Color("#00000000")
 		raster = mapnik.Layer("raster");
 		raster.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
-		raster.datasource = mapnik.Gdal(file="/home_local/obayona/rasters/PRECT2018-05-21-21-39-21-reproj.tif")
+		raster.datasource = mapnik.Gdal(file="/home_local/obayona/rasters/PRECT2018-05-21-21-39-21-reproj.tif",band=1)
 
 		style = mapnik.Style()
 		rule = mapnik.Rule()
-		rule.symbols.append(mapnik.RasterSymbolizer())
+
+		symbol = mapnik.RasterSymbolizer()
+
+		c = mapnik.RasterColorizer( mapnik.COLORIZER_LINEAR,mapnik.Color(0,0,0,0))
+
+		for entry in colorMap:
+			color = entry["color"]
+			quantity = entry["quantity"]
+			c.add_stop(quantity,mapnik.Color(color))
+
+		
+
+		symbol.colorizer = c
+
+		rule.symbols.append(symbol)
+
 		style.rules.append(rule)
 		map.append_style("estilo",style)
 		raster.styles.append("estilo")
