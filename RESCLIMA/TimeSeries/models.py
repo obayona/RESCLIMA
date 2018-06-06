@@ -9,9 +9,9 @@ class Variable(models.Model):
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.name,self.unit,self.symbol)
+        return "%s %s %s" % (self.name,self.unit,self.symbol)
     def __str__(self):
-        return "%s %s" % (self.name,self.unit,self.symbol)
+        return "%s %s %s" % (self.name,self.unit,self.symbol)
 
     class Meta:
         verbose_name = "Variable"
@@ -41,9 +41,9 @@ class Station(models.Model):
 
     #metodos
     def __unicode__(self):
-        return "%s %s" % (self.serialNum,self.location,self.active,self.stationType)
+        return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)
     def __str__(self):
-        return "%s %s" % (self.serialNum,self.location,self.active,self.stationType)
+        return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)
 
     class Meta:
         verbose_name = "Station"
