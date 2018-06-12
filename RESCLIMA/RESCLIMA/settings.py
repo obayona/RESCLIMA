@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'resclima',
         'USER':'obayona',
         'PASSWORD':'EloyEcuador93',
-        'HOST': 'localhost',
+        #'HOST': 'localhost',
     }
 }
 

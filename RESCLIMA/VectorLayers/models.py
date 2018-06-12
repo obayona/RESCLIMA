@@ -1,10 +1,8 @@
 from django.contrib.gis.db import models
-<<<<<<< HEAD
-=======
 from RESCLIMA import settings
 from os.path import join
 from django.contrib.auth.models import User
->>>>>>> febb25fb231da9ea57f6c961193e6953b59db817
+
 
 class VectorLayer(models.Model):
 
@@ -49,10 +47,10 @@ class Style(models.Model):
 	file_name = models.CharField(max_length=50)
 	title = models.CharField(max_length=50)
 	vectorlayer = models.ForeignKey(VectorLayer)
-<<<<<<< HEAD
+
 	class Meta:
 		ordering = ['id']
-=======
+
 
 class Researcher(models.Model):
 	#relaciones
@@ -73,4 +71,4 @@ class Researcher(models.Model):
 	class Meta:
 		verbose_name = "Researcher"
 		verbose_name_plural = "Researchers"
->>>>>>> febb25fb231da9ea57f6c961193e6953b59db817
+
