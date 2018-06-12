@@ -81,6 +81,9 @@ def export_data(vectorlayer):
 def export_geojson(vectorlayer):
 	geojson = {}
 	geojson["type"] = "FeatureCollection";
+	x = vectorlayer.centroid.x
+	y = vectorlayer.centroid.y
+	geojson["centroid"] = {"lon":x,"lat":y};
 	geojson["crs"] = {"type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }}
 	geojson["features"] = []
 

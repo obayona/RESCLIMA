@@ -4,66 +4,51 @@
 	<head>
 		<title></title>
 		<meta charset="utf-8">
-		<meta name="description" content="Clasifica secciones de la hoja de banano">
-		<link rel="stylesheet" type= "text/css" href="/css/bootstrap.min.css" >
+		<meta name="description" content="Visualizador de shapefiles">
+		<link rel="stylesheet" type= "text/css" href= "{% static "bootstrap.min.css"  %}" >
 		<script src="{% static "jquery.js" %}" type= "text/javascript"></script>
 		<script src="{% static "OpenLayers.js" %}" type= "text/javascript"></script>
+		<script src="{% static "view_vectorfile.js" %}" type= "text/javascript"></script>
 	</head>
 	<body>
-		<div id="map" style="width:100%;height: 700px;">
 
+		<div class="container-fluid">
+			<div class="row">
+				<div id="styles" class = "col-md-1">
+					<h3>Estilos</h3>
+					<ul class = "list-group">
+	              		{% for style in vectorlayer.style_set.all %}
+		                <li class= "list-group-item disabled" data-id={{style.id}}>
+		                	{{style.title}}
+		                </li>
+		              {% endfor %}
+	            	</ul>
+				</div>
+
+				<div class="col-md-10">
+					<div id="map" style="width:100%;height: 700px;">
+					</div>
+				</div>
+
+
+				<div id="legend" class = "col-md-1">
+				</div>
+
+			</div>	
 		</div>
 		
 	</body>
 	<script>
-		var vectorlayer_id = {{vectorlayer_id}};
-
-		function renderMap(featurecollection){
-
-			console.log(featurecollection)
-			var map = new OpenLayers.Map("map",{projection: new OpenLayers.Projection("EPSG:900913")});
-
-			var layer = new OpenLayers.Layer.OSM();
-
-
-			var lon = -77.7932620706094866;
-			var lat = -1.8040253271523334;
-//			var lon = 107.206742;
- //           var lat = -4.933280;
-	        var zoom = 5;
-            var geojson_format = new OpenLayers.Format.GeoJSON();
-			var vector_layer = new OpenLayers.Layer.Vector({projection: new OpenLayers.Projection("EPSG:900913")});
-			var features = geojson_format.read(featurecollection);
-			
-			for (i=0; i<features.length; i++){
-				feature = features[i];
-				feature.geometry.transform('EPSG:4326','EPSG:900913');
-           	}
-
-           	vector_layer.addFeatures(features);
-
-           	map.addLayers([layer,vector_layer]);
-           	
-           	
-
-           	map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326','EPSG:900913'), zoom);
-
-           	
-		}
-
-		function init(){
-
-			var url = "/vector/geojson/" + vectorlayer_id;
-			console.log(url)		
-			var request = $.get(url);
-			var featurecollection = null;
-			request.done(function(data){
-				featurecollection = data;
-				renderMap(featurecollection);
-			});			
-
-		}
-
-		window.addEventListener("load",init);
+		var vectorlayer_id = {{vectorlayer.id}};
+		window.addEventListener("load",function(){
+			options = {
+				"map_container":"map",
+				"legend_container":"legend",
+				"styles_container":"styles",
+				"vectorlayer_id":vectorlayer_id
+			}
+			init(options);
+		});
 	</script>
+
 </html>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
 import django.contrib.gis.db.models.fields
 
 
@@ -41,19 +41,38 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='VectorFile',
+            name='Style',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('file_path', models.CharField(max_length=255)),
+                ('file_name', models.CharField(max_length=50)),
+                ('title', models.CharField(max_length=50)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='VectorLayer',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('filename', models.CharField(max_length=255)),
                 ('srs_wkt', models.TextField(max_length=500)),
                 ('geom_type', models.CharField(max_length=50)),
                 ('encoding', models.CharField(max_length=20)),
+                ('title', models.CharField(max_length=50, null=True)),
+                ('abstract', models.TextField(max_length=500, null=True)),
+                ('centroid', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True)),
+                ('data_date', models.DateField(null=True, blank=True)),
+                ('upload_date', models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.AddField(
+            model_name='style',
+            name='vectorlayer',
+            field=models.ForeignKey(to='VectorLayers.VectorLayer'),
+        ),
+        migrations.AddField(
             model_name='feature',
-            name='vectorfile',
-            field=models.ForeignKey(to='VectorLayers.VectorFile'),
+            name='vectorlayer',
+            field=models.ForeignKey(to='VectorLayers.VectorLayer'),
         ),
         migrations.AddField(
             model_name='attributevalue',
@@ -62,7 +81,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='attribute',
-            name='vectorfile',
-            field=models.ForeignKey(to='VectorLayers.VectorFile'),
+            name='vectorlayer',
+            field=models.ForeignKey(to='VectorLayers.VectorLayer'),
         ),
     ]
