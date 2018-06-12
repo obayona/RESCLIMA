@@ -1,6 +1,4 @@
 from django.contrib.gis.db import models
-from RESCLIMA import settings
-from os.path import join
 
 class VectorLayer(models.Model):
 
@@ -39,12 +37,11 @@ class AttributeValue(models.Model):
 	attribute = models.ForeignKey(Attribute)
 	value = models.CharField(max_length=255,blank=True,null=True)
 
-def getFileName(instance, filename):
-	path = settings.STYLE_FILES_PATH;
-	fullName = join(path,"style_{0}_{1}")
-	return fullName.format(instance.vector.id, filename);
-	
+
 class Style(models.Model):
-	file_path = models.FileField(upload_to=getFileName)
+	file_path = models.CharField(max_length=255)
+	file_name = models.CharField(max_length=50)
 	title = models.CharField(max_length=50)
 	vectorlayer = models.ForeignKey(VectorLayer)
+	class Meta:
+		ordering = ['id']
