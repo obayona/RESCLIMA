@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
+import django.contrib.gis.db.models.fields
 
 
 class Migration(migrations.Migration):
@@ -14,8 +15,7 @@ class Migration(migrations.Migration):
             name='Measurement',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date_time', models.DateTimeField()),
-                ('value', models.FloatField()),
+                ('datetime', models.DateTimeField(auto_now_add=True)),
             ],
             options={
                 'verbose_name': 'Measurement',
@@ -23,35 +23,47 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Sensor',
+            name='Provider',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('serialNum', models.CharField(max_length=255)),
-                ('model', models.CharField(max_length=50, choices=[(b'BLOOMSKY', b'Bloomsky - Sky2'), (b'NIPONCF', b'NEI - CF200'), (b'HOBO', b'Hobo')])),
             ],
             options={
-                'verbose_name': 'Sensor',
-                'verbose_name_plural': 'Sensors',
+                'verbose_name': 'Provider',
+                'verbose_name_plural': 'Provider',
             },
         ),
         migrations.CreateModel(
-            name='SensorVariable',
+            name='Station',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('id_sensor', models.ForeignKey(to='TimeSeries.Sensor')),
+                ('serialNum', models.CharField(max_length=30)),
+                ('location', django.contrib.gis.db.models.fields.PointField(srid=4326)),
+                ('active', models.BooleanField()),
             ],
             options={
-                'verbose_name': 'SensorVariable',
-                'verbose_name_plural': 'SensorsVariables',
+                'verbose_name': 'Station',
+                'verbose_name_plural': 'Station',
+            },
+        ),
+        migrations.CreateModel(
+            name='StationType',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('brand', models.CharField(max_length=30)),
+                ('model', models.CharField(max_length=30)),
+            ],
+            options={
+                'verbose_name': 'StationType',
+                'verbose_name_plural': 'StationTypes',
             },
         ),
         migrations.CreateModel(
             name='Variable',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-                ('description', models.TextField(null=True)),
-                ('unit', models.CharField(max_length=100)),
+                ('name', models.CharField(max_length=50)),
+                ('unit', models.CharField(max_length=20)),
+                ('symbol', models.CharField(max_length=10)),
             ],
             options={
                 'verbose_name': 'Variable',
@@ -59,13 +71,18 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AddField(
-            model_name='sensorvariable',
-            name='id_variable',
-            field=models.ForeignKey(to='TimeSeries.Variable'),
+            model_name='station',
+            name='stationType',
+            field=models.ForeignKey(to='TimeSeries.StationType'),
         ),
         migrations.AddField(
             model_name='measurement',
-            name='id_sensorVariable',
-            field=models.ForeignKey(to='TimeSeries.SensorVariable'),
+            name='idProvider',
+            field=models.ForeignKey(to='TimeSeries.Provider', null=True),
+        ),
+        migrations.AddField(
+            model_name='measurement',
+            name='idStation',
+            field=models.ForeignKey(to='TimeSeries.Station', null=True),
         ),
     ]

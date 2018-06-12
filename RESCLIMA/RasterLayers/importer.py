@@ -4,7 +4,8 @@ import os, os.path
 import datetime
 import time
 import requests
-
+import gdal
+import traceback
 
 def import_data(request):
 	list_files = request.FILES.getlist('import_files')
@@ -25,6 +26,24 @@ def import_data(request):
 		for chunk in file.chunks():
 			f.write(chunk)
 		f.close()
+
+	try:
+		layer = gdal.Open(file_dir)
+		proj = layer.GetProjectionRef()
+		ulx, xres, xskew, uly, yskew, yres  = layer.GetGeoTransform()
+		lrx = ulx + (layer.RasterXSize * xres)
+		lry = uly + (layer.RasterYSize * yres)
+
+		print proj
+		print ulx, uly, lrx, lry
+
+		cx = (ulx + lrx)/2
+		cy = (uly + lry)/2
+
+		print cx, cy
+
+	except:
+		traceback.print_exc()
 
 	return None
 

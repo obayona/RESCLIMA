@@ -6,12 +6,12 @@ def show_options(request):
 
 def new_sensor(request):
     if request.method == "POST":
-        form = SensorForm(request.POST)
+        form = StationForm(request.POST)
         if form.is_valid():
             form.save()
         return redirect('home')
     elif request.method == "GET":
-        form = SensorForm()
+        form = StationForm()
         return render(request, 'newSensor.html', {'accion': 'Ingreso',
                                                 'objeto': 'Sensor',
                                                 'form': form,})
