@@ -24,7 +24,7 @@ Es un proyecto en Django con la implementacion del upload y download de un shape
 
 Django 1.8
 
-postgres 10
+postgres
 
 postgis
 
@@ -35,6 +35,8 @@ mapnik
 lxml
 
 floppyforms
+
+TimescaleDB
 
 # Instrucciones instalacion de gdal:
 
@@ -58,26 +60,14 @@ Para comprobar si la instalacion fue correcta, en el interprete de python import
 
 from osgeo import ogr
 
-# Instalacion Postgres 10
-
-https://askubuntu.com/questions/1009975/unable-to-install-postgresql-10-on-ubuntu-16-04
-
-
-# Instalacion Postgis
-
-$ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
-$ sudo apt-get update
-$ sudo apt-get install postgis
-
-Se debe instalar PostGIS version 2.4.4
-
-
 #Instala TimescaleDB
 
 $ sudo add-apt-repository ppa:timescale/timescaledb-ppa
 $ sudo apt-get update
 
-Instalar para postgres 10:
+Instalar para postgres 9.6:
+$ sudo apt install timescaledb-postgresql-9.6
+O instalar para postgres 10:
 $ sudo apt install timescaledb-postgresql-10
 
 $ sudo nano /etc/postgresql/(postgres_version)/main/postgresql.conf
@@ -85,19 +75,36 @@ Localizar y descomentar la línea shared\_preload_libraries e igualarla a 'times
 shared\_preload_libraries = 'timescaledb'
 $ sudo service postgresql restart
 
-
-
 # Configurar postgres
 
-Crear un usuario en postgres; debe coincidir con el usuario del archivo settings.py
+Crear un usuario en postgres; user: obayona, password: EloyEcuador93
 
 Crear una base de datos "resclima"
 
+Agregarle la extencion postgis
+
 \c resclima;
 
-CREATE EXTENSION postgis; 
+CREATE EXTENSION postgis;
+
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
 
+Se debe ejcutar las migraciones de django:
+
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+Ahora se debe crear la hypertabla de timescaledb
+
+ALTER TABLE "TimeSeries_measurement" DROP COLUMN id;
+SELECT create_hypertable('"TimeSeries_measurement"','datetime');
+ALTER TABLE "TimeSeries_measurement" ADD COLUMN id SERIAL PRIMARY KEY;
+
+
+Para cargar datos iniciales en una tabla:
+
+python manage.py loaddata TimeSeries/SensorTypes.json 
 
 # Instalacion floppyforms
 MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
