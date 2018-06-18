@@ -8,7 +8,7 @@
     {% block content2 %}
     <main class="container" role='main'>
 
-      <form method="post">
+      <form method="post" enctype="multipart/form-data">
 
         {% csrf_token %}
         {{ form }}

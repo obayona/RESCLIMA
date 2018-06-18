@@ -46,7 +46,7 @@ class Station(models.Model):
 
 
 class Provider(models.Model):
-    info = JSONField()
+    info = JSONField(default = dict)
 
     def __unicode__(self):
         return "%s" % (self.info)
@@ -62,7 +62,7 @@ class Measurement(models.Model):
     idStation = models.ForeignKey(Station, null=True, on_delete=models.CASCADE)
     idProvider = models.ForeignKey(Provider, null=True, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
-    readings = JSONField()
+    readings = JSONField(default = dict)
 
     def __unicode__(self):
         return "%s %s %s %s" % (self.idStation,self.idProvider,self.datetime,self.readings)

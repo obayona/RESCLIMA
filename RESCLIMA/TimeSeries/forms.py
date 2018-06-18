@@ -24,6 +24,7 @@ MODEL_CHOICES = (
     ("HOBO", "Hobo"),
 )
 
+
 class StationTypeForm(forms.ModelForm):
     class Meta:
         model = StationType
@@ -63,5 +64,14 @@ class StationForm(forms.ModelForm):
         }
 
 class UploadFileForm(forms.Form):
-    select = forms.CharField(widget=forms.Select(choices=MODEL_CHOICES))
+    MODEL_CHOICES2 = []
+    stations = StationType.objects.all()
+    for station in stations:
+        brand = station.brand
+        model = station.model
+        choice_name = brand+"-"+model
+        pair = (choice_name,choice_name)
+        MODEL_CHOICES2.append(pair)
+
+    select = forms.CharField(widget=forms.Select(choices=MODEL_CHOICES2))
     file = forms.FileField()

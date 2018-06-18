@@ -36,6 +36,8 @@ lxml
 
 floppyforms
 
+TimescaleDB
+
 # Instrucciones instalacion de gdal:
 
 $ sudo apt-get build-dep gdal
@@ -58,6 +60,21 @@ Para comprobar si la instalacion fue correcta, en el interprete de python import
 
 from osgeo import ogr
 
+#Instala TimescaleDB
+
+$ sudo add-apt-repository ppa:timescale/timescaledb-ppa
+$ sudo apt-get update
+
+Instalar para postgres 9.6:
+$ sudo apt install timescaledb-postgresql-9.6
+O instalar para postgres 10:
+$ sudo apt install timescaledb-postgresql-10
+
+$ sudo nano /etc/postgresql/(postgres_version)/main/postgresql.conf
+Localizar y descomentar la línea shared\_preload_libraries e igualarla a 'timescaledb'. Debe quedar:
+shared\_preload_libraries = 'timescaledb'
+$ sudo service postgresql restart
+
 # Configurar postgres
 
 Crear un usuario en postgres; user: obayona, password: EloyEcuador93
@@ -69,6 +86,7 @@ Agregarle la extencion postgis
 \c resclima;
 
 CREATE EXTENSION postgis;
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
 # Instalacion floppyforms
 MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
