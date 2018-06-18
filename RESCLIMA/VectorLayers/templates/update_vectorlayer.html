@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title>Editar capa vectorial</title>
+  </head>
+  <body>
+    <body>
+      <h1>RESCLIMA DURAN</h1>
+      
+
+      <div>
+        {%if err_msg %}
+          <b>{{err_msg}}</b>
+        {%endif%}
+
+        <form method="POST">
+            {% csrf_token %}
+            <p>
+              <label for="id_tittle">T&iacute;tulo:</label>
+              <input id="id_title" maxlength="50" name="title" value="{{vectorlayer.title}}" type="text">
+            </p>
+            <p>
+              <label for="id_abstract">Resumen:</label>
+              <textarea cols="40" id="id_abstract" maxlength="500" name="abstract" rows="10">{{vectorlayer.abstract}}</textarea>
+            </p>
+            
+            <h2>Estilos</h2>
+              <p>
+                <a href="{% url "import_style" vectorlayer.id %}">Agregar estilo</a>
+              </p>
+
+              <ul>
+              {% for style in vectorlayer.style_set.all %}
+                <li>
+                  <p>
+                    {{style.title}}
+                    <a href="{% url "delete_style" style.id %}">Eliminar</a>
+                  </p>
+                </li>
+              {% endfor %}
+              </ul>
+
+            <p>
+              <input type="submit" value="Guardar" />
+              <button type="button" id="Cancel" onClick='window.location="/vector";'>Cancelar</button>
+            </p>
+        </form>
+      </div>
+  </body>
+</html>

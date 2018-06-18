@@ -150,6 +150,7 @@ def getAttrValue(attr, value, encoding):
     attr_name = str(attr.name)
     if value == None:
         return value
+
     if attr.type == ogr.OFTInteger:
         return int(value);
     elif attr.type == ogr.OFTIntegerList:
@@ -169,6 +170,8 @@ def getAttrValue(attr, value, encoding):
         for s in eval(value):
             strings.append(s.encode(encoding))
         return strings
+    elif attr.type == ogr.OFTWideString:
+         return value.encode(encoding)
     elif attr.type == ogr.OFTDate:
         parts = value.split(",")
         year = int(parts[0])
@@ -196,6 +199,13 @@ def getAttrValue(attr, value, encoding):
         tzone = int(parts[6])
         result = datetime.datetime(year=year,month=month,day=day,hour=hour,minute=minute,second=second,tzinfo=tzone)
         return result;
+    elif attr.type==ogr.OFTInteger64:
+         return int(value);
+    elif attr.type == ogr.OFTInteger64List:
+        integers = eval(value)
+        return integers
+
+    return None;
 
 
 # Transforma un archivo sld version 1.1.0 a 
