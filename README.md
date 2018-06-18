@@ -72,7 +72,7 @@ $ sudo apt-get install postgis
 Se debe instalar PostGIS version 2.4.4
 
 
-#Instala TimescaleDB
+# Instala TimescaleDB
 
 $ sudo add-apt-repository ppa:timescale/timescaledb-ppa
 $ sudo apt-get update
@@ -81,8 +81,12 @@ Instalar para postgres 10:
 $ sudo apt install timescaledb-postgresql-10
 
 $ sudo nano /etc/postgresql/(postgres_version)/main/postgresql.conf
-Localizar y descomentar la línea shared\_preload_libraries e igualarla a 'timescaledb'. Debe quedar:
+
+Localizar y descomentar la línea shared\_preload_libraries e igualarla a 'timescaledb'. 
+
+Debe quedar:
 shared\_preload_libraries = 'timescaledb'
+
 $ sudo service postgresql restart
 
 
@@ -97,7 +101,24 @@ Crear una base de datos "resclima"
 
 CREATE EXTENSION postgis; 
 
+CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
 
+Se debe ejcutar las migraciones de django:
+
+$ python manage.py makemigrations
+$ python manage.py migrate
+
+Ahora se debe crear la hypertabla de timescaledb
+
+ALTER TABLE "TimeSeries_measurement" DROP COLUMN id;
+
+SELECT create_hypertable('"TimeSeries_measurement"','datetime');
+
+ALTER TABLE "TimeSeries_measurement" ADD COLUMN id SERIAL PRIMARY KEY;
+
+Para cargar datos iniciales en una tabla:
+
+python manage.py loaddata TimeSeries/SensorTypes.json 
 
 # Instalacion floppyforms
 MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
