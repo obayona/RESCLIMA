@@ -14,7 +14,7 @@ def login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('home')
+            return redirect('dashboard')
         else:
             print("ERROR DE AUTENTICACION...")
             return render(request,'login.html', {'error':True})
