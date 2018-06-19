@@ -43,25 +43,22 @@ class StationTypeForm(forms.ModelForm):
             #'location': forms.gis.PointField(attrs={'class': 'form-control', 'id': 'location'}),
         }
 
-class StationForm(forms.ModelForm):
-    class Meta:
-        model = StationType
-        fields = [
-            'brand',
-            'model',
-        ]
-        labels = {
-            'serialNum': 'Numero de serie de la estacion',
-            'brand': 'Marca de la estacion',
-            'model': 'Modelo de la estacion',
-#            'location' : 'Ubicacion de la estacion'
-        }
-        widgets = {
-            'serialNum': forms.TextInput(attrs={'class': 'form-control', 'id': 'serialNum','placeholder': 'Numero de serie de la estacion'}),
-            'brand': forms.Select(attrs={'class':'form-control','id':'brand','placeholder':'Seleccione la marca de la estacion'}, choices=BRAND_CHOICES),
-            'model': forms.Select(attrs={'class':'form-control','id':'model','placeholder':'Seleccione modelo de la estacion'}, choices=MODEL_CHOICES),
-#            'location': forms.gis.PointField(attrs={'class': 'form-control', 'id': 'location'}),
-        }
+class StationForm(forms.Form):
+    MODEL_CHOICES2 = []
+    stations = StationType.objects.all()
+    for station in stations:
+        brand = station.brand
+        model = station.model
+        choice_name = brand+"-"+model
+        pair = (choice_name,choice_name)
+        MODEL_CHOICES2.append(pair)
+
+    stationType = forms.CharField(label="Station Type", widget=forms.Select(choices=MODEL_CHOICES2))
+    serialNum = forms.CharField(label="Serial Number",widget=forms.TextInput())
+    latitude = forms.FloatField(label="Latitude",required=False, widget=forms.NumberInput(attrs={'step': '0.000001'}))
+    longitude = forms.FloatField(label="Longitude", required=False, widget=forms.NumberInput(attrs={'step': '0.000001'}))
+    frequency = forms.IntegerField(label="Requests frequency", required=False, widget=forms.NumberInput(attrs={'step': '1'}))
+    token = forms.CharField(label="Access token", required=False, widget=forms.TextInput())
 
 class UploadFileForm(forms.Form):
     MODEL_CHOICES2 = []
