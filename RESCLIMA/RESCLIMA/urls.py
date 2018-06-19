@@ -17,6 +17,9 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^$', home, name="home"),
+    url(r'^login/$', login, name="login"),
+    url(r'^dashboard/$', dashboard, name="dashboard"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^vector/', include("VectorLayers.urls")),
     url(r'^series/', include("TimeSeries.urls")),
