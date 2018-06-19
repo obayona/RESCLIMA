@@ -8,18 +8,16 @@
     {% block content2 %}
     <main class="container" role='main'>
 
-      <form method="post">
+      <form enctype="multipart/form-data" method="post" >
 
         {% csrf_token %}
-        {{ form }}
-
+        {{ form.as_p }}
+        <input type="submit" id="Upload" value="Guardar"/>
+        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
       </form>
 
     </main>
     {% endblock content2 %}
-
-    <br><button type="submit" class="btn btn-success">Guardar</button>
-        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
 
   </body>
 </html>

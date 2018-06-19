@@ -21,6 +21,7 @@ def upload_file(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             print('holi')
+            return redirect("/series")
     else:
         form = UploadFileForm()
     return render(request, 'base_form.html', {'form': form})
