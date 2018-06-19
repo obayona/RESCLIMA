@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from TimeSeries.forms import *
+from csv_parsers_module import *
+from django.contrib import messages
 
 def show_options(request):
   return render(request,"home_series.html")
@@ -20,16 +22,16 @@ def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            name = form.cleaned_data['select']
-            dt = 
-            name = name + "_" + dt
+            station_type = form.cleaned_data['select']
             file = request.FILES['file']
-            handle_uploaded_file(file, name)
+            if(station_type = "HOBO-MX2300"):
+                try:
+                    result = parseHOBO(file)
+                    messages.success(request, 'Successfully saved')
+                except KeyError:
+                    messages.error(request, 'Could not save the file.', extra_tags='alert')
+                    
     else:
         form = UploadFileForm()
     return render(request, 'base_form.html', {'form': form})
 
-def handle_uploaded_file(f, name):
-    with open(name, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)

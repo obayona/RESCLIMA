@@ -7,7 +7,13 @@
     
     {% block content2 %}
     <main class="container" role='main'>
-
+      {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
       <form method="post" enctype="multipart/form-data">
 
         {% csrf_token %}

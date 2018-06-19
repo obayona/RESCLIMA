@@ -24,7 +24,7 @@ SECRET_KEY = 'k2va29q6&j)hb4cb1q7jq(k(qtl(sr0!hcunjzp@wc6@mt8!ps'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+MESSAGE_LEVEL = 40 
 ALLOWED_HOSTS = []
 
 
