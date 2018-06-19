@@ -1,4 +1,10 @@
 var vector_layer = undefined;
+var map_container, 
+legend_container, 
+styles_container, 
+attributes_container, 
+vectorlayer_id;
+
 
 
 function createLegendRow(value,symbolizer){
@@ -8,7 +14,18 @@ function createLegendRow(value,symbolizer){
 	text.innerHTML = value;
 
 	var symb = document.createElement("div");
-	var polygon = symbolizer.Polygon;
+	console.log(symbolizer)
+
+
+
+	var polygon = null;
+	for (var key in symbolizer) {
+		if (symbolizer.hasOwnProperty(key)){
+			polygon = symbolizer[key]
+			break;
+		}
+   	}
+
 	symb.style.width = "20px";
 	symb.style.height = "20px";
 	symb.style.backgroundColor = polygon.fillColor;
@@ -22,24 +39,20 @@ function createLegendRow(value,symbolizer){
 }
 
 function renderLegend(container_legend,rules){
+
 	var container = document.getElementById(container_legend);
 	container.innerHTML = "";
 
-	var property;
 	var i = 0; length = rules.length;
 
 
 	for (i;i<length;i++){
 		var rule = rules[i];
-		property = rule.filter.property;
-		var value = rule.filter.value;
+		var value = rule.name;
 		var symbolizer = rule.symbolizer;
 		var row = createLegendRow(value,symbolizer);
 		container.appendChild(row);
 	}
-	var prop = document.createElement("h2");
-	prop.innerHTML = property;
-	container.insertBefore(prop,container.firstChild);
 
 }
 
@@ -48,7 +61,18 @@ function renderLegend(container_legend,rules){
 function applyStyle(sld){
 	var format = new OpenLayers.Format.SLD();
 	var sld = format.read(sld);
-	var styles = sld.namedLayers["map"].userStyles;
+	var namedLayers = sld.namedLayers;
+
+
+	var namedLayer = null;
+	for (var key in namedLayers) {
+		if (namedLayers.hasOwnProperty(key)){
+			namedLayer = namedLayers[key]
+			break;
+		}
+   	}
+
+	var styles = namedLayer.userStyles;
 	var style = styles[0];
 	vector_layer.styleMap.styles["default"] = style;
 	vector_layer.redraw();
@@ -123,6 +147,56 @@ function initMap(map_container){
 	return map;
 }
 
+var layerListeners = {
+    featureclick: function(e) {
+    	var attributes = e.feature.attributes;
+        var container = document.getElementById(attributes_container);
+        container.innerHTML = "";
+
+        var table = document.createElement("table");
+        table.className = "table table-striped";
+        
+        var thead = document.createElement("thead");
+        var tr = document.createElement("tr");
+        var th_1 = document.createElement("th");
+        th_1.innerHTML = "Atributo";
+        var th_2 = document.createElement("th");
+        th_2.innerHTML = "Valor";
+
+        tr.appendChild(th_1);
+        tr.appendChild(th_2);
+        thead.appendChild(tr);
+        table.appendChild(thead);
+
+
+        var tbody = document.createElement("tbody");
+
+        for (var attr in attributes) {
+   			if (attributes.hasOwnProperty(attr)){
+      			var value = attributes[attr];
+
+      			var tr = document.createElement("tr");
+      			var td_1 = document.createElement("td");
+      			var td_2 = document.createElement("td");
+
+      			td_1.innerHTML = "" + attr;
+      			td_2.innerHTML = "" + value;
+
+				tr.appendChild(td_1);
+        		tr.appendChild(td_2);
+        		tbody.appendChild(tr);
+   			}
+		}
+		table.appendChild(tbody);
+		container.appendChild(table);
+
+        return false;
+    },
+    nofeatureclick: function(e) {
+        var container = document.getElementById(attributes_container);
+        container.innerHTML = "<h2>Click en un feature</h2>";
+    }
+};
 
 function renderFeatureLayer(data,map){
 
@@ -132,7 +206,10 @@ function renderFeatureLayer(data,map){
    	map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326','EPSG:900913'), zoom);
 
 	var geojson_format = new OpenLayers.Format.GeoJSON();
-	vector_layer = new OpenLayers.Layer.Vector({projection: new OpenLayers.Projection("EPSG:900913")});
+	vector_layer = new OpenLayers.Layer.Vector("layer",{
+			projection: new OpenLayers.Projection("EPSG:900913"),
+			eventListeners: layerListeners
+		});
 	var features = geojson_format.read(data);
 	
 	for (i=0; i<features.length; i++){
@@ -157,10 +234,11 @@ function requestLayer(vectorlayer_id,map){
 
 
 function init(options){
-	var map_container = options["map_container"]
-	var legend_container = options["legend_container"]
-	var styles_container = options["styles_container"]	
-	var vectorlayer_id = options["vectorlayer_id"]
+	map_container = options["map_container"]
+	legend_container = options["legend_container"]
+	styles_container = options["styles_container"]	
+	attributes_container = options["attributes_container"]
+	vectorlayer_id = options["vectorlayer_id"]
 
 
 	var map = initMap(map_container);
