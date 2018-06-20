@@ -1,27 +1,36 @@
 import configparser
 from datetime import datetime
-from dateutil.parser import *
+from dateutil.parser import parse
 from TimeSeries.models import *
+import os
 
 def parseHOBO(file):
 	"""Parse HOBO file"""
 	STATION="HOBO"
+	module_dir = os.path.dirname(__file__)
+	config_file_path = os.path.join(module_dir, 'meteo_stations.cfg')
 	config = configparser.ConfigParser()
-	config.read("meteo_stations.cfg")
+	config.read(config_file_path)
+
 	if "HOBO" not in config.sections():
 		raise KeyError("Meteorological station not configured. Exit...") 
-	headers= int (config.get(STATION,"headers"))
+	headers = int (config.get(STATION,"headers"))
 	#read verbose headers
-	id_sensor = file.readline().split(":")
-	id_sensor = id_sensor[1].strip()
-	file.readline()
+	id_station = file.readline().split(":")
+	id_station = id_station[1].strip()
+
+	datetime_format = str(config.get(STATION,"datetime_format"))
+	date_pos = int(config.get(STATION,"date_pos")) - 1
+
+	lines = [line.rstrip('\n') for line in file]
+	lines = lines[headers:]
 	#start reading the file
-	for line in file:
+
+	for line in lines:
 		measures = line.strip().split("\t")
+		print measures
 		#Parse timestamp as it can be a datetime or date and time independent fields
-		datetime_format = str(config.get(STATION,"datetime_format"))
-		date_pos = int(config.get(STATION,"date_pos"))-1
-		datetime = measures[date_pos - 1]
+		datetime = measures[date_pos]
 		ts = parseDatetime(datetime)
 		fields = config.get(STATION,"fields")
 		fields = fields.strip().split(",")
@@ -32,8 +41,9 @@ def parseHOBO(file):
 			measures_dict[fields[i]] = measures[i]
 
 		#save MeasureModel
-		saveMeasurements(null, id_sensor, ts, measures_dict)
+		saveMeasurements(id_station,None,measures_dict, ts)
 	
+	return None
 		
 
 def parseCF200(file):
@@ -64,6 +74,8 @@ def parseCF200(file):
 		print measures 
 		print "\n"
 
+	return None
+
 def parseDatetime(date, time = None):
 	if time != None:
 		date = date.strip()
@@ -75,9 +87,11 @@ def parseDatetime(date, time = None):
 
 
 
-def saveMeasurements(id_provider, id_station,measurements_dict,datetime = datetime.now()):
-	if id_provider == None:
-		measurement = Measurement(idStation = id_station, datetime = datetime, readings = measurements_dict)
+def saveMeasurements(id_station,id_provider,measurements_dict,datetime = datetime.now()):
+	if id_provider == None and id_station!= None:
+		station = Station.objects.get(serialNum=id_station);
+		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict)
 	else:
-		measurement = Measurement(idProvider = id_provider, datetime = datetime, readings = measurements_dict)
+		provider = Provider.objects.get(id=id_provider)
+		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict)
 	measurement.save()

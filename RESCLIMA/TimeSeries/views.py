@@ -44,8 +44,6 @@ def addSensor(data):
 
     return None
 
-
-
 def new_sensor(request):
     if request.method == "GET":
         station_types = StationType.objects.all()
@@ -64,18 +62,29 @@ def new_sensor(request):
         else:
             return HttpResponse(err_msg);
 
+
 def upload_file(request):
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            station_type = form.cleaned_data['select']
-            file = request.FILES['file']
-            if(station_type == "HOBO-MX2300"):
-                try:
-                    result = parseHOBO(file)
-                    messages.success(request, 'Successfully saved')
-                except KeyError:
-                    messages.error(request, 'Could not save the file.', extra_tags='alert')
-    elif request.method == "GET":
+    if request.method == "GET":
         form = UploadFileForm()
         return render(request, 'base_form.html', {'form': form})
+    elif request.method == "POST":
+        err_msg = None;
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            stationType_id = int(form.cleaned_data['stationType']);
+            stationType = StationType.objects.get(id=stationType_id);
+            stationType_str = str(stationType);
+            file = request.FILES['file']
+            if stationType_str == "HOBO-MX2300":
+                err_msg = parseHOBO(file);
+            elif stationType_str == "":
+                err_msg = parseDataLogger(file);
+            else:
+                err_msg = "Error: no se reconoce ese tipo de estacion";
+        else:
+            err_msg = form.errors
+
+        if(err_msg==None):
+            return HttpResponse("OK")
+        else:
+            return HttpResponse(err_msg);

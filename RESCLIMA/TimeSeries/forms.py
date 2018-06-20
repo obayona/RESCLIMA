@@ -28,5 +28,5 @@ class StationForm(forms.Form):
 
 class UploadFileForm(forms.Form):
     model_choices = getModelChoices(automatic=False)
-    select = forms.CharField(widget=forms.Select(choices=model_choices))
+    stationType = forms.CharField(widget=forms.Select(choices=model_choices))
     file = forms.FileField()

@@ -16,11 +16,7 @@ Pasos para crear hipertabla:
 ALTER TABLE "TimeSeries_measurement" DROP COLUMN id;
 SELECT create_hypertable('"TimeSeries_measurement"','datetime');
 ALTER TABLE "TimeSeries_measurement" ADD COLUMN id SERIAL PRIMARY KEY;
-<<<<<<< HEAD
-ALTER TABLE "TimeSeries_measurement" ADD CONSTRAINT unique_fields UNIQUE (id);
 
 Para cargar datos iniciales en una tabla:
 python manage.py loaddata archivo.json
-=======
-ALTER TABLE "TimeSeries_measurement" ADD CONSTRAINT unique_fields UNIQUE (datetime,id);
->>>>>>> remotes/origin/upload-files
+
