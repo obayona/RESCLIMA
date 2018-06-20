@@ -28,7 +28,6 @@ def parseHOBO(file):
 
 	for line in lines:
 		measures = line.strip().split("\t")
-		print measures
 		#Parse timestamp as it can be a datetime or date and time independent fields
 		datetime = measures[date_pos]
 		ts = parseDatetime(datetime)

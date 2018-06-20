@@ -1,13 +1,9 @@
 var vector_layer = undefined;
-<<<<<<< HEAD
 var map_container, 
 legend_container, 
 styles_container, 
 attributes_container, 
 vectorlayer_id;
-
-=======
->>>>>>> remotes/origin/upload-files
 
 
 function createLegendRow(value,symbolizer){
@@ -17,7 +13,6 @@ function createLegendRow(value,symbolizer){
 	text.innerHTML = value;
 
 	var symb = document.createElement("div");
-<<<<<<< HEAD
 	console.log(symbolizer)
 
 
@@ -30,9 +25,6 @@ function createLegendRow(value,symbolizer){
 		}
    	}
 
-=======
-	var polygon = symbolizer.Polygon;
->>>>>>> remotes/origin/upload-files
 	symb.style.width = "20px";
 	symb.style.height = "20px";
 	symb.style.backgroundColor = polygon.fillColor;
@@ -46,38 +38,20 @@ function createLegendRow(value,symbolizer){
 }
 
 function renderLegend(container_legend,rules){
-<<<<<<< HEAD
 
 	var container = document.getElementById(container_legend);
 	container.innerHTML = "";
 
-=======
-	var container = document.getElementById(container_legend);
-	container.innerHTML = "";
-
-	var property;
->>>>>>> remotes/origin/upload-files
 	var i = 0; length = rules.length;
 
 
 	for (i;i<length;i++){
 		var rule = rules[i];
-<<<<<<< HEAD
 		var value = rule.name;
-=======
-		property = rule.filter.property;
-		var value = rule.filter.value;
->>>>>>> remotes/origin/upload-files
 		var symbolizer = rule.symbolizer;
 		var row = createLegendRow(value,symbolizer);
 		container.appendChild(row);
 	}
-<<<<<<< HEAD
-=======
-	var prop = document.createElement("h2");
-	prop.innerHTML = property;
-	container.insertBefore(prop,container.firstChild);
->>>>>>> remotes/origin/upload-files
 
 }
 
@@ -86,10 +60,7 @@ function renderLegend(container_legend,rules){
 function applyStyle(sld){
 	var format = new OpenLayers.Format.SLD();
 	var sld = format.read(sld);
-<<<<<<< HEAD
 	var namedLayers = sld.namedLayers;
-
-
 	var namedLayer = null;
 	for (var key in namedLayers) {
 		if (namedLayers.hasOwnProperty(key)){
@@ -99,9 +70,6 @@ function applyStyle(sld){
    	}
 
 	var styles = namedLayer.userStyles;
-=======
-	var styles = sld.namedLayers["map"].userStyles;
->>>>>>> remotes/origin/upload-files
 	var style = styles[0];
 	vector_layer.styleMap.styles["default"] = style;
 	vector_layer.redraw();
@@ -176,7 +144,7 @@ function initMap(map_container){
 	return map;
 }
 
-<<<<<<< HEAD
+
 var layerListeners = {
     featureclick: function(e) {
     	var attributes = e.feature.attributes;
@@ -227,8 +195,7 @@ var layerListeners = {
         container.innerHTML = "<h2>Click en un feature</h2>";
     }
 };
-=======
->>>>>>> remotes/origin/upload-files
+
 
 function renderFeatureLayer(data,map){
 
@@ -238,14 +205,12 @@ function renderFeatureLayer(data,map){
    	map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326','EPSG:900913'), zoom);
 
 	var geojson_format = new OpenLayers.Format.GeoJSON();
-<<<<<<< HEAD
+
 	vector_layer = new OpenLayers.Layer.Vector("layer",{
 			projection: new OpenLayers.Projection("EPSG:900913"),
 			eventListeners: layerListeners
 		});
-=======
-	vector_layer = new OpenLayers.Layer.Vector({projection: new OpenLayers.Projection("EPSG:900913")});
->>>>>>> remotes/origin/upload-files
+
 	var features = geojson_format.read(data);
 	
 	for (i=0; i<features.length; i++){
@@ -270,19 +235,12 @@ function requestLayer(vectorlayer_id,map){
 
 
 function init(options){
-<<<<<<< HEAD
+
 	map_container = options["map_container"]
 	legend_container = options["legend_container"]
 	styles_container = options["styles_container"]	
 	attributes_container = options["attributes_container"]
 	vectorlayer_id = options["vectorlayer_id"]
-=======
-	var map_container = options["map_container"]
-	var legend_container = options["legend_container"]
-	var styles_container = options["styles_container"]	
-	var vectorlayer_id = options["vectorlayer_id"]
->>>>>>> remotes/origin/upload-files
-
 
 	var map = initMap(map_container);
 	requestLayer(vectorlayer_id,map);
