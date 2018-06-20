@@ -75,13 +75,9 @@ def parseDatetime(date, time = None):
 
 
 
-def saveMeasurements(id_provider = null, id_station = null, datetime = datetime.datetime.now(),measurements_dict):
-	if id_provider = null:
+def saveMeasurements(id_provider, id_station,measurements_dict,datetime = datetime.now()):
+	if id_provider == None:
 		measurement = Measurement(idStation = id_station, datetime = datetime, readings = measurements_dict)
 	else:
 		measurement = Measurement(idProvider = id_provider, datetime = datetime, readings = measurements_dict)
 	measurement.save()
-
-
-	    
-

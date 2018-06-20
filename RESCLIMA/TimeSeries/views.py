@@ -22,24 +22,14 @@ def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-<<<<<<< HEAD
-            print('holi')
-            return redirect("/series")
-    else:
-        form = UploadFileForm()
-    return render(request, 'base_form.html', {'form': form})
-=======
             station_type = form.cleaned_data['select']
             file = request.FILES['file']
-            if(station_type = "HOBO-MX2300"):
+            if(station_type == "HOBO-MX2300"):
                 try:
                     result = parseHOBO(file)
                     messages.success(request, 'Successfully saved')
                 except KeyError:
                     messages.error(request, 'Could not save the file.', extra_tags='alert')
-                    
-    else:
+    elif request.method == "GET":
         form = UploadFileForm()
-    return render(request, 'base_form.html', {'form': form})
-
->>>>>>> remotes/origin/upload-files
+        return render(request, 'base_form.html', {'form': form})

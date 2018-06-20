@@ -71,10 +71,3 @@ def parseDatetime(date, time = None):
 	else:
 		ts = parse(date)
 	return ts
-
-
-
-
-
-	    
-
