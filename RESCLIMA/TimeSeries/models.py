@@ -19,21 +19,25 @@ class Variable(models.Model):
 class StationType(models.Model):
     brand = models.CharField(max_length=30)
     model = models.CharField(max_length=30)
+    automatic = models.BooleanField(default=False);
+    variables = models.ManyToManyField(Variable, blank = True)
 
     def __unicode__(self):
-        return "%s %s" % (self.brand,self.model)
+        return "%s-%s" % (self.brand,self.model)
     def __str__(self):
-        return "%s %s" % (self.brand,self.model)
+        return "%s-%s" % (self.brand,self.model)
 
     class Meta:
-        verbose_name = "StationType"
-        verbose_name_plural = "StationTypes"
+        verbose_name = "Tipo de estacion"
+        verbose_name_plural = "Tipo de estaciones"
 
 class Station(models.Model):
     serialNum = models.CharField(max_length=30)
     location = models.PointField(srid=4326)
     active = models.BooleanField()
     stationType = models.ForeignKey(StationType, on_delete=models.CASCADE)
+    frecuency = models.FloatField(blank=True,null=True);
+    token = models.CharField(max_length=30, blank=True, null=True);
 
     def __unicode__(self):
         return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)
@@ -41,8 +45,8 @@ class Station(models.Model):
         return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)
 
     class Meta:
-        verbose_name = "Station"
-        verbose_name_plural = "Station"
+        verbose_name = "Estation"
+        verbose_name_plural = "Estationes"
 
 
 class Provider(models.Model):
@@ -54,8 +58,8 @@ class Provider(models.Model):
         return "%s" % (self.info)
 
     class Meta:
-        verbose_name = "Provider"
-        verbose_name_plural = "Provider"
+        verbose_name = "Proveedor"
+        verbose_name_plural = "Proveedores"
 
 
 class Measurement(models.Model):

@@ -2,34 +2,94 @@
 
 <html>
   <head>
-    {{ form.media }}
     <title>Series de tiempo</title>
-
-    <script src="{% static 'js/MapWidget.js' %}"></script>
-    <script>
-      {% block extra_js %}
-      {% endblock extra_js %}
-    </script>
 
   </head>
   <body>
     <h1>RESCLIMA DURAN</h1>
     
-    {% block content2 %}
+    {% block content %}
     <main class="container" role='main'>
 
-      <form method="post">
+      {%if err_msg %}
+        <h3>{{err_msg}}</h3>
+      {% endif %}
+
+      <form method="post" id="StationForm">
 
         {% csrf_token %}
-        {{ form.as_p }}
+        <p>
+        <label>Tipo de estaci&oacute;n</label>
+        <select id="id_stationType" name="stationType">
+          {% for station_type in station_types  %}
+            <option value={{station_type.id}} data-automatic={{station_type.automatic}}>{{station_type}} </option>
+          {% endfor %}
+        </select>
+        </p>
+        <p>
+          <label for="id_serialNum">Número serial:</label>
+          <input id="id_serialNum" name="serialNum" type="text" />
+        </p>
+        <p>
+          <label for="id_latitude">Latitud:</label>
+          <input id="id_latitude" name="latitude" step="0.000001" type="number" />
+        </p>
+        <p>
+          <label for="id_longitude">Longitud:</label>
+          <input id="id_longitude" name="longitude" step="0.000001" type="number" />
+        </p>
+        <p class="optional">
+          <label for="id_frequency">Frecuencia de requerimientos:</label>
+          <input id="id_frequency" name="frequency" step="1" type="number" />
+        </p>
+        <p class="optional">
+          <label for="id_token">Token:</label>
+          <input id="id_token" name="token" type="text" />
+        </p>
 
+        <input type="submit" id="Upload" value="Guardar"/>
+        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
       </form>
 
     </main>
-    {% endblock content2 %}
+    {% endblock content %}
 
-    <br><button type="submit" class="btn btn-success">Guardar</button>
-        <a onClick="javascript:history.go(-1);" style="margin-top: 0;" class="btn btn-primary">Cancelar</a>
+    <br>
+    
 
   </body>
+
+  <script>
+
+  function hideOrShowOptional(option){
+    var automatic = option.dataset["automatic"]
+    var options = document.querySelectorAll(".optional");
+    var display = "";
+
+    var display = (automatic=="True")?"":"None";
+    console.log(display)
+
+    for(var i=0; i < options.length; i++){
+      var x = options[i];
+      x.style.display = display;
+    }
+  }
+
+  function init(){
+    var sensorTypes = document.getElementById("id_stationType").options;
+    var option = sensorTypes[sensorTypes.selectedIndex];
+    hideOrShowOptional(option);
+
+    addEventListener("change", function(e){
+      var sensorTypes = e.target;
+      var option = sensorTypes[sensorTypes.selectedIndex];
+      hideOrShowOptional(option);      
+    });
+
+  }
+
+  window.addEventListener("load",init);
+
+  </script>
+
 </html>
