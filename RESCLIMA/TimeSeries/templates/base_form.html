@@ -7,8 +7,19 @@
     
     {% block content2 %}
     <main class="container" role='main'>
+<<<<<<< HEAD:RESCLIMA/TimeSeries/templates/base_form.html
 
       <form enctype="multipart/form-data" method="post" >
+=======
+      {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+      <form method="post" enctype="multipart/form-data">
+>>>>>>> remotes/origin/upload-files:RESCLIMA/TimeSeries/templates/base_form.html
 
         {% csrf_token %}
         {{ form.as_p }}

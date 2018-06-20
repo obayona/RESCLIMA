@@ -36,6 +36,8 @@ lxml
 
 floppyforms
 
+TimescaleDB
+
 # Instrucciones instalacion de gdal:
 
 $ sudo apt-get build-dep gdal
@@ -57,6 +59,7 @@ $ sudo python setup.py install
 Para comprobar si la instalacion fue correcta, en el interprete de python importar gdal:
 
 from osgeo import ogr
+
 
 # Instalacion Postgres 10
 
@@ -119,6 +122,7 @@ ALTER TABLE "TimeSeries_measurement" ADD COLUMN id SERIAL PRIMARY KEY;
 Para cargar datos iniciales en una tabla:
 
 python manage.py loaddata TimeSeries/SensorTypes.json 
+
 
 # Instalacion floppyforms
 MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:

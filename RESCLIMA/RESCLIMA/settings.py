@@ -24,7 +24,7 @@ SECRET_KEY = 'k2va29q6&j)hb4cb1q7jq(k(qtl(sr0!hcunjzp@wc6@mt8!ps'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+MESSAGE_LEVEL = 40 
 ALLOWED_HOSTS = []
 
 
@@ -122,3 +122,5 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 STYLE_FILES_PATH = "/home_local/obayona/RESCLIMA/styles/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

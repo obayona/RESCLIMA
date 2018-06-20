@@ -1,7 +1,7 @@
 import configparser
 from datetime import datetime
 from dateutil.parser import *
-
+from TimeSeries.models import *
 
 def parseHOBO(file):
 	"""Parse HOBO file"""
@@ -15,7 +15,6 @@ def parseHOBO(file):
 	id_sensor = file.readline().split(":")
 	id_sensor = id_sensor[1].strip()
 	file.readline()
-	measurements_list = []
 	#start reading the file
 	for line in file:
 		measures = line.strip().split("\t")
@@ -27,12 +26,14 @@ def parseHOBO(file):
 		fields = config.get(STATION,"fields")
 		fields = fields.strip().split(",")
 		measures_num = len(measures)
+		#form json of readings
 		measures_dict = {}
 		for i in range (2, measures_num):
 			measures_dict[fields[i]] = measures[i]
-			measurements_list.append(measurements_list)
 
-	return measurements_list
+		#save MeasureModel
+		saveMeasurements(null, id_sensor, ts, measures_dict)
+	
 		
 
 def parseCF200(file):
@@ -74,6 +75,12 @@ def parseDatetime(date, time = None):
 
 
 
+def saveMeasurements(id_provider = null, id_station = null, datetime = datetime.datetime.now(),measurements_dict):
+	if id_provider = null:
+		measurement = Measurement(idStation = id_station, datetime = datetime, readings = measurements_dict)
+	else:
+		measurement = Measurement(idProvider = id_provider, datetime = datetime, readings = measurements_dict)
+	measurement.save()
 
 
 	    
