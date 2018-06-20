@@ -36,7 +36,7 @@ class Station(models.Model):
     location = models.PointField(srid=4326)
     active = models.BooleanField()
     stationType = models.ForeignKey(StationType, on_delete=models.CASCADE)
-    frecuency = models.FloatField(blank=True,null=True);
+    frequency = models.FloatField(blank=True,null=True);
     token = models.CharField(max_length=30, blank=True, null=True);
 
     def __unicode__(self):

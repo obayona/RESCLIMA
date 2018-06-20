@@ -21,15 +21,16 @@ def import_shapefile(request):
         form = ImportShapefileForm()
         return render(request, "import_shapefile.html",{'form':form})
     elif request.method == "POST":
+        err_msg = None;
         form = ImportShapefileForm(request.POST,request.FILES)
-        
         if form.is_valid():
-            err_msg = importer.import_data(request)
-            if err_msg == None:
-                return HttpResponse("OK")
+          err_msg = importer.import_data(request)
         else:
-            err_msg = "Error en el formulario"
-        return HttpResponse(err_msg);
+          err_msg = form.errors;
+        if err_msg == None:
+          return HttpResponse("OK")
+        else:
+            return HttpResponse(err_msg);
 
 def export_shapefile(request, vectorlayer_id):
 	try:

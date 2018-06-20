@@ -3,7 +3,7 @@
 <html>
   <head>
     <title>Series de tiempo</title>
-
+    <script src="{% static "jquery.js" %}" type= "text/javascript"></script>
   </head>
   <body>
     <h1>RESCLIMA DURAN</h1>
@@ -11,9 +11,7 @@
     {% block content %}
     <main class="container" role='main'>
 
-      {%if err_msg %}
-        <h3>{{err_msg}}</h3>
-      {% endif %}
+      <div id="errorMsg"></div>
 
       <form method="post" id="StationForm">
 
@@ -39,7 +37,7 @@
           <input id="id_longitude" name="longitude" step="0.000001" type="number" />
         </p>
         <p class="optional">
-          <label for="id_frequency">Frecuencia de requerimientos:</label>
+          <label for="id_frequency">Frecuencia de requerimientos (en minutos):</label>
           <input id="id_frequency" name="frequency" step="1" type="number" />
         </p>
         <p class="optional">
@@ -61,34 +59,73 @@
 
   <script>
 
-  function hideOrShowOptional(option){
-    var automatic = option.dataset["automatic"]
-    var options = document.querySelectorAll(".optional");
-    var display = "";
+    var form = $("#StationForm");
 
-    var display = (automatic=="True")?"":"None";
-    console.log(display)
-
-    for(var i=0; i < options.length; i++){
-      var x = options[i];
-      x.style.display = display;
+    function errorHandler(data){
+      status = String(data.status);
+      msg = "<b><i>Ha ocurrido un error " + status+ " en el servidor</i></b>"
+      errorMsg.innerHTML = msg;
     }
-  }
 
-  function init(){
-    var sensorTypes = document.getElementById("id_stationType").options;
-    var option = sensorTypes[sensorTypes.selectedIndex];
-    hideOrShowOptional(option);
+    function successHandler(data){
+      if(data=="OK"){
+        window.location = "/series"
+      }
+      else{
+        errorMsg.innerHTML = "<b><i>"+data+"</i></b>"
+      }
+    }
 
-    addEventListener("change", function(e){
-      var sensorTypes = e.target;
-      var option = sensorTypes[sensorTypes.selectedIndex];
-      hideOrShowOptional(option);      
-    });
 
-  }
+    function formSubmit(){
+      var data = new FormData(form.get(0));
+      $.ajax({
+        type: form.attr('method'),
+        url: form.attr('action'),
+        data: data,
+        processData: false,
+        contentType: false,
+        success: successHandler,
+        error: errorHandler
+      });
 
-  window.addEventListener("load",init);
+      return false;
+    }
+
+
+    function hideOrShowOptional(option){
+      console.log("me llamaron")
+      var automatic = option.dataset["automatic"]
+      var options = document.querySelectorAll(".optional");
+      var display = "";
+
+      var display = (automatic=="True")?"":"None";
+
+      for(var i=0; i < options.length; i++){
+        var x = options[i];
+        x.style.display = display;
+      }
+    }
+
+    function init(){
+      var sensorTypes = document.getElementById("id_stationType");
+      var options = sensorTypes.options;
+      var option = options[options.selectedIndex];
+      hideOrShowOptional(option);
+
+      sensorTypes.addEventListener("change", function(e){
+        var target = e.target;
+        var options = target.options;
+        var option = target[target.selectedIndex];
+        hideOrShowOptional(option);      
+      });
+
+      form.submit(formSubmit);
+
+    }
+
+    $(document).ready(init);
+
 
   </script>
 

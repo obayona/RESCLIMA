@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
+from django.http import HttpResponse
 from TimeSeries.forms import *
 from parsers.csv_parsers_module import *
 from django.contrib import messages
@@ -29,9 +30,12 @@ def addSensor(data):
         station.stationType = stationType;
 
         if(automatic==True):
-            if(frequency=="" or token == ""):
+            if(frequency == "" or token == ""):
                 return "Error: faltan argumentos";
-            station.frecuency = float(frequency);
+            frequency = float(frequency);
+            if(frequency<=0):
+                return "Error: frecuencia debe ser mayor que cero"
+            station.frequency = frequency;
             station.token = token;
 
         station.save();
@@ -40,8 +44,9 @@ def addSensor(data):
 
     return None
 
+
+
 def new_sensor(request):
-    
     if request.method == "GET":
         station_types = StationType.objects.all()
         options = {'station_types':station_types}
@@ -55,11 +60,9 @@ def new_sensor(request):
             err_msg = form.errors
 
         if(err_msg==None):
-            return HttpResponseRedirect("/series")
+            return HttpResponse("OK")
         else:
-            station_types = StationType.objects.all()
-            options = {'station_types':station_types,"err_msg":err_msg}
-            return render(request, 'new_sensor.html',options)
+            return HttpResponse(err_msg);
 
 def upload_file(request):
     if request.method == 'POST':
