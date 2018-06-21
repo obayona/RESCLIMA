@@ -4,7 +4,9 @@
     "pk": 1,
     "fields": {
       "brand": "HOBO",
-      "model": "MX2300"
+      "model": "MX2300",
+      "automatic":false,
+      "variables":[1,2,3,4,5,6]
     }
   },
   {
@@ -12,7 +14,9 @@
     "pk": 2,
     "fields": {
       "brand": "NIPONCF",
-      "model": "NEI-CF200"
+      "model": "NEI-CF200",
+      "automatic":false,
+      "variables":[7,8,9,10,11,12,13,14,15]
     }
   },
   {
@@ -20,7 +24,9 @@
     "pk": 3,
     "fields": {
       "brand": "BloomSky",
-      "model": "SKY2"
+      "model": "SKY2",
+      "automatic":true,
+      "variables":[]
     }
   }
 ]

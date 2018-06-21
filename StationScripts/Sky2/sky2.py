@@ -13,6 +13,7 @@ def getTokens(filename):
 	f.close()
 	return tokens
 
+
 def bloomsky_client(apiUrl, frequency, filename):
 	while(True):
 		tokens = getTokens(filename)
@@ -22,6 +23,7 @@ def bloomsky_client(apiUrl, frequency, filename):
 			request.add_header('Authorization', token)
 			response = urllib2.urlopen(request).read()
 			json1_data = json.loads(response)[0]
+			print json1_data["Data"]
 			print 'Temperature: ' + str(json1_data['Data']['Temperature'])
 		time.sleep(frequency)
 

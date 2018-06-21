@@ -4,8 +4,10 @@ from utils.fields import JSONField
 
 class Variable(models.Model):
     name = models.CharField(max_length=50)
-    unit = models.CharField(max_length=20)
+    unit = models.CharField(max_length=50)
     symbol = models.CharField(max_length=10)
+    alias = models.CharField(max_length=150, unique=True)
+    datatype = models.CharField(max_length=20)
 
     def __unicode__(self):
         return "%s %s %s" % (self.name,self.unit,self.symbol)
