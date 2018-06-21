@@ -4,7 +4,6 @@ from django.http import Http404
 import traceback
 import math
 import mapnik
-import gdal
 import utils
 
 MAX_ZOOM_LEVEL = 10

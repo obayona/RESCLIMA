@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.gis.db import models
 from utils.fields import JSONField
+from django.utils import timezone
 
 class Variable(models.Model):
     name = models.CharField(max_length=50)
@@ -52,6 +53,7 @@ class Station(models.Model):
 
 
 class Provider(models.Model):
+    name = models.CharField(max_length = 120, default = "Proveedor")
     info = JSONField(default = dict)
 
     def __unicode__(self):
@@ -67,7 +69,7 @@ class Provider(models.Model):
 class Measurement(models.Model):
     idStation = models.ForeignKey(Station, null=True, on_delete=models.CASCADE)
     idProvider = models.ForeignKey(Provider, null=True, on_delete=models.CASCADE)
-    datetime = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField(default=timezone.now)
     readings = JSONField(default = dict)
 
     def __unicode__(self):

@@ -84,7 +84,7 @@ def upload_file(request):
         else:
             err_msg = form.errors
 
-        if(err_msg==None):
+        if(err_msg=="Success"):
             return HttpResponse("OK")
         else:
             return HttpResponse(err_msg);

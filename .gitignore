@@ -166,3 +166,5 @@ ENV/
 /site
 
 gdal-2.1.0/
+*/migrations/
+RESCLIMA/TimeSeries/migrations/

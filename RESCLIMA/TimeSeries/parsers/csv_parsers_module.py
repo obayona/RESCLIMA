@@ -40,9 +40,10 @@ def parseHOBO(file):
 			measures_dict[fields[i]] = measures[i]
 
 		#save MeasureModel
+		print ("ASDFDSGFTRHDTRH")
 		saveMeasurements(id_station,None,measures_dict, ts)
-	
-	return None
+		
+	return "Success"
 		
 
 def parseCF200(file):
@@ -70,7 +71,6 @@ def parseCF200(file):
 		ts = parseDatetime(date,time)
 		fields = config.get(STATION,"fields")
 		fields = fields.strip().split(",")
-		print measures 
 		print "\n"
 
 	return None
@@ -87,10 +87,12 @@ def parseDatetime(date, time = None):
 
 
 def saveMeasurements(id_station,id_provider,measurements_dict,datetime = datetime.now()):
+
 	if id_provider == None and id_station!= None:
 		station = Station.objects.get(serialNum=id_station);
-		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict)
+		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict, idProvider = None)
+		print (measurement)
 	else:
 		provider = Provider.objects.get(id=id_provider)
-		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict)
+		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict, idStation = None)
 	measurement.save()

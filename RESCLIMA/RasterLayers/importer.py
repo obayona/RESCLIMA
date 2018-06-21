@@ -2,9 +2,7 @@
 
 import os, os.path
 import datetime
-import time
-import requests
-import gdal
+from osgeo import gdal
 import traceback
 
 def import_data(request):
@@ -28,7 +26,7 @@ def import_data(request):
 		f.close()
 
 	try:
-		layer = gdal.Open(file_dir)
+		layer = Open(file_dir)
 		proj = layer.GetProjectionRef()
 		ulx, xres, xskew, uly, yskew, yres  = layer.GetGeoTransform()
 		lrx = ulx + (layer.RasterXSize * xres)
