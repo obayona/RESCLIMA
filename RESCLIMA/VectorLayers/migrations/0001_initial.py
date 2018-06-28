@@ -48,6 +48,9 @@ class Migration(migrations.Migration):
                 ('file_name', models.CharField(max_length=50)),
                 ('title', models.CharField(max_length=50)),
             ],
+            options={
+                'ordering': ['id'],
+            },
         ),
         migrations.CreateModel(
             name='VectorLayer',
@@ -59,9 +62,9 @@ class Migration(migrations.Migration):
                 ('encoding', models.CharField(max_length=20)),
                 ('title', models.CharField(max_length=50, null=True)),
                 ('abstract', models.TextField(max_length=500, null=True)),
-                ('centroid', django.contrib.gis.db.models.fields.PointField(srid=4326, null=True)),
                 ('data_date', models.DateField(null=True, blank=True)),
                 ('upload_date', models.DateTimeField(auto_now_add=True)),
+                ('bbox', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True)),
             ],
         ),
         migrations.AddField(

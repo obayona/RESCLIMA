@@ -28,7 +28,7 @@
     "pk": 3,
     "fields": {
       "name": "Lluvia",
-      "unit": "Milinetros",
+      "unit": "Milimetros",
       "symbol": "mm",
       "alias":"Lluvia, mm (LGR S/N: 10450278, SEN S/N: 10440752, LBL: Lluvia)",
       "datatype":"float"

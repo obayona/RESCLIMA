@@ -197,12 +197,26 @@ var layerListeners = {
 };
 
 
-function renderFeatureLayer(data,map){
+function getExtent(bbox_json){
+	var geojson_format = new OpenLayers.Format.GeoJSON();
+	var polygon = geojson_format.read(bbox_json)[0];
+	polygon.geometry.transform('EPSG:4326','EPSG:900913');
+	var coords = polygon.geometry.components[0]
+	coords = coords.components
+	var minX,minY,maxX,maxY
+	minX = coords[0]["x"]
+	minY = coords[0]["y"]
+	maxX = coords[2]["x"]
+	maxY = coords[2]["y"]
+	console.log(minX,minY,maxX,maxY)
+	return [minX,minY,maxX,maxY]
+}
 
-	var lon = data.centroid.lon;
-	var lat = data.centroid.lat;
-   	var zoom = 4;
-   	map.setCenter(new OpenLayers.LonLat(lon, lat).transform('EPSG:4326','EPSG:900913'), zoom);
+
+function renderFeatureLayer(data,map){
+	console.log(data.bbox)
+	var extent = getExtent(data.bbox);   	
+   	map.zoomToExtent(extent);
 
 	var geojson_format = new OpenLayers.Format.GeoJSON();
 

@@ -13,10 +13,9 @@ class VectorLayer(models.Model):
 	encoding = models.CharField(max_length= 20)
 	title = models.CharField(max_length=50,null=True)
 	abstract = models.TextField(max_length=500,null=True)
-	centroid = models.PointField(srid=4326,null=True)
 	data_date = models.DateField(blank=True,null=True)
 	upload_date = models.DateTimeField(auto_now_add=True)
-	#bbox
+	bbox = models.PolygonField(srid=4326,null=True)
 	#owner
 
 class Attribute(models.Model):

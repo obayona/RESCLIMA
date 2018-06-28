@@ -5,6 +5,7 @@ from TimeSeries.models import *
 import os
 
 def parseHOBO(file):
+
 	"""Parse HOBO file"""
 	STATION="HOBO"
 	module_dir = os.path.dirname(__file__)

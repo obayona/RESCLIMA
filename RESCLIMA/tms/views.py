@@ -142,7 +142,7 @@ def _unitsPerPixel(zoomLevel):
     return 156544.3066/math.pow(2,zoomLevel)
 
 def tile(request, version, shapefile_id, zoom, x, y):
-	sld = open("/home_local/obayona/RESCLIMA/RESCLIMA/tms/estilo.xml");
+	sld = open("/home_local/obayona/Documents/RESCLIMA/RESCLIMA/tms/estilo.xml");
 	sld = sld.read()
 	colorMap = utils.parseRasterSLD(sld)
 
@@ -174,8 +174,7 @@ def tile(request, version, shapefile_id, zoom, x, y):
 		map.background = mapnik.Color("#00000000")
 		raster = mapnik.Layer("raster");
 		raster.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
-		raster.datasource = mapnik.Gdal(file="/home_local/obayona/rasters/PRECT2018-05-21-21-39-21-reproj.tif",band=1)
-
+		raster.datasource = mapnik.Gdal(file="/home_local/obayona/Documents/RESCLIMA/data/PRECT2018-05-21-21-39-21-reproj.tif",band=1)
 		style = mapnik.Style()
 		rule = mapnik.Rule()
 
