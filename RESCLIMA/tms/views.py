@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
+from os.path import join
+from RasterLayers.models import RasterLayer,Style
 import traceback
 import math
 import mapnik
@@ -49,7 +51,7 @@ def service(request, version):
 	return HttpResponse("Error")
 
 
-def tileMap(request, version, shapefile_id):
+def tileMap(request, version, rasterlayer_id):
 	print "TILE MAP****"
 
 	if version != "1.0":
@@ -84,69 +86,16 @@ def tileMap(request, version, shapefile_id):
 		traceback.print_exc()
 		return HttpResponse("Error")
 
-"""
-def tile(request, version, shapefile_id, zoom, x, y):
-	try:
-		if version != "1.0":
-			raise Http404
-	
-		zoom = int(zoom)
-		x    = int(x)
-		y    = int(y)
-
-		if zoom < 0 or zoom > MAX_ZOOM_LEVEL:
-			raise Http404
-
-		xExtent = _unitsPerPixel(zoom) * TILE_WIDTH
-		yExtent = _unitsPerPixel(zoom) * TILE_HEIGHT
-		minLong = x * xExtent - 180.0
-		minLat  = y * yExtent - 90.0
-		maxLong = minLong + xExtent
-		maxLat  = minLat  + yExtent
-
-		if (minLong < -180 or maxLong > 180 or minLat < -90 or maxLat > 90):
-			raise Http404
-
-		map = mapnik.Map(TILE_WIDTH, TILE_HEIGHT,"+proj=longlat +datum=WGS84")
-		map.background = mapnik.Color("#00000000")
-
-		#capa raster
-		raster = mapnik.Layer("raster");
-		raster.datasource = mapnik.Gdal(file="/home_local/obayona/rasters/PRECT2018-05-21-21-39-21.tif")
-
-		style = mapnik.Style()
-		rule = mapnik.Rule()
-		rule.symbols.append(mapnik.RasterSymbolizer())
-		style.rules.append(rule)
-		map.append_style("estilo",style)
-		raster.styles.append("estilo")
-		map.layers.append(raster)
-
-		map.zoom_to_box(mapnik.Box2d(minLong, minLat, maxLong, maxLat))
-		image = mapnik.Image(TILE_WIDTH, TILE_HEIGHT)
-		mapnik.render(map, image)
-		imageData = image.tostring('png')
-    
-		return HttpResponse(imageData, content_type="image/png")
-
-	except:
-		traceback.print_exc()
-		return HttpResponse("Error")
-
-
-"""
 
 def _unitsPerPixel(zoomLevel):
 	# ancho del mundo = 20026376.39 + 20048966.10 = 40075342.49
     # 40075342.49/256=156544.3066
     return 156544.3066/math.pow(2,zoomLevel)
 
-def tile(request, version, shapefile_id, zoom, x, y):
-	sld = open("/home_local/obayona/Documents/RESCLIMA/RESCLIMA/tms/estilo.xml");
-	sld = sld.read()
-	colorMap = utils.parseRasterSLD(sld)
 
+def tile(request, version, rasterlayer_id, zoom, x, y):
 	try:
+		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
 
 		if version != "1.0":
 			raise Http404
@@ -168,31 +117,51 @@ def tile(request, version, shapefile_id, zoom, x, y):
 		maxLong = minLong + xExtent
 		maxLat = minLat + yExtent
 
-		print "minLog",minLong,"maxLog",maxLong,"minLat",minLat,"maxLat",maxLat
-
 		map = mapnik.Map(TILE_WIDTH, TILE_HEIGHT, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +units=m +k=1.0 +nadgrids=@null +no_defs")
 		map.background = mapnik.Color("#00000000")
 		raster = mapnik.Layer("raster");
 		raster.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
-		raster.datasource = mapnik.Gdal(file="/home_local/obayona/Documents/RESCLIMA/data/PRECT2018-05-21-21-39-21-reproj.tif",band=1)
+
+		# se carga el archivo
+		file_path = rasterlayer.file_path
+		file_name = rasterlayer.file_name
+		file_format = rasterlayer.file_format
+		ext = "."+file_format
+		file_name = file_name.replace(ext,"-proj"+ext)
+		fullName = join(file_path,file_name)
+		numBands = rasterlayer.numBands
+		if numBands == 1 and rasterlayer.style!=None:
+			raster.datasource = mapnik.Gdal(file=fullName,band=1)
+		else:
+			raster.datasource = mapnik.Gdal(file=fullName)
+
 		style = mapnik.Style()
 		rule = mapnik.Rule()
 
 		symbol = mapnik.RasterSymbolizer()
 
-		c = mapnik.RasterColorizer( mapnik.COLORIZER_LINEAR,mapnik.Color(0,0,0,0))
+		# agregar estilo si existe
+		if rasterlayer.style != None:
+			print "VOY A AGREGAR ESTILO"
+			layer_style = rasterlayer.style
+			file_path = layer_style.file_path;
+			file_name = layer_style.file_name;
+			fullName = join(file_path,file_name);
+			print fullName
+			f = open(fullName,'r');
+			sld = f.read()
+			colorMap = utils.parseRasterSLD(sld)	
+			c = mapnik.RasterColorizer( mapnik.COLORIZER_LINEAR,mapnik.Color(0,0,0,0))
 
-		for entry in colorMap:
-			color = entry["color"]
-			quantity = entry["quantity"]
-			c.add_stop(quantity,mapnik.Color(color))
+			for entry in colorMap:
+				color = entry["color"]
+				quantity = entry["quantity"]
+				c.add_stop(quantity,mapnik.Color(color))
 
-		
+			symbol.colorizer = c
 
-		symbol.colorizer = c
 
 		rule.symbols.append(symbol)
-
 		style.rules.append(rule)
 		map.append_style("estilo",style)
 		raster.styles.append("estilo")
@@ -208,7 +177,3 @@ def tile(request, version, shapefile_id, zoom, x, y):
 	except:
 		traceback.print_exc()
 		return HttpResponse("Error")
-
-
-
-	

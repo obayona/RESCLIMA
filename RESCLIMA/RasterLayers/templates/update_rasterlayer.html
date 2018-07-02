@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <title>Editar capa raster</title>
+  </head>
+  <body>
+    <body>
+      <h1>RESCLIMA DURAN</h1>
+
+      <div>
+        {%if err_msg %}
+          <b>{{err_msg}}</b>
+        {%endif%}
+
+        <form method="POST">
+            {% csrf_token %}
+            <p>
+              <label for="id_tittle">T&iacute;tulo:</label>
+              <input id="id_title" maxlength="50" name="title" value="{{rasterlayer.title}}" type="text">
+            </p>
+            <p>
+              <label for="id_abstract">Resumen:</label>
+              <textarea cols="40" id="id_abstract" maxlength="500" name="abstract" rows="10">{{rasterlayer.abstract}}</textarea>
+            </p>
+            
+            {% if styles %}
+              <h2>Estilo</h2>
+              <select id = "id_style" name = "style">
+              <option value="null">Ninguno</option>
+              {% for style in styles %}
+                {% if style.id == rasterlayer.style.id %}
+                  <option value = {{style.id}} selected>{{style.title}}</option>
+                {% else %}
+                  <option value = {{style.id}}>{{style.title}}</option>
+                {% endif %}
+              {% endfor %}
+              </select>
+            {% endif %}
+            <p>
+              <input type="submit" value="Guardar" />
+              <button type="button" id="Cancel" onClick='window.location="/raster";'>Cancelar</button>
+            </p>
+        </form>
+      </div>
+  </body>
+</html>

@@ -122,5 +122,6 @@ USE_TZ = False
 STATIC_URL = '/static/'
 
 STYLE_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/styles/"
+RASTER_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/raster/"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

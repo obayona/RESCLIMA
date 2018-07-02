@@ -1,78 +1,108 @@
 # -*- encoding: utf-8 -*-
 
-import os, os.path
+import os
+from os.path import join
+from RESCLIMA import settings
+from models import RasterLayer
 import datetime
+import time
 from osgeo import gdal
+from osgeo import osr
+from django.contrib.gis.geos import Polygon
 import traceback
 
+def get_data_date(request):
+	date_text = request.POST["data_date"]
+	return datetime.datetime.strptime(date_text, '%Y-%m-%d')
+
+
+def getBBox(datasource):
+	gt = datasource.GetGeoTransform()
+	cols = datasource.RasterXSize
+	rows = datasource.RasterYSize
+	ext=[]
+	xarr=[0,cols]
+	yarr=[0,rows]
+
+	for px in xarr:
+		for py in yarr:
+			x=gt[0]+(px*gt[1])+(py*gt[2])
+			y=gt[3]+(px*gt[4])+(py*gt[5])
+			ext.append([x,y])
+			print x,y
+		yarr.reverse()
+
+	# se reproyecta a EPSG:4326
+	src_srs=osr.SpatialReference()
+	src_srs.ImportFromWkt(datasource.GetProjection())
+	tgt_srs = osr.SpatialReference()
+	tgt_srs.ImportFromEPSG(4326)
+
+	trans_coords=[]
+	transform = osr.CoordinateTransformation(src_srs,tgt_srs)
+	for x,y in ext:
+		x,y,z = transform.TransformPoint(x,y)
+		trans_coords.append([x,y])
+
+	minX = trans_coords[0][0]
+	minY = trans_coords[1][1]
+	maxX = trans_coords[2][0]
+	maxY = trans_coords[0][1]
+
+	coords = ((minX,minY),(minX,maxY),
+		(maxX,maxY),(maxX,minY),(minX,minY))
+	bbox = Polygon(coords)
+	return bbox
+
 def import_data(request):
-	list_files = request.FILES.getlist('import_files')
+	list_files = request.FILES.getlist('import_file')
 	title = request.POST["title"]
 	abstract = request.POST["abstract"]
+	data_date = get_data_date(request)
 
-	# se guarda el archivo en una carpeta
-	file_dir = None
-	fileName = None
-	for file in list_files:
-		fileName = file.name.split(".")[0];
-		ts = time.time()
-		timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-		fileName = fileName + timestamp_str + ".tif" 
-		print fileName
-		file_dir = os.path.join("/home_local/obayona/rasters",fileName)
-		f = open(file_dir, 'wb+')	
-		for chunk in file.chunks():
-			f.write(chunk)
-		f.close()
+	if (len(list_files)!=1):
+		return "Se debe subir un solo archivo"
 
-	try:
-		layer = Open(file_dir)
-		proj = layer.GetProjectionRef()
-		ulx, xres, xskew, uly, yskew, yres  = layer.GetGeoTransform()
-		lrx = ulx + (layer.RasterXSize * xres)
-		lry = uly + (layer.RasterYSize * yres)
-
-		print proj
-		print ulx, uly, lrx, lry
-
-		cx = (ulx + lrx)/2
-		cy = (uly + lry)/2
-
-		print cx, cy
-
-	except:
-		traceback.print_exc()
-
-	return None
-
-"""
+	file = list_files[0]
+	# se obtiene el nombre del archivo de la capa
+	fileName = file.name
+	extention = fileName.split(".")[-1]
+	fileName = fileName.replace("."+extention,"")
 	ts = time.time()
 	timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-	# se crea el coverage store en geoserver
-	url = "http://localhost:8080/geoserver/rest/workspaces/resclima_raster/coveragestores?configure=all"
-	auth = ("admin","geoserver")
-	headers = {"Content-type":"text/xml"}
-	xml = open("/home_local/obayona/RESCLIMA/RESCLIMA/RasterLayers/xml/coverage.xml","r");
-	data = xml.read()
-	coverage_name = "covergare"+timestamp_str
-	data = data.replace("{%name%}",coverage_name)
-	data = data.replace("{%workspace%}","resclima_raster")
-	data = data.replace("{%url%}",file_dir)
-	
-	print data, url
-	resp = requests.post(url,headers=headers,data=data,auth=auth);
-	print "respuesta",resp.status_code, resp.content
+	fileName = fileName + "-" + timestamp_str + "." + extention
+	path = settings.RASTER_FILES_PATH
+	fullName = join(path,fileName)
 
+	# se guarda el archivo
+	f = open(fullName,'w')
+	for chunk in file.chunks():
+		f.write(chunk)
+	f.close()
 
-	# se crea la capa en geoserver
-	url = "http://localhost:8080/geoserver/rest/workspaces/resclima_raster/coveragestores/"+coverage_name+"/coverages"
-	xml = open("/home_local/obayona/RESCLIMA/RESCLIMA/RasterLayers/xml/layer.xml","r")
-	data = xml.read()
-	layer_name = fileName.replace(".tif","");
-	data = data.replace("{%name%}",layer_name)
-	data = data.replace("{%title%}",title)
-	print data, url
-	resp = requests.post(url,headers=headers,data=data,auth=auth);	
-	print resp.status_code, resp.content
+	# se reproyecta la capa a EPSG:3857
+	ext = "."+extention
+	fullName_proj = fullName.replace(ext,"-proj"+ext)	
+	gdal.Warp(fullName_proj,fullName, dstSRS="EPSG:3857")
 
-"""
+	# se obtiene informacion de la capa
+	datasource = gdal.Open(fullName)
+	numBands = datasource.RasterCount
+	srs_wkt = datasource.GetProjection()
+	bbox = getBBox(datasource)
+
+	# se guarda en la base de datos
+	rasterlayer = RasterLayer()
+	rasterlayer.file_path = path
+	rasterlayer.file_name = fileName
+	rasterlayer.file_format = extention
+	# proyected
+	rasterlayer.title = title
+	rasterlayer.abstract = abstract
+	rasterlayer.data_date = data_date
+	rasterlayer.srs_wkt = srs_wkt
+	rasterlayer.numBands = numBands
+	rasterlayer.bbox = bbox
+	rasterlayer.save()
+	# todo validar el formoato del archivo
+	return None

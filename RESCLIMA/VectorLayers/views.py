@@ -13,7 +13,7 @@ from os.path import join
 
 
 def list_vectorlayers(request):
-  vectorlayers = VectorLayer.objects.all().order_by("filename");
+  vectorlayers = VectorLayer.objects.all().order_by("upload_date");
   return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
 def import_shapefile(request):

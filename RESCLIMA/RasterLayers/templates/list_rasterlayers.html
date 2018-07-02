@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <title>Capas raster</title>
+  </head>
+  <body>
+    <h1>RESCLIMA DURAN</h1>
+    {% if rasterlayers %}
+      <b>Capas raster:</b>
+      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
+        {% for raster in rasterlayers %}
+          <tr>
+            <td>
+              <span style="font-family:monospace">{{ raster.title}}</span>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/raster/view/{{ raster.id }}">Visualizar</a>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/raster/export/{{ raster.id }}">Descargar</a>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="/raster/edit/{{ raster.id }}">Editar</a>
+            </td>
+            <td>&nbsp;</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+    <button type="button" onClick='window.location="/raster/import";'>Importar raster</button>
+    <br>
+    
+    <b>Estilos</b>
+    {% if styles %}
+      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
+        {% for style in styles %}
+          <tr>
+            <td>
+              <span style="font-family: :monospace">{{style.title}}</span>
+            </td>
+            <td>&nbsp;</td>
+            <td>
+              <a href="#">Eliminar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+    <br>
+    <button type="button" onClick='window.location="/raster/import_style";'>Importar estilo</button>
+
+  </body>
+</html>
