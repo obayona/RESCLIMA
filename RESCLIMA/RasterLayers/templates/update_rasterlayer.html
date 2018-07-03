@@ -27,7 +27,7 @@
               <select id = "id_style" name = "style">
               <option value="null">Ninguno</option>
               {% for style in styles %}
-                {% if style.id == rasterlayer.style.id %}
+                {% if style.id == layer_style_id %}
                   <option value = {{style.id}} selected>{{style.title}}</option>
                 {% else %}
                   <option value = {{style.id}}>{{style.title}}</option>

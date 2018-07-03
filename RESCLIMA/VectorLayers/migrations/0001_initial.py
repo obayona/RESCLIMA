@@ -8,6 +8,7 @@ import django.contrib.gis.db.models.fields
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('Layer', '0001_initial'),
     ]
 
     operations = [
@@ -41,36 +42,14 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Style',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('file_path', models.CharField(max_length=255)),
-                ('file_name', models.CharField(max_length=50)),
-                ('title', models.CharField(max_length=50)),
-            ],
-            options={
-                'ordering': ['id'],
-            },
-        ),
-        migrations.CreateModel(
             name='VectorLayer',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('layer_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='Layer.Layer')),
                 ('filename', models.CharField(max_length=255)),
-                ('srs_wkt', models.TextField(max_length=500)),
                 ('geom_type', models.CharField(max_length=50)),
                 ('encoding', models.CharField(max_length=20)),
-                ('title', models.CharField(max_length=50, null=True)),
-                ('abstract', models.TextField(max_length=500, null=True)),
-                ('data_date', models.DateField(null=True, blank=True)),
-                ('upload_date', models.DateTimeField(auto_now_add=True)),
-                ('bbox', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True)),
             ],
-        ),
-        migrations.AddField(
-            model_name='style',
-            name='vectorlayer',
-            field=models.ForeignKey(to='VectorLayers.VectorLayer'),
+            bases=('Layer.layer',),
         ),
         migrations.AddField(
             model_name='feature',

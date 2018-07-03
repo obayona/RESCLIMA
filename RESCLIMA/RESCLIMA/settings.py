@@ -40,9 +40,11 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'floppyforms',
     'RESCLIMA',
+    'Layer',
+    'Style',
     'VectorLayers',
-    'TimeSeries',
     'RasterLayers',
+    'TimeSeries',
     'tms',
 )
 

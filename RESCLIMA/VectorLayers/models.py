@@ -2,21 +2,13 @@ from django.contrib.gis.db import models
 from RESCLIMA import settings
 from os.path import join
 from django.contrib.auth.models import User
+from Layer.models import Layer
 
 
-
-class VectorLayer(models.Model):
-
+class VectorLayer(Layer):
 	filename = models.CharField(max_length= 255)
-	srs_wkt = models.TextField(max_length= 500)
 	geom_type = models.CharField(max_length= 50)
 	encoding = models.CharField(max_length= 20)
-	title = models.CharField(max_length=50,null=True)
-	abstract = models.TextField(max_length=500,null=True)
-	data_date = models.DateField(blank=True,null=True)
-	upload_date = models.DateTimeField(auto_now_add=True)
-	bbox = models.PolygonField(srid=4326,null=True)
-	#owner
 
 class Attribute(models.Model):
 	vectorlayer = models.ForeignKey(VectorLayer)
@@ -40,13 +32,3 @@ class AttributeValue(models.Model):
 	feature = models.ForeignKey(Feature)
 	attribute = models.ForeignKey(Attribute)
 	value = models.CharField(max_length=255,blank=True,null=True)
-
-
-class Style(models.Model):
-	file_path = models.CharField(max_length=255)
-	file_name = models.CharField(max_length=50)
-	title = models.CharField(max_length=50)
-	vectorlayer = models.ForeignKey(VectorLayer)
-
-	class Meta:
-		ordering = ['id']

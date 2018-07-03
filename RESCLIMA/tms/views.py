@@ -2,13 +2,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
 from os.path import join
-from RasterLayers.models import RasterLayer,Style
+from RasterLayers.models import RasterLayer
+from Style.models import Style
 import traceback
 import math
 import mapnik
 import utils
 
-MAX_ZOOM_LEVEL = 10
+MAX_ZOOM_LEVEL = 20
 TILE_WIDTH     = 256
 TILE_HEIGHT    = 256
 
@@ -130,7 +131,10 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		file_name = file_name.replace(ext,"-proj"+ext)
 		fullName = join(file_path,file_name)
 		numBands = rasterlayer.numBands
-		if numBands == 1 and rasterlayer.style!=None:
+
+		# se obtiene el estilo
+		layer_styles = Style.objects.filter(layers__id=rasterlayer.id)
+		if numBands == 1 and layer_styles.count()==1:
 			raster.datasource = mapnik.Gdal(file=fullName,band=1)
 		else:
 			raster.datasource = mapnik.Gdal(file=fullName)
@@ -141,9 +145,9 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		symbol = mapnik.RasterSymbolizer()
 
 		# agregar estilo si existe
-		if rasterlayer.style != None:
+		if layer_styles.count()==1:
+			layer_style = layer_styles[0]
 			print "VOY A AGREGAR ESTILO"
-			layer_style = rasterlayer.style
 			file_path = layer_style.file_path;
 			file_name = layer_style.file_name;
 			fullName = join(file_path,file_name);

@@ -2,8 +2,11 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound, JsonResponse
 from django.http import HttpResponseRedirect
-from models import VectorLayer, Style
-from forms import ImportShapefileForm, ImportStyleForm
+from models import VectorLayer
+from forms import ImportShapefileForm
+from Style.models import Style
+from Style.forms import ImportStyleForm
+from Style.utils import transformSLD
 import importer, exporter
 from RESCLIMA import settings
 import datetime
@@ -39,7 +42,6 @@ def export_shapefile(request, vectorlayer_id):
 		return HttpResponseNotFound()
 	return exporter.export_data(vectorlayer)
 
-
 def export_geojson(request, vectorlayer_id):
   try:
     vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -54,8 +56,6 @@ def view_vectorlayer(request,vectorlayer_id):
     return render(request,"view_vectorlayer.html",{"vectorlayer":vectorlayer});
   except VectorLayer.DoesNotExist:
     return HttpResponseNotFound()  
-
-
 
 def updateVectorLayer(vectorlayer,request):
   try:
@@ -104,7 +104,7 @@ def importStyle(request,vectorlayer):
     f = request.FILES['file']
 
     sld_string = f.read();
-    sld_string = utils.transformSLD(sld_string);
+    sld_string = transformSLD(sld_string);
 
     f.close();
     f = open(fullName,'w');
@@ -112,8 +112,11 @@ def importStyle(request,vectorlayer):
     f.close();
 
     style = Style(file_path=path,file_name=fileName,
-      title=title,vectorlayer=vectorlayer);
+      title=title, type="shapefile");
     style.save()
+    style.layers.add(vectorlayer)
+    style.save()
+
   except Exception as e:
     return "Error " + str(e)
 

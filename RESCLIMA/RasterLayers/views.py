@@ -7,17 +7,18 @@ from os.path import join
 from forms import ImportRasterForm
 from forms import ImportStyleForm
 from RESCLIMA import settings
-from models import RasterLayer, Style
+from models import RasterLayer
+from Style.models import Style
 import datetime
 import time
 import importer
-import utils
+from Style.utils import transformSLD
 import json
 
 
 def list_rasterlayers(request):
     rasterlayers = RasterLayer.objects.all().order_by("upload_date");
-    styles = Style.objects.all();
+    styles = Style.objects.filter(type="raster");
     obj = {'rasterlayers':rasterlayers,'styles':styles}
     return render(request,"list_rasterlayers.html",obj)
 
@@ -61,11 +62,13 @@ def updateRasterLayer(rasterlayer,request):
 
         rasterlayer.title = title;
         rasterlayer.abstract = abstract;
-        if id_style != "null":
-            rasterlayer.style = Style.objects.get(id=id_style)
-        else:
-            rasterlayer.style = None;
         rasterlayer.save()
+        if id_style != "null":
+            style = Style.objects.get(id=id_style)
+            style.layers.add(rasterlayer)
+            style.save()
+        else:
+            rasterlayer.style_set.clear()
     except Exception as e:
         return "Error " + str(e)
 
@@ -76,11 +79,17 @@ def edit_raster(request, rasterlayer_id):
     except RasterLayer.DoesNotExist:
         return HttpResponseNotFound()
 
-    styles = Style.objects.all()
+    styles = Style.objects.filter(type="raster")
+    layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
+    layer_style_id = None
+    if layer_styles.count()==1:
+        layer_style = layer_styles[0]
+        layer_style_id = layer_style.id
 
     if request.method == "GET":
         params = {"rasterlayer":rasterlayer,
                   "styles":styles,
+                  "layer_style_id":layer_style_id,
                   "err_msg":None}
         return render(request,"update_rasterlayer.html",params)
 
@@ -91,6 +100,7 @@ def edit_raster(request, rasterlayer_id):
 
     params = {"rasterlayer":rasterlayer,
               "styles":styles,
+              "layer_style_id":layer_style_id,
               "err_msg":err_msg}
     return render(request,"update_rasterlayer.html",params)  
 
@@ -111,7 +121,7 @@ def importStyle(request):
     f = request.FILES['file']
 
     sld_string = f.read();
-    sld_string = utils.transformSLD(sld_string);
+    sld_string = transformSLD(sld_string);
 
     f.close();
     f = open(fullName,'w');
@@ -119,7 +129,7 @@ def importStyle(request):
     f.close();
 
     style = Style(file_path=path,file_name=fileName,
-      title=title);
+      title=title, type="raster");
     style.save()
   except Exception as e:
     return "Error " + str(e)
