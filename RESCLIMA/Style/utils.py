@@ -1,5 +1,7 @@
 from lxml import etree
-
+from os.path import join
+from models import Style
+import traceback
 
 # Transforma un archivo sld version 1.1.0 a 
 # un archivo sld version 1.0.0
@@ -40,3 +42,45 @@ def transformSLD(sld):
 
     
     return new_sld
+
+# Parsea un archivo sld solo de raster
+# devuelve un diccionario con la informacion
+# del color, el label, opacity y quantity
+def parseRasterSLD(sld):
+    root = etree.fromstring(sld);
+    xpath = "sld:UserLayer/sld:UserStyle/sld:FeatureTypeStyle/"
+    xpath = xpath + "sld:Rule/sld:RasterSymbolizer/sld:ColorMap"
+    colorMaps = root.findall(xpath,namespaces={"sld":"http://www.opengis.net/sld"})
+    
+    if (len(colorMaps)==0):
+        return None
+    
+    colorMap = colorMaps[0]
+
+    try:
+        result = []
+        for x in colorMap:
+            entry = {}
+            entry["color"] = x.get("color")
+            entry["label"] = x.get("label")
+            entry["opacity"] = x.get("opacity")
+            entry["quantity"] = float(x.get("quantity"))
+            result.append(entry)
+    except:
+        traceback.print_exc()
+        return None
+
+    return result
+
+
+# retorna un diccionario con la informacion
+# del color, el label, opacity y quantity del
+# archivo sld de un style de tipo raster
+def getColorMap(style):
+    file_path = style.file_path;
+    file_name = style.file_name;
+    fullName = join(file_path,file_name);
+    f = open(fullName,'r');
+    sld = f.read()
+    colorMap = parseRasterSLD(sld)
+    return colorMap  

@@ -14,7 +14,18 @@
 
 		<div class="container-fluid">
 			<div class="row">
-				<div id="styles" class = "col-md-1">
+				<h1>{{vectorlayer.title}}</h1>
+			</div>
+			<div class="row">
+				<div id="styles" class = "col-md-2">
+					<h3>Resumen</h3>
+					<p>
+						{{vectorlayer.abstract}}
+					</p>
+					<h3>Fecha</h3>
+					<p>
+						{{vectorlayer.data_date}}
+					</p>
 					<h3>Estilos</h3>
 					<ul class = "list-group">
 	              		{% for style in vectorlayer.style_set.all %}
@@ -23,6 +34,8 @@
 		                </li>
 		              {% endfor %}
 	            	</ul>
+	            	<div id="legend" style="padding:10px;">
+					</div>
 				</div>
 
 				<div class="col-md-10">
@@ -30,16 +43,13 @@
 					</div>
 				</div>
 
-				<div id="legend" class = "col-md-1" style="padding:10px;">
-				</div>
 
 			</div>
 			<div class="row">
-				<div class= "col-md-1"></div>
+				<div class= "col-md-2"></div>
 				<div class= "col-md-10" id="attributes">
 					<h2>Click en un feature</h2>
 				</div>
-				<div class= "col-md-1"></div>
 			</div>	
 		</div>
 		

@@ -9,7 +9,7 @@ vectorlayer_id;
 function createLegendRow(value,symbolizer){
 	var row = document.createElement("div");
 	
-	var text = document.createElement("h4");
+	var text = document.createElement("h5");
 	text.innerHTML = value;
 
 	var symb = document.createElement("div");
@@ -25,11 +25,12 @@ function createLegendRow(value,symbolizer){
 		}
    	}
 
-	symb.style.width = "20px";
-	symb.style.height = "20px";
+	symb.style.width = "15px";
+	symb.style.height = "15px";
 	symb.style.backgroundColor = polygon.fillColor;
 	symb.style.borderWidth = polygon.strokeWidth;
-	symb.style.borderColor = polygon.strokeColor;
+	symb.style.borderStyle = "solid";
+	symb.style.borderColor = "black";
 
 
 	row.appendChild(symb);

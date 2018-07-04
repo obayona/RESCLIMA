@@ -13,6 +13,7 @@ import datetime
 import time
 import importer
 from Style.utils import transformSLD
+from Style.utils import getColorMap
 import json
 
 
@@ -42,13 +43,19 @@ def view_raster(request,rasterlayer_id):
     try:
         rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
         bbox = rasterlayer.bbox.geojson
-        bbox = json.dumps(bbox)
-        print bbox
+        # se comprueba si tiene estilo
+        layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
+        legend = [];
+        if layer_styles.count()==1:
+            style = layer_styles[0]
+            legend = getColorMap(style);
+
     except RasterLayer.DoesNotExist:
         return HttpResponseNotFound()
 
     obj = {"rasterlayer":rasterlayer,
-           "bbox":bbox}
+           "bbox":bbox,
+           "legend":legend}
     return render(request,"view_raster.html",obj)
 
 
