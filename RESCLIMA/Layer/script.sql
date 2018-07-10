@@ -11,3 +11,8 @@ FROM "Layer_layer", plainto_tsquery('spanish','Playas') query
 WHERE query @@ textsearchable_index
 ORDER BY rank DESC
 LIMIT 10;
+
+
+CREATE TRIGGER tsvector_update_layer BEFORE INSERT OR UPDATE
+ON "Layer_layer" FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger("textsearchable_index", 'pg_catalog.spanish', title, abstract);
