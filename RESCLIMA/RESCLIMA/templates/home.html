@@ -1,14 +1,75 @@
+{% load static %}
+
 <html>
     <head>
         <title>Home</title>
+        <script src="{% static "jquery.js" %}" type= "text/javascript"></script>
     </head>
     <body>
         <h1>RESCLIMA DURAN</h1>
         <a href="{% url 'login' %}">Iniciar Sesion</a>
         <div class="topnav">
             <a href="#">About</a>
-            <a href="#">Contact</a>
-            <input type="text" placeholder="Search..">
+            <a href="#">Contact</a> 
+        </div>
+
+        <div>
+            <input id = "search_input" type="text" placeholder="Buscar...">
+            <button id="search_button" type="button">º\</button>
+        </div>
+        <div id="results_container">
         </div>
     </body>
+    <script>
+
+        function renderResults(results){
+            var layers = results["layers"];
+            var length = layers.length;
+            if(length == 0){
+                results_container.innerHTML = "<h3>No hay resultados</h3>"
+            }
+            results_container.innerHTML = "";
+
+            for(var i=0; i< length; i++){
+                var layer = layers[i];
+                var div = document.createElement("div");
+                var h3 = document.createElement("h3");
+                h3.innerHTML = layer["title"];
+                var h5 = document.createElement("h5");
+                h5.innerHTML = layer["abstract"];
+                var a = document.createElement("a");
+                a.innerHTML = "Visualizar"
+                a.href = layer["type"]+"/view/"+layer["id"];
+
+                div.appendChild(h3);
+                div.appendChild(h5);
+                div.appendChild(a)
+
+                results_container.appendChild(div);
+            }
+        }
+
+        function search(text_query){
+            if(url==""){
+                return;
+            }
+            var url = "search/layer?q="+text_query;
+            var request = $.get(url);
+            request.done(function(results){
+                renderResults(results)
+            })
+
+        }
+
+
+        function init(){
+            console.log("se empieza")
+            search_button.addEventListener("click",function(event){
+                var text_query = search_input.value
+                search(text_query);
+            });
+        }
+
+        window.addEventListener("load",init);
+    </script>
 </html>

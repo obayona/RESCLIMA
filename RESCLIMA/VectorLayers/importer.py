@@ -83,7 +83,8 @@ def import_data(request):
 							  encoding=encoding,
 							  title=title,
 							  abstract=abstract,
-							  data_date=data_date)
+							  data_date=data_date,
+							  type="vector")
 	vectorlayer.save()
 	# se obtienen los atributos del shapefile
 	# y se crean objetos Attribute del modelo

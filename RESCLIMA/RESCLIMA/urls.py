@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^series/', include("TimeSeries.urls")),
     url(r'^raster/', include("RasterLayers.urls")),
     url(r'^tms/', include("tms.urls")),
+    url(r'^search/',include("search.urls")),
 ]

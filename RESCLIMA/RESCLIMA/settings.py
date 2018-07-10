@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     'VectorLayers',
     'RasterLayers',
     'TimeSeries',
+    'search',
     'tms',
 )
 

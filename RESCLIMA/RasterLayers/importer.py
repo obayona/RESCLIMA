@@ -103,6 +103,7 @@ def import_data(request):
 	rasterlayer.srs_wkt = srs_wkt
 	rasterlayer.numBands = numBands
 	rasterlayer.bbox = bbox
+	rasterlayer.type = "raster";
 	rasterlayer.save()
 	# todo validar el formoato del archivo
 	return None
