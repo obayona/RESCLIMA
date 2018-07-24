@@ -127,8 +127,8 @@ def saveMeasurements(id_station,id_provider,measurements_dict,datetime = datetim
 
 def valid_len(f):
 
-    for i, l in enumerate(f):
-        pass
+	for i, l in enumerate(f):
+		pass
 		if i > 4 :
 			return True
-    return False
+	return False
