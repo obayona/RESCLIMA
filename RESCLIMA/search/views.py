@@ -1,3 +1,4 @@
+# encoding: utf-8
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -30,7 +31,7 @@ def search_layer(request):
 """
 PARAMETROS:
 request: Request de la vista
-queryset: Queryset a utilizar en la paginación
+queryset: Queryset a utilizar en la paginacion
 pages: Numero de items que quisieras tener en cada pagina
 """
 def Paginate(request, queryset, pages):
@@ -47,7 +48,7 @@ def Paginate(request, queryset, pages):
     if page <= 0:
         page = 1
  
-    # Si viene un parámetro que es mayor a la cantidad
+    # Si viene un parametro que es mayor a la cantidad
     # de paginas le igualo el parámetro con las cant de paginas
     if(page > result_list.num_pages):
         page = result_list.num_pages
