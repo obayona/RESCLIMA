@@ -11,3 +11,4 @@ class Layer(models.Model):
 	srs_wkt = models.TextField(max_length= 500)
 	bbox = models.PolygonField(srid=4326,null=True)
 	#owner
+
