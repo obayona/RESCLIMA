@@ -132,7 +132,13 @@ var BboxSelector = function(container){
 		var copy_bbox = bbox.clone();
 		copy_bbox.geometry.transform('EPSG:900913','EPSG:4326');
 		copy_bbox.geometry.calculateBounds();
-		return copy_bbox.geometry.bounds;
+		var bounds = copy_bbox.geometry.bounds; 
+		var box = {};
+		box["minX"]=bounds["left"];
+		box["maxX"]=bounds["right"];
+		box["minY"]=bounds["bottom"];
+		box["maxY"]=bounds["top"];
+		return box;
 		
 	}
 
