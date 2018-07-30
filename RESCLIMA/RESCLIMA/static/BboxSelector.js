@@ -2,8 +2,8 @@ var BboxSelector = function(container){
 
 	var vectors; // capa vectorial
 	//banderas
-	var flagDraw = true;
-	var flagDown=false;
+	var flagDraw = false;
+	var flagDown = false;
 
 	var bbox;
 	var p0,pf;
@@ -18,7 +18,6 @@ var BboxSelector = function(container){
 	drawBtn.src = "/static/IconDraw.png";
 	drawBtn.style.width = "30px";
 	drawBtn.style.height = "30px";
-	drawBtn.style.backgroundColor = "#A19F9F";
 
 
 	drawBtn.addEventListener("click",function(e){
