@@ -24,9 +24,12 @@ var BboxSelector = function(container){
 		flagDraw = !flagDraw;
 		if(flagDraw){
 			drawBtn.style.backgroundColor = "#A19F9F";
+			map_container.style.cursor = "crosshair";
+			console.log(map_container.style);
 		}
 		else{
 			drawBtn.style.backgroundColor = "";
+			map_container.style.cursor = "default";
 			map.setOptions({restrictedExtent: null});
 		}
 	});
@@ -70,9 +73,9 @@ var BboxSelector = function(container){
 
 
 	// se configuran los eventos
-	map.events.register("mousedown", map, function (e) {
+	map.events.register("mousedown", map, function(e){
 		flagDown = true;            
-		var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )     
+		var point = map.getLonLatFromPixel( this.events.getMousePosition(e))     
 	    // se guarda el punto inicial
 	    if(flagDraw){
 	    	p0 = point;
@@ -82,7 +85,7 @@ var BboxSelector = function(container){
 	    }
 	},true);
 
-	map.events.register("mousemove", map, function (e) {            
+	map.events.register("mousemove", map, function(e){            
 		var point = map.getLonLatFromPixel(this.events.getMousePosition(e))      
 	    if(flagDraw && flagDown){
 	    	pf = point;
@@ -95,12 +98,12 @@ var BboxSelector = function(container){
 	 
 	});
 
-	map.events.register("mouseup", map, function (e) {            
-	var point = map.getLonLatFromPixel( this.events.getMousePosition(e) )
-		flagDraw = false;
+	map.events.register("mouseup", map, function(e){
 		drawBtn.style.backgroundColor = "";
+		map_container.style.cursor = "default";
 		map.setOptions({restrictedExtent: null});
-	    flagDown=false;
+	    flagDraw = false;
+	    flagDown = false;
 	    p0 = undefined;
 	    pf = undefined;
 	});
