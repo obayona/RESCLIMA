@@ -1,48 +1,36 @@
 var BboxSelector = function(container){
 
 	var vectors; // capa vectorial
-	//banderas
-	var flagDraw = false;
-	var flagDown = false;
+	var box;
+	var transform;
 
-	var bbox;
-	var p0,pf;
+	var bbox = null;
 
 	// se crean los elementgos graficos
 
 	// el toolbox de opciones
-	var toolbox_container = document.createElement("div");
-	toolbox_container.style.backgroundColor = "#CEDBDA";
-	toolbox_container.style.width = "500px";
-	var drawBtn = document.createElement("img");
-	drawBtn.src = "/static/IconDraw.png";
-	drawBtn.style.width = "30px";
-	drawBtn.style.height = "30px";
-
-
-	drawBtn.addEventListener("click",function(e){
-		flagDraw = !flagDraw;
-		if(flagDraw){
-			drawBtn.style.backgroundColor = "#A19F9F";
-			map_container.style.cursor = "crosshair";
-			console.log(map_container.style);
-		}
-		else{
-			drawBtn.style.backgroundColor = "";
-			map_container.style.cursor = "default";
-			map.setOptions({restrictedExtent: null});
-		}
+	var menu_container = document.createElement("div");
+	menu_container.style.backgroundColor = "#CEDBDA";
+	menu_container.style.width = "500px";
+	var instruction = document.createElement("div");
+	instruction.innerHTML = "Dibuje un &aacute;rea";
+	var newAreaBtn = document.createElement("input");
+	newAreaBtn.type = "button";
+  	newAreaBtn.value = unescape("Dibuje nueva %E1rea");
+	newAreaBtn.style.display = 'none';
+	newAreaBtn.addEventListener("click",function(event){
+		dragNewBox();
 	});
-
-	toolbox_container.appendChild(drawBtn);
-	container.appendChild(toolbox_container);
+	menu_container.appendChild(instruction);
+	menu_container.appendChild(newAreaBtn);
 
 	var map_container = document.createElement("div");
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
+	container.appendChild(menu_container);
 	container.appendChild(map_container);
-
-	// se inicializa el mapa
+	
+	// inicializacion del mapa
 	var map = new OpenLayers.Map({
 		div:map_container,
 		projection:"EPSG:3857",
@@ -50,99 +38,86 @@ var BboxSelector = function(container){
 		numZoomLevels:11,
 		units: 'm'
 	});
-	// se crea una capa de open street map
-	var osm = new OpenLayers.Layer.OSM("OSM");
+    var osm = new OpenLayers.Layer.OSM();
+    vectors = new OpenLayers.Layer.Vector("Vector Layer");
 
-
-	// se crea una capa vectorial para dibujar
-	var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
-  	renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
-    
-    vectors = new OpenLayers.Layer.Vector("Vector Layer", {
-        renderers: renderer
-    });
-
-    // se agregan las capas
     map.addLayers([osm,vectors]);
-    // se muestra el mapa
-	map.zoomToMaxExtent();
-    
-    // se desactiva el drag
-    var extent = map.getExtent();
-    map.setOptions({restrictedExtent: extent});
 
 
-	// se configuran los eventos
-	map.events.register("mousedown", map, function(e){
-		flagDown = true;            
-		var point = map.getLonLatFromPixel( this.events.getMousePosition(e))     
-	    // se guarda el punto inicial
-	    if(flagDraw){
-	    	p0 = point;
-	    	// se desactiva el drag
-    		var extent = map.getExtent();
-    		map.setOptions({restrictedExtent: extent});	
-	    }
-	},true);
+    box = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon, {
+      handlerOptions: {
+        sides: 4,
+        snapAngle: 90,
+        irregular: true,
+        persist: true
+      }
+    });
+    box.handler.callbacks.done = endDrag;
+    map.addControl(box);
 
-	map.events.register("mousemove", map, function(e){            
-		var point = map.getLonLatFromPixel(this.events.getMousePosition(e))      
-	    if(flagDraw && flagDown){
-	    	pf = point;
-	    	vectors.removeAllFeatures();
-	    	bbox = createPolygon();
-	    	vectors.addFeatures(bbox);
-			vectors.redraw();
-	    	return;
-	    }
-	 
-	});
+    transform = new OpenLayers.Control.TransformFeature(vectors, {
+      rotate: false,
+      irregular: true
+    });
+    transform.events.register("transformcomplete", transform, boxResize);
+    map.addControl(transform);  
+    map.addControl(box);
+    box.activate();
 
-	map.events.register("mouseup", map, function(e){
-		drawBtn.style.backgroundColor = "";
-		map_container.style.cursor = "default";
-		map.setOptions({restrictedExtent: null});
-	    flagDraw = false;
-	    flagDown = false;
-	    p0 = undefined;
-	    pf = undefined;
-	});
-
-
-	var createPolygon = function(){
-		var point1 = new OpenLayers.Geometry.Point(p0.lon,p0.lat);
-		var point2 = new OpenLayers.Geometry.Point(pf.lon,p0.lat);
-		var point3 = new OpenLayers.Geometry.Point(pf.lon,pf.lat);
-		var point4 = new OpenLayers.Geometry.Point(p0.lon, pf.lat);
-		
-		var points = [point1,point2,point3,point4,point1];
-		var linearRing = new OpenLayers.Geometry.LinearRing(points);
-		var polygonFeature = new OpenLayers.Feature.Vector(
-                new OpenLayers.Geometry.Polygon([linearRing]));
-		polygonFeature.style = {strokeColor: "#F07C1B",
-								fillColor: "#9FBFDC",
-								fillOpacity: 0.5}
-
-		return polygonFeature;
-	}
+    console.log("zoomToMaxExtent");
+    map.zoomToMaxExtent();
 
 
 	this.getBBox = function(){
-		if(!bbox){
-			return null;	
-		}
-		var copy_bbox = bbox.clone();
-		copy_bbox.geometry.transform('EPSG:900913','EPSG:4326');
-		copy_bbox.geometry.calculateBounds();
-		var bounds = copy_bbox.geometry.bounds; 
-		var box = {};
-		box["minX"]=bounds["left"];
-		box["maxX"]=bounds["right"];
-		box["minY"]=bounds["bottom"];
-		box["maxY"]=bounds["top"];
-		return box;
-		
+		return bbox;
 	}
+
+
+	function endDrag(bbox) {
+		var bounds = bbox.getBounds();
+		setBounds(bounds);
+		drawBox(bounds);
+		box.deactivate();
+		instruction.innerHTML = "Modifique el &aacute;rea o ...";
+		newAreaBtn.style.display = "block";        
+     }
+      
+    function dragNewBox() {
+        box.activate();
+        transform.deactivate();
+        vectors.destroyFeatures();
+        
+        instruction.innerHTML = "Dibuje un &aacute;rea";
+        newAreaBtn.style.display = 'none';
+        
+        setBounds(null); 
+    }
+      
+	function boxResize(event) {
+        setBounds(event.feature.geometry.bounds);
+    }
+      
+    function drawBox(bounds) {
+        var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+ 
+        vectors.addFeatures(feature);
+        transform.setFeature(feature);
+	}
+      
+    function setBounds(bounds) {
+        if (bounds == null) {
+          bbox = null;
+        }
+        else {
+			b = bounds.clone().transform(map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326"))
+			bbox = {};
+			bbox["minX"] = b.left;
+			bbox["minY"] = b.bottom;    
+			bbox["maxX"] = b.right;
+			bbox["maxY"] = b.top;  
+            
+        }
+    }
 
 
 }
