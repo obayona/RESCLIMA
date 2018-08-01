@@ -4,16 +4,18 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
 from django.core.paginator import Paginator
+from django.contrib.gis.geos import Polygon
 
 def search_layer(request):
 
 	user_query = request.GET["q"];
 
-	qs = 'SELECT id, title, abstract, type, ts_rank_cd(textsearchable_index, query)' 
+	qs = 'SELECT id, title, abstract, type, bbox ts_rank_cd(textsearchable_index, query)' 
 	qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
 	qs = qs + ' query WHERE query @@ textsearchable_index'
 	qs = qs + ' ORDER BY rank DESC LIMIT 10'
 
+    #Text Search
 	layers = []
 	with connection.cursor() as cursor:
 		cursor.execute(qs, [user_query])
@@ -24,9 +26,25 @@ def search_layer(request):
 			layer["title"] = row[1];
 			layer["abstract"] = row[2];
 			layer["type"] = row[3];
+            layer["bbox"] = row[4];
 			layers.append(layer)
 
-	return JsonResponse({"layers":layers})
+    #Bbox Search
+    minX = request.GET["left"];
+    maxX = request.GET["right"];
+    minY_query = request.GET["bottom"];
+    maxY = request.GET["top"];
+    box = Polygon( ((minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326))
+
+    finalLayers = []
+    for layer in layers:
+        layerBox = layer["bbox"]
+        qb = 'SELECT ST_Intersects(box, bbox)'
+        if (qb):
+            finalLayers.append(layer)
+
+
+	return JsonResponse({"layers":finalLayers})
 
 """
 PARAMETROS:
