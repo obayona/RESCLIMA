@@ -1,5 +1,6 @@
 import configparser
 from datetime import datetime
+import pytz
 from dateutil.parser import parse
 from TimeSeries.models import *
 import os
@@ -8,7 +9,7 @@ __ERROR_MESSAGES__ = {
 	"uknown_station": "uknown station - not in config file", 
 	"no_station_id": "No id in HOBO-MX2300 file",
 	"invalid_len": "File is too small",
-	"user_menssage": "Error al procesar su archivo",
+	"user_message": "Error al procesar su archivo",
 	"no_columns": "Not enough columns"
 }
 
@@ -17,7 +18,7 @@ def parseHOBO(file):
 	global __ERROR_MESSAGES__
 	STATION="HOBO"
 	#check file length
-	if valid_len(file) == False:
+	if is_valid_len(file,4) == False:
 		print (__ERROR_MESSAGES__["invalid_len"])
 		return (__ERROR_MESSAGES__["user_message"])
 
@@ -31,47 +32,127 @@ def parseHOBO(file):
 		return __ERROR_MESSAGES__["user_message"]
 
 	headers = int (config.get(STATION,"headers"))
-	
-	#read id of station in the first line
-	id_station = file.readline().split(":")
-	if len(id_station) < 2 :
-		print(__ERROR_MESSAGES__["no_station_id"])
-		return (__ERROR_MESSAGES__["user_message"])
-	
-	id_station = id_station[1].strip()
 	datetime_format = str(config.get(STATION,"datetime_format"))
 	date_pos = int(config.get(STATION,"date_pos")) - 1
 
-	#pass all the headers
-	for i in range (headers):
-		file.readline()
+	datetime_format = "%m/%d/%y %I:%M:%S %p";
+	local_tz_str = None;
+	serialNum = None;
+	station = None;
+	variables = []
+	blanks = 0
 
-	#start reading the file
-	for line in lines:
-		measures = line.strip().split("\t")
-		measures_num = len(measures)
-		fields = config.get(STATION,"fields")
-		fields = fields.strip().split(",")
-		if measures_num != len(fields):
-			min_len = len(fields) if len(fields)<measures_num else measures_num
-		if min_len < 1:
-			print (__ERROR_MESSAGES__["no_columns"])
-			return (__ERROR_MESSAGES__["user_message"])
+	# se itera el archivo
+	for i, line in enumerate(file,1):
+		# si se lee la primera linea del archivo
+		# se recupera el numero serial de la estacion
+		if(i==1):
+			# la primera linea contiene
+			# string: string
+			# El segundo string es el serial de la estacion
+			parts = line.split(":")
+			if (len(parts)==2):
+				serialNum = parts[1]
+				serialNum = serialNum.strip(' \t\n\r')
+			else:
+				return __ERROR_MESSAGES__["no_station_id"]
 
-		#Parse timestamp as it can be a datetime or date and time independent fields
-		datetime = measures[date_pos]
-		ts = parseDatetime(datetime)
-		
-		#form json of readings
+			# se valida que la estacion existe en la base de datos
+			results=Station.objects.filter(serialNum=serialNum);
+			if(results.count()!=1):
+				return __ERROR_MESSAGES__["uknown_station"]
+			else:
+				station = results[0]
+
+			# se comprueba que el tipo de stacion sea HOBO-
+			typestation = str(station.stationType)
+			if(typestation!="HOBO-MX2300"):
+				return "Error: la estacion debe ser de tipo HOBO-MX2300"
+
+			continue;
+		# si se lee la segunda linea del archivo
+		# se tienen los headers
+		if(i==2):
+			headers = line.split("\t");
+			if len(headers)!=8:
+				msg = "Error: el archivo debe tener ocho columnas, "
+				ms = msg + "se tienen "+str(len(headers)) + " columnas"
+				return msg
+
+			# se obtiene la informacion del timezone
+			# el string debe ser parseado para obtener el ofset en
+			# horas
+			header_date = headers[1]
+			index = header_date.find("GMT")
+			time_zone_str = header_date[index:].strip(' \t\n\r')
+			ofset_str = time_zone_str[3:]
+			index = ofset_str.find(":")
+			ofset_str = ofset_str[:index]
+			ofset = int(ofset_str)
+
+			if(ofset<0):
+				local_tz_str = "Etc/GMT-" + str(abs(ofset));
+			elif(ofset >0):
+				local_tz_str = "Etc/GMT+" + str(abs(ofset));
+			else:
+				local_tz_str="UTC";
+
+
+			# La primera columna es un contador
+			# y la segunda columna es la fecha.
+			# Se las ignora
+			headers = headers[2:];
+			# se recuperan los pk de las variables
+			for alias in headers:
+				# se busca por el alias
+				# a la variable
+				alias = alias.strip(' \t\n\r');
+				results = Variable.objects.filter(alias=alias);
+				if(results.count()!=1):
+					return "Error: No existe la variable " + alias
+				variable = results[0];
+				# se guarda en la lista el id de la
+				# variable
+				variables.append(variable);
+
+			continue;
+
+		# si la linea es mayor que la 2
+		# se obtienen las mediciones
+		measures = line.split("\t")
+		if(len(measures)!=8):
+			return "Error: falta una columna en: "+line
+		# se recupera la fecha hora de la segunda columna
+		datetime_str = measures[1]
+		try:
+			# se crea un objeto datetime del string y del formato
+			dt = datetime.strptime(datetime_str,datetime_format);
+			# se transforma la fecha del time zone local a UTC
+			dt = transformToUTC(dt,local_tz_str);
+		except Exception as e:
+			return "Error: la fecha "+datetime_str+" no es correcta "+str(e)
+
+
+
+		# se remueven las dos primeras columnas
+		measures = measures[2:]
 		measures_dict = {}
-		#traverse each line of the file starting after de column of datetime
-		for i in range (date_pos+1, min_len):
-			measures_dict[fields[i]] = measures[i]
+		for index,measure in enumerate(measures):
+			if measure == "":
+				blanks = blanks + 1
+				continue;
 
-		#save MeasureModel
-		saveMeasurements(id_station,None,measures_dict, ts)
+			variable = variables[index]
+			idVariable = variable.id;
+			datatype = variable.datatype;
+			measure = parseMeasure(measure,datatype);
+			# se agrega al diccionario de variables y
+			# mediciones
+			measures_dict[idVariable]=measure;
+		# se guardan las mediciones
+		saveMeasurements(station,None,measures_dict, dt);
 		
-	return "Success"
+	return "Success",blanks
 		
 
 def parseCF200(file):
@@ -112,12 +193,30 @@ def parseDatetime(date, time = None):
 		ts = parse(date)
 	return ts
 
+def transformToUTC(dt,local_tz_str):
+	if(local_tz_str=="UTC"):
+		return dt
+	local_tz = pytz.timezone (local_tz_str);
+	dt_with_tz = local_tz.localize(dt, is_dst=None)
+	dt_in_utc = dt_with_tz.astimezone(pytz.utc)
+	return dt_in_utc;
 
 
-def saveMeasurements(id_station,id_provider,measurements_dict,datetime = datetime.now()):
 
-	if id_provider == None and id_station!= None:
-		station = Station.objects.get(serialNum=id_station);
+
+# pendiente validad boolean
+def parseMeasure(measure,datatype):
+	if(datatype=="float"):
+		return float(measure);
+	if(datatype=="string"):
+		return measure;
+	if(datatype=="boolean"):
+		return True;
+
+
+def saveMeasurements(station,id_provider,measurements_dict,datetime = datetime.now()):
+
+	if id_provider == None and station!= None:
 		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict, idProvider = None)
 		
 	else:
@@ -125,10 +224,11 @@ def saveMeasurements(id_station,id_provider,measurements_dict,datetime = datetim
 		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict, idStation = None)
 	measurement.save()
 
-def valid_len(f):
-
+# Valida si el archivo f 
+# tiene al menos min_length lineas
+# retorna un boolean 
+def is_valid_len(f,min_length):
 	for i, l in enumerate(f):
-		pass
-		if i > 4 :
+		if i > min_length :
 			return True
 	return False

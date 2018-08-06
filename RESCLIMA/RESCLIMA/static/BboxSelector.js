@@ -39,7 +39,20 @@ var BboxSelector = function(container){
 		units: 'm'
 	});
     var osm = new OpenLayers.Layer.OSM();
-    vectors = new OpenLayers.Layer.Vector("Vector Layer");
+    var StyleMap = new OpenLayers.StyleMap({
+                    // a nice style for the transformation box
+                    "transform": new OpenLayers.Style({
+			                        display: "${getDisplay}",
+			                        cursor: "${role}",
+			                        pointRadius: 5,
+			                        fillColor: "white",
+			                        fillOpacity: 1,
+			                        strokeColor: "black"
+                  				 })
+                	});
+    vectors = new OpenLayers.Layer.Vector("Vector Layer", {
+    	styleMap: StyleMap
+    });
 
     map.addLayers([osm,vectors]);
 
@@ -53,9 +66,11 @@ var BboxSelector = function(container){
       }
     });
     box.handler.callbacks.done = endDrag;
+    console.log(box.handler.callbacks);
     map.addControl(box);
 
     transform = new OpenLayers.Control.TransformFeature(vectors, {
+      renderIntent:"transform",
       rotate: false,
       irregular: true
     });
@@ -64,7 +79,6 @@ var BboxSelector = function(container){
     map.addControl(box);
     box.activate();
 
-    console.log("zoomToMaxExtent");
     map.zoomToMaxExtent();
 
 
@@ -99,7 +113,8 @@ var BboxSelector = function(container){
       
     function drawBox(bounds) {
         var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
- 
+		feature.style = {fillColor: "#9FBFDC",
+						 fillOpacity: 0.5};
         vectors.addFeatures(feature);
         transform.setFeature(feature);
 	}

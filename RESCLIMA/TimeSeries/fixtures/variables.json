@@ -50,7 +50,7 @@
       "name": "Velocidad del viento",
       "unit": "metros sobre segundos",
       "symbol": "m/s",
-      "alias":"Velocidad del viento, m/s (LGR S/N: 10450278, SEN S/N: 10470750",
+      "alias":"Velocidad del viento, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad del viento)",
       "datatype":"float"
     } 
   },
