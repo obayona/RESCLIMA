@@ -9,7 +9,7 @@ from django.contrib.gis.geos import Point
 
 
 def show_options(request):
-  return render(request,"home_series.html")
+    return render(request,"home_series.html")
 
 
 def addSensor(data):

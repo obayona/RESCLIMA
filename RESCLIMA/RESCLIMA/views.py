@@ -29,7 +29,7 @@ def noAccess(request):
     return render(request, 'noAccess.html', {})
 
 def home(request):
-  return render(request,"home.html")
+    return render(request,"home.html")
 
 @login_required()
 def dashboard(request):

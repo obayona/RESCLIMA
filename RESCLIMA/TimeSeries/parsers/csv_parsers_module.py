@@ -5,41 +5,35 @@ from dateutil.parser import parse
 from TimeSeries.models import *
 import os
 
-__ERROR_MESSAGES__ = {
-	"uknown_station": "uknown station - not in config file", 
-	"no_station_id": "No id in HOBO-MX2300 file",
-	"invalid_len": "File is too small",
-	"user_message": "Error al procesar su archivo",
-	"no_columns": "Not enough columns"
-}
-
+# parseHobo(file)
+# Recibe un objeto de tipo UploadedFile
+# (clase de django). Obtiene los datos del archivo csv
+# y los guarda en la base de datos.
+# El archivo csv, contiene las mediciones a lo largo
+# del tiempo de varias variables que fueron medidas con una
+# estacion meteorologica de tipo HOBO-MX2300.
+# Del archivo se puede recuperar: la estacion meteorologica,
+# las variables y las mediciones con su datetime
 def parseHOBO(file):
-	"""Parse HOBO file"""
-	global __ERROR_MESSAGES__
-	STATION="HOBO"
-	#check file length
-	if is_valid_len(file,4) == False:
-		print (__ERROR_MESSAGES__["invalid_len"])
-		return (__ERROR_MESSAGES__["user_message"])
+	# comprueba el numero de lineas del archivo
+	# se requieren al menos 3 lineas
+	# 1era linea: contiene el numero de serie de la estacion
+	# 2da linea: contiene el header del csv
+	# 3ra linea: datos
+	if is_valid_len(file,3) == False:
+		return "Error: archivo sin datos"
 
-	module_dir = os.path.dirname(__file__)
-	config_file_path = os.path.join(module_dir, 'meteo_stations.cfg')
-	config = configparser.ConfigParser()
-	config.read(config_file_path)
-	#check for file 
-	if "HOBO" not in config.sections():
-		print (__ERROR_MESSAGES__["unknown_station"])
-		return __ERROR_MESSAGES__["user_message"]
-
-	headers = int (config.get(STATION,"headers"))
-	datetime_format = str(config.get(STATION,"datetime_format"))
-	date_pos = int(config.get(STATION,"date_pos")) - 1
-
+	# formato de la fecha
 	datetime_format = "%m/%d/%y %I:%M:%S %p";
+	# time zone de las fechas de los datos (ej.: UTC,GMT+2,GMT-4,etc)
 	local_tz_str = None;
+	# numero de serie de la estacion
 	serialNum = None;
+	# objeto con datos de la estacion
 	station = None;
+	# las variables del archivo
 	variables = []
+	# contador de datos vacios
 	blanks = 0
 
 	# se itera el archivo
@@ -55,12 +49,14 @@ def parseHOBO(file):
 				serialNum = parts[1]
 				serialNum = serialNum.strip(' \t\n\r')
 			else:
-				return __ERROR_MESSAGES__["no_station_id"]
+				return ("Error: en el archivo no"
+				"se especifica el numero de" 
+				"serie de la estacion")
 
 			# se valida que la estacion existe en la base de datos
 			results=Station.objects.filter(serialNum=serialNum);
 			if(results.count()!=1):
-				return __ERROR_MESSAGES__["uknown_station"]
+				return "Error: no se encontro la estacion "+serialNum
 			else:
 				station = results[0]
 
@@ -80,8 +76,8 @@ def parseHOBO(file):
 				return msg
 
 			# se obtiene la informacion del timezone
-			# el string debe ser parseado para obtener el ofset en
-			# horas
+			# el string debe ser parseado para obtener el ofset 
+			# en horas
 			header_date = headers[1]
 			index = header_date.find("GMT")
 			time_zone_str = header_date[index:].strip(' \t\n\r')
@@ -89,7 +85,7 @@ def parseHOBO(file):
 			index = ofset_str.find(":")
 			ofset_str = ofset_str[:index]
 			ofset = int(ofset_str)
-
+			# se crea el string del timezone
 			if(ofset<0):
 				local_tz_str = "Etc/GMT-" + str(abs(ofset));
 			elif(ofset >0):
@@ -121,19 +117,18 @@ def parseHOBO(file):
 		# se obtienen las mediciones
 		measures = line.split("\t")
 		if(len(measures)!=8):
-			return "Error: falta una columna en: "+line
+			return "Error: falta una columna en la linea "+str(i)
 		# se recupera la fecha hora de la segunda columna
 		datetime_str = measures[1]
 		try:
-			# se crea un objeto datetime del string y del formato
+			# se crea un objeto datetime desde el string y el formato
 			dt = datetime.strptime(datetime_str,datetime_format);
 			# se transforma la fecha del time zone local a UTC
 			dt = transformToUTC(dt,local_tz_str);
 		except Exception as e:
-			return "Error: la fecha "+datetime_str+" no es correcta "+str(e)
+			return "Error: la fecha "+datetime_str+" no es correcta"
 
-
-
+		# se obtienen las mediciones
 		# se remueven las dos primeras columnas
 		measures = measures[2:]
 		measures_dict = {}
@@ -153,7 +148,8 @@ def parseHOBO(file):
 		saveMeasurements(station,None,measures_dict, dt);
 		
 	return "Success",blanks
-		
+
+
 
 def parseCF200(file):
 	"""Parse Datalogger CF200 file"""

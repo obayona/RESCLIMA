@@ -18,6 +18,7 @@ class Migration(migrations.Migration):
                 ('file_path', models.CharField(max_length=255)),
                 ('file_name', models.CharField(max_length=50)),
                 ('title', models.CharField(max_length=50)),
+                ('type', models.CharField(max_length=10)),
                 ('layers', models.ManyToManyField(to='Layer.Layer')),
             ],
         ),
