@@ -5,6 +5,9 @@ from dateutil.parser import parse
 from TimeSeries.models import *
 import os
 
+# pendiente optimizacion
+
+
 # parseHobo(file)
 # Recibe un objeto de tipo UploadedFile
 # (clase de django). Obtiene los datos del archivo csv
@@ -145,11 +148,10 @@ def parseHOBO(file):
 			# mediciones
 			measures_dict[idVariable]=measure;
 		# se guardan las mediciones
+		# pendiente validar guardado
 		saveMeasurements(station,None,measures_dict, dt);
 		
 	return "Success",blanks
-
-
 
 def parseCF200(file):
 	"""Parse Datalogger CF200 file"""
@@ -197,9 +199,6 @@ def transformToUTC(dt,local_tz_str):
 	dt_in_utc = dt_with_tz.astimezone(pytz.utc)
 	return dt_in_utc;
 
-
-
-
 # pendiente validad boolean
 def parseMeasure(measure,datatype):
 	if(datatype=="float"):
@@ -209,12 +208,10 @@ def parseMeasure(measure,datatype):
 	if(datatype=="boolean"):
 		return True;
 
-
 def saveMeasurements(station,id_provider,measurements_dict,datetime = datetime.now()):
 
 	if id_provider == None and station!= None:
 		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict, idProvider = None)
-		
 	else:
 		provider = Provider.objects.get(id=id_provider)
 		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict, idStation = None)
