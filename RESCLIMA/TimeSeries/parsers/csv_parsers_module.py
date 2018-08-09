@@ -1,4 +1,3 @@
-import configparser
 from datetime import datetime
 import pytz
 from dateutil.parser import parse
