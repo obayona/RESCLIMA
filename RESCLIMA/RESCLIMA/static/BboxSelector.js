@@ -12,6 +12,7 @@ var BboxSelector = function(container){
 	var menu_container = document.createElement("div");
 	menu_container.style.backgroundColor = "#CEDBDA";
 	menu_container.style.width = "500px";
+	menu_container.style.zIndex = "1";
 	var instruction = document.createElement("div");
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
@@ -27,9 +28,12 @@ var BboxSelector = function(container){
 	var map_container = document.createElement("div");
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
+	map_container.style.zIndex = "-1";
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
+	container.style.zIndex = "2";
 	
+
 	// inicializacion del mapa
 	var map = new OpenLayers.Map({
 		div:map_container,

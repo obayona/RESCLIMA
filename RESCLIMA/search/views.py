@@ -34,6 +34,14 @@ def search_layer(request):
 	maxX = request.GET["right"];
 	minY_query = request.GET["bottom"];
 	maxY = request.GET["top"];
+
+	minX = float(minX)
+	maxX = float(maxX)
+	minY = float(minY)
+	maxY = float(maxY)
+
+	print(minX)
+	
 	#box = Polygon( ((minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326))
 
 	finalLayers = []
@@ -46,7 +54,7 @@ def search_layer(request):
 	"""
 
 
-	return JsonResponse({"layers":finalLayers})
+	return JsonResponse({"layers":layers})
 
 """
 PARAMETROS:
