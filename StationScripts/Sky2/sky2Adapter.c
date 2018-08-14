@@ -1,77 +1,90 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <libpq-fe.h>
+#include <time.h>
+#include <string.h>
+#include <curl/curl.h>
+#include <jansson.h>
+#include "datastructs.h"
+#include "database.h"
+#include "request.h"
 
-// gcc -o sk2Adapter sky2Adapter.c -I/usr/include/postgresql -lpq
-// tdbDpM7ktbTRos6iv3c76dQ=
 
-void do_exit(PGconn *conn) {
+
+// gcc -o sk2Adapter sky2Adapter.c database.c request.c -I/usr/include/postgresql -I/usr/local/include -L/usr/local/lib -lcurl -lpq -ljansson
+// tdbDpM7ktbTRos6iv3C76dQ=
+
+//curl-7.61.0
+//jansson-2.11
+
+Measurements* parseMeasurements(int idStation,char* data_json, Variable** variables){
+    json_t* source, *measurements, *object, *result;
+    json_error_t error;
+
+
+    source = json_loads(data_json,0,&error);
+    //source = json_load_file("result.txt",0,&error);
+    source = json_array_get(source,0);
     
-    PQfinish(conn);
-    exit(1);
-}
+    result = json_object();
 
-typedef struct Station{
-    int id;
-    char * token;
-}Station;
+    measurements = json_object_get(source,"Data");
 
-
-Station * getStations(){
-    Station * stations = NULL;
-    PGconn *conn = PQconnectdb("user=resclima password=resclima dbname=resclima");
-
-    if (PQstatus(conn) == CONNECTION_BAD) {
-        
-        fprintf(stderr, "Connection to database failed: %s\n",
-            PQerrorMessage(conn));
-        do_exit(conn);
-    }
+    object = json_object_get(measurements,"TS");
+    const time_t utc_time = (const time_t)json_integer_value(object);
+    struct tm * utc_tm = gmtime(&utc_time); 
+    char * datetime_str = (char*)malloc(sizeof(char)*20);
+    strftime(datetime_str,20,"%Y-%m-%d %H:%M:%S",utc_tm);
+    printf("La fecha %s",datetime_str);
     
-    PGresult *res = PQexec(conn, "SELECT * FROM \"TimeSeries_station\"");    
-    
-    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-
-        printf("No data retrieved\n");        
-        PQclear(res);
-        do_exit(conn);
-    }   
-    
-    int rows = PQntuples(res);
-    
-    if(rows>0){
-        stations = (Station*)malloc(sizeof(Station)*rows);
-    }
-
-    for(int i=0; i<rows; i++) {
-        
-        Station station;
-        station.id = 12;
-        station.token = "El token";
-
-        stations[i] = station;
-        printf("%s %s %s\n", PQgetvalue(res, i, 0), 
-            PQgetvalue(res, i, 1), PQgetvalue(res, i, 2));
+    Variable** iter = variables;
+    while(*iter){
+        Variable* variable = *iter;
+        char * id = variable->id;
+        char * alias = variable->alias;
+        char * datatype = variable->datatype;
+        object = json_object_get(measurements,alias);
+        json_object_set(result,id,object); 
+        iter++;
     }
 
-    for(int i=0; i<rows; i++) {
 
-        Station station = stations[i];
-        printf("%d %s\n", station.id, station.token);
-    }        
+    char* values_str = json_dumps(result,0);
+    json_decref(source);
 
-    PQclear(res);
-    PQfinish(conn);
+    Measurements* m = (Measurements*)malloc(sizeof(Measurements));
+    m->idStation = idStation;
+    m->datetime = datetime_str;
+    m->values = values_str;
 
-
-    return stations;
+    return m;
 
 }
 
 
 int main() {
-    
-    Station * stations = getStations();
+    char *variables_aliases[3]={'\0'};
+    variables_aliases[0]="Luminance";
+    variables_aliases[1]="Temperature";
+    variables_aliases[2]="Humidity";
+
+    Variable ** variables = getVariablesByAliases(variables_aliases,3);
+
+    char token[30];
+
+    Station ** stations = getStations();
+    Station ** iter = stations;
+    while(*iter!=NULL) {
+        Station * station = *iter;
+        strcpy(token,station->token);
+        int idStation = station->id;
+        char * data = getSKY2Data(token);
+        //char * data = "eloy";
+        Measurements* m = parseMeasurements(idStation,data,variables);
+        //printf("**%d %s** %s",m->idStation,m->datetime,m->values);
+        insertMeasures(m);
+        iter++;
+    }
+
 
     return 0;
 }

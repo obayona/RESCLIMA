@@ -24,11 +24,13 @@ def bloomsky_client(apiUrl, frequency, filename, myConnection):
 			line = line.strip()
 			fields = line.split(',')
 			idStation = fields[0]
-			token = fields[1] 
+			token = fields[1]
+			print token 
 			request = urllib2.Request(API_URL)
 			request.add_header('Authorization', token)
 			response = urllib2.urlopen(request).read()
 			json1_data = json.loads(response)[0]
+			print json1_data,response
 			readings = json1_data['Data']
 			timestamp = readings['TS']
 			dt = datetime.datetime.fromtimestamp(timestamp)
@@ -41,7 +43,7 @@ PASSWORD = 'EloyEcuador93'
 DATABASE = 'resclima'
 
 myConnection = psycopg2.connect( host=HOSTNAME, user=USERNAME, password=PASSWORD, dbname=DATABASE )
-FILENAME = './tokens//sky2tokens.txt'
+FILENAME = 'tokens.txt'
 FREQUENCY = 60*15
 API_URL = 'https://api.bloomsky.com/api/skydata/.?unit=intl'
 bloomsky_client(API_URL, FREQUENCY, FILENAME, myConnection)
