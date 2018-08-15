@@ -69,7 +69,7 @@ class Provider(models.Model):
 class Measurement(models.Model):
     idStation = models.ForeignKey(Station, null=True, on_delete=models.CASCADE)
     idProvider = models.ForeignKey(Provider, null=True, on_delete=models.CASCADE)
-    datetime = models.DateTimeField(default=timezone.now)
+    ts = models.DateTimeField(default=timezone.now)
     readings = JSONField(default = dict)
 
     def __unicode__(self):

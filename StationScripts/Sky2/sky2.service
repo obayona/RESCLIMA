@@ -1,0 +1,11 @@
+[Unit]
+Description=Programa que obtiene los datos de las estaciones meteorlogicas SKY2
+
+[Service]
+ExecStart=/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/sky2Adapter
+StandardOutput=null
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+Alias=sky2Adapter.service
