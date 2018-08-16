@@ -37,7 +37,7 @@ PGconn * _connect(){
 
 
     char * conection_string = (char*)malloc(sizeof(char)*150);
-    sprintf(conection_string,"host='localhost' dbname=%s user=%s password=%s",dbname,user,password);
+    sprintf(conection_string,"hostaddr='127.0.0.1' port=5432 dbname=%s user=%s password=%s",dbname,user,password);
 	PGconn *conn = PQconnectdb(conection_string);
 
 	json_decref(source);

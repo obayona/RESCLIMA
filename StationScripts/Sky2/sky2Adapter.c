@@ -4,7 +4,8 @@
 #include <string.h>
 #include <pthread.h>
 #include <signal.h>
-#include <unistd.h> 
+#include <unistd.h>
+#include <syslog.h> 
 #include <curl/curl.h>
 #include <jansson.h>
 #include "datastructs.h"
@@ -27,7 +28,6 @@ typedef struct Thread_arg{
 
 // bandera de terminacion de hilos
 int finish_flag = 0;
-FILE * LOG_FILE; // archivo de log
 FILE * BACKUP_FILE; // archivo de backup
 //variable de condicion
 pthread_cond_t finish_cv = PTHREAD_COND_INITIALIZER;
@@ -46,14 +46,19 @@ void _exit(int value){
     exit(value);
 }
 
+char * ident = "sky2";
+
 void _log(char * msg){
-    time_t t = time(NULL);
+/*    time_t t = time(NULL);
     struct tm * utc_tm = gmtime(&t);
     char datetime_str[20];
     strftime(datetime_str,20,"%Y-%m-%d %H:%M:%S", utc_tm);
     pthread_mutex_lock(&mutex_log);
     fprintf(LOG_FILE,"%s\t%s\n",datetime_str,msg);
-    pthread_mutex_unlock(&mutex_log);
+    pthread_mutex_unlock(&mutex_log);*/
+    openlog(ident, LOG_PID|LOG_CONS, LOG_USER);
+    syslog(LOG_INFO, msg);
+    closelog();
 }
 
 void _backup(char* data){
@@ -84,11 +89,6 @@ int main(int argc, char* argv[]) {
         _log("Error en inicializar libcurl");
         return -1;
     }
-    // abre el archivo de log
-    LOG_FILE = fopen(logFileName,"a");
-    if(!LOG_FILE){
-        return -1;
-    }
     BACKUP_FILE = fopen(backupFileName,"a");
     if(!LOG_FILE){
         _log("No existe el archivo de backup");
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
     Station ** stations = getStations(errorMsg);
     if(!stations){
         _log(errorMsg);
-        _exit(-1);
+        _exit(2);
     }
     // por cada estacion se crea un hilo
     Station ** iter = stations;
@@ -236,7 +236,7 @@ void* dataExtraction_thread(void* arg){
     Variable** variables = args->variables;
     // frecuencua en minutos
     int frecuency = station->frequency;
-    int segundos = frecuency*60;
+    int segundos = frecuency*1;
     int idStation = station->id;
     char token[30];
     char logMsg[100];
