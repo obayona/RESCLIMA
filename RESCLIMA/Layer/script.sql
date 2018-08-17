@@ -16,3 +16,18 @@ LIMIT 10;
 CREATE TRIGGER tsvector_update_layer BEFORE INSERT OR UPDATE
 ON "Layer_layer" FOR EACH ROW EXECUTE PROCEDURE
 tsvector_update_trigger("textsearchable_index", 'pg_catalog.spanish', title, abstract);
+
+
+CREATE OR REPLACE FUNCTION InsertSky2Measurements
+(idStation INTEGER, ts_in TIMESTAMP,readings JSON)
+RETURNS void AS $$
+BEGIN
+	IF NOT(EXISTS(SELECT * FROM "TimeSeries_measurement"
+		WHERE "idStation_id"=idStation and "ts"=ts_in))
+	THEN
+		INSERT INTO "TimeSeries_measurement"("idStation_id","ts","readings")
+		VALUES(idStation,ts_in,readings);
+	END IF;
+END;
+$$ LANGUAGE plpgsql;
+
