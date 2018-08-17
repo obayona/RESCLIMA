@@ -80,7 +80,7 @@
                 return;
             }
             else if (text_query=="") {
-                var url = "search/layer?q="+null+"&left="+String(bbox["minX"])+"&right="+String(bbox["maxX"])+"&bottom="+String(bbox["minY"])+"&top="+String(bbox["maxY"]);
+                var url = "search/layer?q="+"&left="+String(bbox["minX"])+"&right="+String(bbox["maxX"])+"&bottom="+String(bbox["minY"])+"&top="+String(bbox["maxY"]);
                 console.log("**** url",url);
                 var request = $.get(url);
                 request.done(function(results){
@@ -88,7 +88,7 @@
                 })
             }
             else if (bbox==null) {
-                var url = "search/layer?q="+text_query+"&left="+null+"&right="+null+"&bottom="+null+"&top="+null;
+                var url = "search/layer?q="+text_query+"&left=0&right=0&bottom=0&top=0";
                 console.log("**** url",url);
                 var request = $.get(url);
                 request.done(function(results){

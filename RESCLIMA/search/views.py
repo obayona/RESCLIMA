@@ -6,12 +6,36 @@ from django.db import connection
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Polygon
 
+def create_query(text, polygon):
+	return null
+
+def create_polygon(minX, maxX, minY, maxY):
+	if (minX=='0' and maxX=='0' and minY=='0' and maxY=='0'):
+		return None
+	else:
+		polygon_str = "'POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))'::geometry"%(float(minX),float(minY),float(minX),float(maxY),float(maxX),float(maxY),float(maxX),float(minY),float(minX),float(minY));
+		return polygon_str
 
 def search_layer(request):
-
 	#crear string polygon
 	#hacer query dinamica con AND en el WHERE
 	user_query = request.GET["q"];
+	minX = request.GET["left"];
+	maxX = request.GET["right"];
+	minY = request.GET["bottom"];
+	maxY = request.GET["top"];
+	
+	search_polygon = create_polygon(minX,maxX,minY,maxY)
+	print(search_polygon)
+
+	"""
+		bbox["minX"] = float(minX)
+		bbox["minY"] = float(maxX)    
+		bbox["maxX"] = float(maxX)
+		bbox["maxY"] = float(maxX)
+	
+	print(bbox)"""
+
 	qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
 	qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
 	qs = qs + ' query WHERE query @@ textsearchable_index'
@@ -32,26 +56,8 @@ def search_layer(request):
 
 
 	"""
-	#Bbox Search
-	"""
-	minX = request.GET["left"];
-	maxX = request.GET["right"];
-	minY_query = request.GET["bottom"];
-	maxY = request.GET["top"];
-
-	minX = float(minX)
-	maxX = float(maxX)
-	minY = float(minY)
-	maxY = float(maxY)"""
-	
-<<<<<<< HEAD
-	#box = Polygon( (minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326)
-
-=======
 	#box = Polygon( ((minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326))
 	"""
->>>>>>> c64ad4280fa30c56601bf724f20d078e6622468a
-	finalLayers = []
 	"""
 	for layer in layers:
 		layerBox = layer["bbox"]
