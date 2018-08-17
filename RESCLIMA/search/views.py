@@ -8,9 +8,12 @@ from django.contrib.gis.geos import Polygon
 
 def search_layer(request):
 
+	#crear string polygon
+	#hacer query dinamica con AND en el WHERE
 	user_query = request.GET["q"];
+	print(user_query)
 
-	qs = 'SELECT id, title, abstract, type, bbox ts_rank_cd(textsearchable_index, query)' 
+	qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
 	qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
 	qs = qs + ' query WHERE query @@ textsearchable_index'
 	qs = qs + ' ORDER BY rank DESC LIMIT 10'
@@ -26,9 +29,10 @@ def search_layer(request):
 			layer["title"] = row[1];
 			layer["abstract"] = row[2];
 			layer["type"] = row[3];
-			layer["bbox"] = row[4];
 			layers.append(layer)
 
+
+	"""
 	#Bbox Search
 	minX = request.GET["left"];
 	maxX = request.GET["right"];
@@ -38,19 +42,17 @@ def search_layer(request):
 	minX = float(minX)
 	maxX = float(maxX)
 	minY = float(minY)
-	maxY = float(maxY)
-
-	print(minX)
+	maxY = float(maxY)"""
 	
-	#box = Polygon( ((minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326))
+	#box = Polygon( (minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326)
 
 	finalLayers = []
 	"""
 	for layer in layers:
-	layerBox = layer["bbox"]
-	qb = 'SELECT ST_Intersects(box, bbox)'
-	if (qb):
-	finalLayers.append(layer)
+		layerBox = layer["bbox"]
+		qb = 'SELECT ST_Intersects(box, bbox)'
+		if (qb):
+			finalLayers.append(layer)
 	"""
 
 

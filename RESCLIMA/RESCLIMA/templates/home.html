@@ -76,16 +76,33 @@
         }
 
         function search(text_query,bbox){
-
-            if(text_query==""){
+            if(text_query=="" && bbox==null) {
                 return;
             }
-            var url = "search/layer?q="+text_query+"&left="+String(bbox["minX"])+"&right="+String(bbox["maxX"]+"&bottom="+String(bbox["minY"])+"&top="+String(bbox["maxY"]));
-            var request = $.get(url);
-            request.done(function(results){
-                renderResults(results)
-            })
-
+            else if (text_query=="") {
+                var url = "search/layer?q="+null+"&left="+String(bbox["minX"])+"&right="+String(bbox["maxX"])+"&bottom="+String(bbox["minY"])+"&top="+String(bbox["maxY"]);
+                console.log("**** url",url);
+                var request = $.get(url);
+                request.done(function(results){
+                    renderResults(results)
+                })
+            }
+            else if (bbox==null) {
+                var url = "search/layer?q="+text_query+"&left="+null+"&right="+null+"&bottom="+null+"&top="+null;
+                console.log("**** url",url);
+                var request = $.get(url);
+                request.done(function(results){
+                    renderResults(results)
+                })
+            }
+            else {
+                var url = "search/layer?q="+text_query+"&left="+String(bbox["minX"])+"&right="+String(bbox["maxX"])+"&bottom="+String(bbox["minY"])+"&top="+String(bbox["maxY"]);               
+                console.log("**** url",url);
+                var request = $.get(url);
+                request.done(function(results){
+                    renderResults(results)
+                })
+            }
         }
 
         
@@ -96,6 +113,7 @@
 
             search_button.addEventListener("click",function(event){
                 var text_query = search_input.value;
+                console.log("****query text",text_query);
                 var bbox = bboxSelector.getBBox();
                 console.log("****El bounding box",bbox);
                 search(text_query,bbox);
