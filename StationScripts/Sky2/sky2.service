@@ -1,11 +1,14 @@
 [Unit]
 Description=Programa que obtiene los datos de las estaciones meteorlogicas SKY2
+StartLimitIntervalSec=0
+
 
 [Service]
 Type=simple
 ExecStart=/usr/bin/python /home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/sky2.py
 StandardOutput=null
 Restart=always
+RestartSec=10
 Wants=postgresql.service
 After=postgresql.service
 

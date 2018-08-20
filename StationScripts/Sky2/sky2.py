@@ -147,7 +147,7 @@ def dataExtraction_thread(dbParams,station,variables):
 	idStation = station["id"]
 	token = station["token"]
 	frequency = station["frequency"]
-	seconds = frequency*5
+	seconds = frequency*60
 
 	while(True):
 		time.sleep(seconds)
@@ -196,16 +196,12 @@ if __name__ == "__main__":
 		_log(error)
 		exit(-1);
 	_log("Estamos bien 5");
-	"""
+
 	for station in stations:
 		thread_ = Thread(target=dataExtraction_thread, args=(dbParams,station,variables,));
 		thread_.setDaemon(True)
 		thread_.start()
-	"""	
-	station = stations[0]
-	thread_ = Thread(target=dataExtraction_thread, args=(dbParams,station,variables,));
-	thread_.setDaemon(True)
-	thread_.start()
+
 	_log("Estamos bien 6");
 	cv.acquire()
 	cv.wait()
