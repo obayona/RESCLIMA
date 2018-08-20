@@ -94,7 +94,7 @@
       "name": "Imagen SKY2",
       "unit": "",
       "symbol": "",
-      "alias":  "imageURL",
+      "alias":  "ImageURL",
       "datatype": "string"  
     }
   },

@@ -5,20 +5,35 @@ import json
 import time
 from datetime import datetime
 import psycopg2
+import logging
 from threading import Condition, Thread
+from Queue import Queue
 
 # Script que descarga los datos
 # de las estaciones SKY2 y las guarda en 
 # la base de datos
 
+# archivos de configuracion, log y backup
+configFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/config.json";
+logFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/log.txt"
+backupFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/backup.txt";
+
 # variable de condicion
 # para dormir el main
 cv = Condition()
+# cola para escribir en el archivo
+# de backup
+writeQueue = Queue()
 
-def _log(msg):
-	file = open("/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/log.txt","a");
-	file.write(msg+"\n");
-	file.close();
+def backup(measurement):
+	measurement = measurement + "\n"
+	writeQueue.put(measurement)
+	outFile = open(backupFileName,'a')
+	while writeQueue.qsize():
+		outFile.write(writeQueue.get())
+	outFile.flush()
+	outFile.close()
+
 
 def getVariablesByAliases(dbParams,variables_aliases):
 	variables = []
@@ -36,7 +51,6 @@ def getVariablesByAliases(dbParams,variables_aliases):
 	            WHERE v.alias=%s
 	            """;
 		for variable_alias in variables_aliases:
-			_log(variable_alias)
 			cursor.execute(query,(variable_alias,));
 			result = cursor.fetchone();
 			variable = {}
@@ -85,7 +99,8 @@ def getStations(dbParams):
 		error_str = "Fallo la base de datos " + str(e);
 		return None,error_str;
 	finally:
-		conn.close()
+		if conn:
+			conn.close()
 
 	return stations,None 
 
@@ -139,7 +154,8 @@ def insertMeasures(dbParams,measurements):
 		error_str = "Fallo la base de datos " + str(e);
 		return error_str;
 	finally:
-		conn.close()
+		if conn:
+			conn.close()
 
 	return None 
 
@@ -153,25 +169,28 @@ def dataExtraction_thread(dbParams,station,variables):
 		time.sleep(seconds)
 		data,error = getSKY2Data(token);
 		if(error):
-			_log(error)
+			logging.error(error)
 			continue
 		measurements,error = parseMeasurements(idStation,data,variables)
 		if(error):
-			_log(error)
+			logging.error(error)
 			continue
 		error = insertMeasures(dbParams,measurements) 
 		if(error):
-			_log(error)
+			logging.error(error)
 			# intenta guardar en el backup
+			m_dump = json.dumps(measurements)
+			backup(m_dump);
 
 
 if __name__ == "__main__":
-	# archivos de configuracion, log y backup
-	configFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/config.json";
-	backupFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/backup.txt";
-	# se registran los signal
+	
+	# se inicializa el logger
+	logging.basicConfig(filename=logFileName,
+						format='%(asctime)s %(message)s')
+	logging.debug('Adaptador SKY2 inicializado')
 
-	_log("Estamos bien");
+	
 	# Se otienen las credenciales de 
 	# la base de datos
 	dbParams = None
@@ -184,24 +203,31 @@ if __name__ == "__main__":
 	variables_aliases.append("Luminance");
 	variables_aliases.append("Temperature");
 	variables_aliases.append("Humidity");
-	_log("Estamos bien 2");
+	variables_aliases.append("ImageURL");
+	variables_aliases.append("Rain");
+	variables_aliases.append("Humidity");
+	variables_aliases.append("Pressure");
+	variables_aliases.append("Voltage");
+	variables_aliases.append("Night");
+	variables_aliases.append("UVIndex");
+
+
 	variables,error = getVariablesByAliases(dbParams,variables_aliases);
 	if(error):
-		_log(error)
+		logging.error(error)
 		exit(-1);
-	_log("Estamos bien 3");
+
 	stations,error = getStations(dbParams);
-	_log("Estamos bien 4");
+
 	if(error):
-		_log(error)
+		logging.error(error)
 		exit(-1);
-	_log("Estamos bien 5");
+
 
 	for station in stations:
 		thread_ = Thread(target=dataExtraction_thread, args=(dbParams,station,variables,));
 		thread_.setDaemon(True)
 		thread_.start()
 
-	_log("Estamos bien 6");
 	cv.acquire()
 	cv.wait()
