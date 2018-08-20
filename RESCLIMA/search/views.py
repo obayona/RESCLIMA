@@ -6,16 +6,46 @@ from django.db import connection
 from django.core.paginator import Paginator
 from django.contrib.gis.geos import Polygon
 
+def create_query(text, polygon):
+	qs = ''
+
+	#QUERY SOLO TEXTO
+	if (polygon==None):
+		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
+		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
+		qs = qs + ' query WHERE query @@ textsearchable_index'
+		qs = qs + ' ORDER BY rank DESC LIMIT 10'
+	
+	#QUERY SOLO BBOX
+	elif (text==''):
+		return None
+	
+	#QUERY TEXTO Y BBOX
+	#AGREGAR CONDICION DE INTERSECCION CON POLYGON EN EL WHERE
+	else:
+		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
+		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
+		qs = qs + ' query WHERE query @@ textsearchable_index'
+		qs = qs + ' ORDER BY rank DESC LIMIT 10'
+	return qs
+
+def create_polygon(minX, maxX, minY, maxY):
+	if (minX=='0' and maxX=='0' and minY=='0' and maxY=='0'):
+		return None
+	else:
+		polygon_str = "'POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))'::geometry"%(float(minX),float(minY),float(minX),float(maxY),float(maxX),float(maxY),float(maxX),float(minY),float(minX),float(minY));
+		return polygon_str
 
 def search_layer(request):
-
+	minX = request.GET["left"];
+	maxX = request.GET["right"];
+	minY = request.GET["bottom"];
+	maxY = request.GET["top"];
 	user_query = request.GET["q"];
-	qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
-	qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
-	qs = qs + ' query WHERE query @@ textsearchable_index'
-	qs = qs + ' ORDER BY rank DESC LIMIT 10'
+	user_polygon = create_polygon(minX,maxX,minY,maxY)
+	
+	qs = create_query(user_query, user_polygon)
 
-	#Text Search
 	layers = []
 	with connection.cursor() as cursor:
 		cursor.execute(qs, [user_query])
@@ -26,34 +56,7 @@ def search_layer(request):
 			layer["title"] = row[1];
 			layer["abstract"] = row[2];
 			layer["type"] = row[3];
-			layer["bbox"] = row[4];
 			layers.append(layer)
-
-	#Bbox Search
-	"""
-	minX = request.GET["left"];
-	maxX = request.GET["right"];
-	minY_query = request.GET["bottom"];
-	maxY = request.GET["top"];
-
-	minX = float(minX)
-	maxX = float(maxX)
-	minY = float(minY)
-	maxY = float(maxY)
-
-	print(minX)
-	
-	#box = Polygon( ((minX, minY), (minX, maxY), (maxX, minY), (maxX, maxY), srid=4326))
-	"""
-	finalLayers = []
-	"""
-	for layer in layers:
-	layerBox = layer["bbox"]
-	qb = 'SELECT ST_Intersects(box, bbox)'
-	if (qb):
-	finalLayers.append(layer)
-	"""
-
 
 	return JsonResponse({"layers":layers})
 
