@@ -8,17 +8,24 @@ from django.contrib.gis.geos import Polygon
 
 def create_query(text, polygon):
 	qs = ''
-
+	params = []
 	#QUERY SOLO TEXTO
 	if (polygon==None):
 		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
 		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
 		qs = qs + ' query WHERE query @@ textsearchable_index'
 		qs = qs + ' ORDER BY rank DESC LIMIT 10'
+		params.append(text)
+		return qs, params
 	
 	#QUERY SOLO BBOX
 	elif (text==''):
-		return None
+		qs = 'SELECT id, title, abstract, type, bbox' 
+		qs = qs + ' FROM "Layer_layer"'
+		qs = qs + ' WHERE ST_Intersects(bbox,%s)'
+		qs = qs + ' LIMIT 10'
+		params.append(polygon)
+		return qs, params
 	
 	#QUERY TEXTO Y BBOX
 	#AGREGAR CONDICION DE INTERSECCION CON POLYGON EN EL WHERE
@@ -27,13 +34,16 @@ def create_query(text, polygon):
 		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
 		qs = qs + ' query WHERE query @@ textsearchable_index'
 		qs = qs + ' ORDER BY rank DESC LIMIT 10'
-	return qs
+		params.append(text)
+		params.append(polygon)
+		return qs, params
+
 
 def create_polygon(minX, maxX, minY, maxY):
 	if (minX=='0' and maxX=='0' and minY=='0' and maxY=='0'):
 		return None
 	else:
-		polygon_str = "'POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))'::geometry"%(float(minX),float(minY),float(minX),float(maxY),float(maxX),float(maxY),float(maxX),float(minY),float(minX),float(minY));
+		polygon_str = "SRID=4326;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))::geometry"%(float(minX),float(minY),float(minX),float(maxY),float(maxX),float(maxY),float(maxX),float(minY),float(minX),float(minY));
 		return polygon_str
 
 def search_layer(request):
@@ -43,12 +53,10 @@ def search_layer(request):
 	maxY = request.GET["top"];
 	user_query = request.GET["q"];
 	user_polygon = create_polygon(minX,maxX,minY,maxY)
-	
-	qs = create_query(user_query, user_polygon)
-
+	qs,params = create_query(user_query, user_polygon)
 	layers = []
 	with connection.cursor() as cursor:
-		cursor.execute(qs, [user_query])
+		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		for row in rows:
 			layer = {}
