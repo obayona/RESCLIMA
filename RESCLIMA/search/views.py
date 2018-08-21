@@ -28,11 +28,10 @@ def create_query(text, polygon):
 		return qs, params
 	
 	#QUERY TEXTO Y BBOX
-	#AGREGAR CONDICION DE INTERSECCION CON POLYGON EN EL WHERE
 	else:
 		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
 		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
-		qs = qs + ' query WHERE query @@ textsearchable_index'
+		qs = qs + ' query WHERE query @@ textsearchable_index AND ST_Intersects(bbox,%s)'
 		qs = qs + ' ORDER BY rank DESC LIMIT 10'
 		params.append(text)
 		params.append(polygon)
