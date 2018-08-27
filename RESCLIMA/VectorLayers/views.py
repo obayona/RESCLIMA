@@ -11,13 +11,31 @@ import importer, exporter
 from RESCLIMA import settings
 import datetime
 import time
+import json
 import utils
 from os.path import join
+from celery.result import AsyncResult
+from tasks import add
 
 
 def list_vectorlayers(request):
+  task = add.delay(2,3)
+  print "***", task, task,id
   vectorlayers = VectorLayer.objects.all().order_by("upload_date");
   return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
+
+def get_task_info(request):
+    task_id = request.GET.get('task_id', None)
+    if task_id is not None:
+        task = AsyncResult(task_id)
+        print "Lo que recupero  ",task, task.state,task.result,task.backend
+        data = {
+            'state': task.state,
+            'result': task.result,
+        }
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    else:
+        return HttpResponse('No job id given.')
 
 def import_shapefile(request):
     if request.method == "GET":

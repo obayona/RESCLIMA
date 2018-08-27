@@ -25,7 +25,7 @@ SECRET_KEY = 'k2va29q6&j)hb4cb1q7jq(k(qtl(sr0!hcunjzp@wc6@mt8!ps'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 MESSAGE_LEVEL = 40 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,7 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'floppyforms',
+    'django_celery_results',
     'RESCLIMA',
     'Layer',
     'Style',
@@ -88,9 +88,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'obayona',
-        'PASSWORD':'EloyEcuador93',
-        'HOST': 'localhost',
+        'USER':'postgres',
+        'PASSWORD':'postgres',
+        'HOST': '192.168.3.246',
+	'PORT':5433
     }
 }
 
@@ -123,8 +124,15 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CELERY_BROKER_URL = 'amqp://resclima:resclima@localhost:5672/resclima'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_SERIALIZER = 'json'
 
 STYLE_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/styles/"
 RASTER_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/raster/"
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
