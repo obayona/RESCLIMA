@@ -83,10 +83,14 @@
                 var a = document.createElement("a");
                 a.innerHTML = "Visualizar"
                 a.href = layer["type"]+"/view/"+layer["id"];
+                var b = document.createElement("a");
+                b.innerHTML = "Descargar"
+                b.href = layer["type"]+"/export/"+layer["id"];
 
                 div.appendChild(h3);
                 div.appendChild(h5);
                 div.appendChild(a);
+                div.appendChild(b);
                 div.style.borderStyle = "solid";
                 div.style.borderWidth = "2px";
                 div.style.borderColor = "blue";
