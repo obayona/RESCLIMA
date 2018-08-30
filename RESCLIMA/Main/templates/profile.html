@@ -1,0 +1,17 @@
+<html>
+  {% block content %}
+  <head>
+    <title>Series de tiempo</title>
+  </head>
+  <body>
+    <h1>RESCLIMA DURAN</h1>
+      <td>{{ researcher.name }}</td>
+      <td>{{ researcher.last_name }}</td>
+      <a href="{% url 'home' %}" class="btn btn-lg btn-danger btn-block" role="button">Cerrar Sesión</a>
+      <br><b>Opciones:</b> <br><br>
+    <button type="button" onClick='window.location="/series";'>Time Series</button><br>
+    <button type="button" onClick='window.location="/vector";'>Vector Layers</button><br>
+    <button type="button" onClick='window.location="/raster";'>Raster Layers</button>
+  </body>
+  {% endblock content %}
+</html>

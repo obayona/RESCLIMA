@@ -4,7 +4,6 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
-from models import Researcher
 
 #METODOS DE ACCESO
 def login(request):
@@ -14,7 +13,7 @@ def login(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('dashboard')
+            return redirect('profile')
         else:
             print("ERROR DE AUTENTICACION...")
             return render(request,'login.html', {'error':True})
@@ -32,6 +31,6 @@ def home(request):
     return render(request,"home.html")
 
 @login_required()
-def dashboard(request):
+def profile(request):
     researcher = request.user.researcher
-    return render(request, 'dashboard.html', {'researcher': researcher, })
+    return render(request, 'profile.html', {'researcher': researcher, })

@@ -15,12 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from views import *
+from Main.views import *
 
 urlpatterns = [
+    #URLS DE INCIO/CIERRE/PERMISOS
     url(r'^$', home, name="home"),
     url(r'^login/$', login, name="login"),
-    url(r'^dashboard/$', dashboard, name="dashboard"),
+    url(r'^logout/$', logout, name="logout"),
+    
+    url(r'^profile/$', profile, name="profile"),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^vector/', include("VectorLayers.urls")),
     url(r'^series/', include("TimeSeries.urls")),
