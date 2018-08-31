@@ -113,11 +113,17 @@ $ python manage.py migrate
 
 Ahora se debe crear la hypertabla de timescaledb
 
-ALTER TABLE "TimeSeries_measurement" DROP COLUMN id;
+Debido a que en timescaledb el primary key siempre debe contener el campo de tiempo,
+se debe alterar la tabla
 
-SELECT create_hypertable('"TimeSeries_measurement"','datetime');
+ALTER TABLE "timeSeries_measurement" ADD CONSTRAINT ts PRIMARY KEY (ts,id_m);
 
-ALTER TABLE "TimeSeries_measurement" ADD COLUMN id SERIAL PRIMARY KEY;
+De esta manera, el primary key de la tabla "timeSeries_measurement" esta compuesto por (ts,id_m)
+y la creacion del hypertable, no debe dar ningun problema
+
+Cree el hypertable de la siguiente manera
+SELECT create_hypertable('"timeSeries_measurement"','ts');
+
 
 Para cargar datos iniciales en una tabla:
 
