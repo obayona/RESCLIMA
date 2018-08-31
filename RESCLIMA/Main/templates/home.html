@@ -17,11 +17,10 @@
 
     <body>
         <h1>RESCLIMA DURAN</h1>
-
-        <a href="{% url 'login' %}">Iniciar Sesion</a>
         <div class="topnav">
             <a href="#">About</a>
             <a href="#">Contact</a> 
+            <a href="{% url 'login' %}">Iniciar Sesion</a>
         </div>
 
         <div style="visibility:visible; z-index:10">
@@ -70,7 +69,9 @@
                 results_container.innerHTML = "<h3>No hay resultados</h3>"
                 return;
             }
-            results_container.innerHTML = "";
+
+
+            results_container.innerHTML = "<h2>Resultados:</h2>";
 
             for(var i=0; i< length; i++){
                 var layer = layers[i];
@@ -82,16 +83,21 @@
                 var a = document.createElement("a");
                 a.innerHTML = "Visualizar"
                 a.href = layer["type"]+"/view/"+layer["id"];
+                var b = document.createElement("a");
+                b.innerHTML = "Descargar"
+                b.href = layer["type"]+"/export/"+layer["id"];
 
                 div.appendChild(h3);
                 div.appendChild(h5);
                 div.appendChild(a);
+                div.appendChild(b);
                 div.style.borderStyle = "solid";
                 div.style.borderWidth = "2px";
                 div.style.borderColor = "blue";
                 div.style.padding = "5px";
 
                 results_container.appendChild(div);
+
             }
         }
 

@@ -39,7 +39,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_celery_results',
-    'RESCLIMA',
     'Layer',
     'Style',
     'VectorLayers',
@@ -47,6 +46,7 @@ INSTALLED_APPS = (
     'TimeSeries',
     'search',
     'tms',
+    'Main',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,10 +88,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'postgres',
-        'PASSWORD':'postgres',
-        'HOST': '192.168.3.246',
-	'PORT':5433
+        'USER':'obayona',
+        'PASSWORD':'EloyEcuador93',
+        'HOST': 'LocalHost',
     }
 }
 
