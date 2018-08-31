@@ -1,0 +1,167 @@
+[
+  {
+   "model": "timeSeries.Variable",
+    "pk": 1,
+    "fields": {
+      "name": "Temperatura",
+      "unit": "Celsius",
+      "symbol": "C",
+      "alias":"Temp, °C (LGR S/N: 10450278, SEN S/N: 10431781, LBL: AmbTemp)",
+      "datatype":"float"
+    } 
+  },
+  {
+   "model": "timeSeries.Variable",
+    "pk": 2,
+    "fields": {
+      "name": "Humedad relativa",
+      "unit": "Celsius",
+      "symbol": "C",
+      "alias":"HR, % (LGR S/N: 10450278, SEN S/N: 10431781, LBL: AmbHR)",
+      "datatype":"float"
+    } 
+  },
+  {
+   "model": "timeSeries.Variable",
+    "pk": 3,
+    "fields": {
+      "name": "Lluvia",
+      "unit": "Milinetros",
+      "symbol": "mm",
+      "alias":"Lluvia, mm (LGR S/N: 10450278, SEN S/N: 10440752, LBL: Lluvia)",
+      "datatype":"float"
+    } 
+  },
+  {
+   "model": "timeSeries.Variable",
+    "pk": 4,
+    "fields": {
+      "name": "Direccion del viento",
+      "unit": "",
+      "symbol": "ø",
+      "alias":"Dirección del viento, ø (LGR S/N: 10450278, SEN S/N: 10468828, LBL: Direccion del viento)",
+      "datatype":"float"
+    } 
+  },
+  {
+   "model": "timeSeries.Variable",
+    "pk": 5,
+    "fields": {
+      "name": "Velocidad del viento",
+      "unit": "metros sobre segundos",
+      "symbol": "m/s",
+      "alias":"Velocidad del viento, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad del viento)",
+      "datatype":"float"
+    } 
+  },
+  {
+   "model": "timeSeries.Variable",
+    "pk": 6,
+    "fields": {
+      "name": "Velocidad de rafagas",
+      "unit": "metros sobre segundos",
+      "symbol": "m/s",
+      "alias":"Velocidad de Ráfagas, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad de rafagas)",
+      "datatype":"float"
+    } 
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 7,
+    "fields": {
+      "name": "Luminancia",
+      "unit": "Candela per square metre",
+      "symbol": "cd/m2",
+      "alias":"Luminance",
+      "datatype":"float"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 8,
+    "fields": {
+      "name": "Temperatura",
+      "unit": "Celsius",
+      "symbol": "C",
+      "alias":"Temperature",
+      "datatype":"float"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk":9,
+    "fields": {
+      "name": "Imagen SKY2",
+      "unit": "",
+      "symbol": "",
+      "alias":  "ImageURL",
+      "datatype": "string"  
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk":10,
+    "fields": {
+      "name": "Deteccion lluvia",
+      "unit": "",
+      "symbol": "",
+      "alias":  "Rain",
+      "datatype": "boolean"  
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 11,
+    "fields": {
+      "name": "Humedad",
+      "unit": "Percentage",
+      "symbol": "%",
+      "alias":"Humidity",
+      "datatype":"float"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 12,
+    "fields": {
+      "name": "Presion",
+      "unit": "Milibar",
+      "symbol": "mbar",
+      "alias":"Pressure",
+      "datatype":"float"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 13,
+    "fields": {
+      "name": "Voltaje",
+      "unit": "Milivolts",
+      "symbol": "mV",
+      "alias":"Voltage",
+      "datatype":"float"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 14,
+    "fields": {
+      "name": "Deteccion noche",
+      "unit": "",
+      "symbol": "",
+      "alias":"Night",
+      "datatype":"boolean"
+    }
+  },
+  {
+    "model": "timeSeries.Variable",
+    "pk": 15,
+    "fields": {
+      "name": "Indice UV",
+      "unit": "",
+      "symbol": "",
+      "alias":"UVIndex",
+      "datatype":"float"
+    }
+  }
+]

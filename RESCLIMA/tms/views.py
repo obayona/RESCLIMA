@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
 from os.path import join
-from RasterLayers.models import RasterLayer
-from Style.models import Style
-from Style.utils import getColorMap
+from rasterLayers.models import RasterLayer
+from style.models import Style
+from style.utils import getColorMap
 import traceback
 import math
 import mapnik

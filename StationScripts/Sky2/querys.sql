@@ -1,1 +1,0 @@
-insert into "TimeSeries_station"("serialNum","location","active","frequency","token","stationType_id") select "serialNum","location","active","frequency","token","stationType_id" from "TimeSeries_station" where id =2;

@@ -39,14 +39,14 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django_celery_results',
-    'Layer',
-    'Style',
-    'VectorLayers',
-    'RasterLayers',
-    'TimeSeries',
+    'layer',
+    'style',
+    'vectorLayers',
+    'rasterLayers',
+    'timeSeries',
     'search',
     'tms',
-    'Main',
+    'main',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,21 +88,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'obayona',
-        'PASSWORD':'EloyEcuador93',
-        'HOST': 'LocalHost',
+        'USER':'postgres',
+        'PASSWORD':'postgres',
+        'HOST': '192.168.3.246',
+	'PORT':5433
     }
-}
-
-#Map Widget 
-MAP_WIDGETS = {
-    "GooglePointFieldWidget": (
-        ("zoom", 15),
-        ("mapCenterLocationName", "duran"),
-        ("GooglePlaceAutocompleteOptions", {'componentRestrictions': {'country': 'ec'}}),
-        ("markerFitZoom", 12),
-    ),
-    "GOOGLE_MAP_API_KEY": "AIzaSyC2rFWRbUJOntwZtperaKHIJMDNvNShWP0"
 }
 
 # Internationalization
@@ -126,12 +116,15 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Celery configuration
 CELERY_BROKER_URL = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
+# paths for user data
 STYLE_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/styles/"
 RASTER_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/raster/"
+
 

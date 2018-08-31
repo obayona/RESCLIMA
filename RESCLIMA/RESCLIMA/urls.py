@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
-from Main.views import *
+from main.views import *
 
 urlpatterns = [
     #URLS DE INCIO/CIERRE/PERMISOS
@@ -25,9 +25,9 @@ urlpatterns = [
     
     url(r'^profile/$', profile, name="profile"),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^vector/', include("VectorLayers.urls")),
-    url(r'^series/', include("TimeSeries.urls")),
-    url(r'^raster/', include("RasterLayers.urls")),
+    url(r'^vector/', include("vectorLayers.urls")),
+    url(r'^series/', include("timeSeries.urls")),
+    url(r'^raster/', include("rasterLayers.urls")),
     url(r'^tms/', include("tms.urls")),
     url(r'^search/',include("search.urls")),
 ]

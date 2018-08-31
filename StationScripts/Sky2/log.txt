@@ -1,4 +1,0 @@
-2018-08-20 15:26:34,655 Fallo la base de datoscould not connect to server: Connection refused
-	Is the server running on host "localhost" (127.0.0.1) and accepting
-	TCP/IP connections on port 5432?
-

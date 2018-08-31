@@ -14,9 +14,9 @@ from Queue import Queue
 # la base de datos
 
 # archivos de configuracion, log y backup
-configFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/config.json";
-logFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/log.txt"
-backupFileName = "/home_local/obayona/Documents/RESCLIMA/StationScripts/Sky2/backup.txt";
+configFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/config.json";
+logFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/log.txt"
+backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt";
 
 # variable de condicion
 # para dormir el main
