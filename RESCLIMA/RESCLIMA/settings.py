@@ -130,7 +130,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CELERY_BROKER_URL = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
 STYLE_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/styles/"

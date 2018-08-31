@@ -21,6 +21,31 @@
   <script>
     var form = $("#shapefileForm");
 
+    function renderProcess(task_id){
+      $.ajax({
+            type: 'get',
+            url: '/vector/get-task-info/',
+            data: {'task_id': task_id},
+            success: function (data) {
+               console.log(data);
+		 if (data.state == 'PENDING') {
+                    uploadPercent.innerHTML = "Procesando 0%"
+                }
+                else if (data.state == 'PROGRESS' || data.state == 'SUCCESS') {
+                    uploadPercent.innerHTML = "Procesando " + data.result.percent + "%"
+                }
+                if (data.state != 'SUCCESS') {
+                    setTimeout(function () {
+                        renderProcess(task_id)
+                    }, 100);
+                }
+            },
+            error: function (data) {
+                errorMsg.innerHTML = "Error " + data.error;
+            }
+        });
+    }
+
     function createXHR(){
       var xhr = new window.XMLHttpRequest();
       xhr.upload.addEventListener("progress",function(evt){
@@ -39,12 +64,12 @@
     }
 
     function successHandler(data){
-      if(data=="OK"){
-        window.location = "/vector"
+      console.log(data)
+      if(!data.error){
+        renderProcess(data.task_id);
       }
       else{
-        console.log("No fue OK")
-        errorMsg.innerHTML = "<b><i>"+data+"</i></b>"
+        errorMsg.innerHTML = "<b><i>"+data.error+"</i></b>"
         uploadPercent.innerHTML = "";
       }
     }

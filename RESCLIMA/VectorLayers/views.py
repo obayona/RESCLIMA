@@ -15,12 +15,10 @@ import json
 import utils
 from os.path import join
 from celery.result import AsyncResult
-from tasks import add
+
 
 
 def list_vectorlayers(request):
-  task = add.delay(2,3)
-  print "***", task, task,id
   vectorlayers = VectorLayer.objects.all().order_by("upload_date");
   return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
@@ -42,16 +40,22 @@ def import_shapefile(request):
         form = ImportShapefileForm()
         return render(request, "import_shapefile.html",{'form':form})
     elif request.method == "POST":
-        err_msg = None;
+        result = None
         form = ImportShapefileForm(request.POST,request.FILES)
-        if form.is_valid():
-          err_msg = importer.import_data(request)
-        else:
-          err_msg = form.errors;
-        if err_msg == None:
-          return HttpResponse("OK")
-        else:
-            return HttpResponse(err_msg);
+        if not(form.is_valid()):
+          result["error"] = form.errors;
+          return HttpResponse(json.dumps(result),content_type='application/json')
+
+        try:
+          print "se ejecuta la tarea"
+          result = importer.import_data(request)
+          print "el resultado", result
+          return HttpResponse(json.dumps(result),content_type='application/json')
+        except Exception as e:
+          print "El error", e
+          result["error"]=str(e);
+          return HttpResponse(json.dumps(result),content_type='application/json')
+    
 
 def export_shapefile(request, vectorlayer_id):
 	try:
