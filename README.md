@@ -118,18 +118,25 @@ se debe alterar la tabla:
 
 Primero se debe eliminar los primary keys que creo django
 
-alter table "timeSeries_measurement" drop column id_m;
-alter table "timeSeries_measurement" drop column ts;
+ALTER TABLE "timeSeries_measurement" DROP COLUMN id_m;
+
+ALTER TABLE "timeSeries_measurement" DROP COLUMN ts;
 
 Luego de debe agregar esas columnas otra vez:
-alter table "timeSeries_measurement" add column id_m SERIAL;
-alter table "timeSeries_measurement" add column ts TIMESTAMP;
+
+ALTER TABLE "timeSeries_measurement" ADD COLUMN id_m SERIAL;
+
+ALTER TABLE "timeSeries_measurement" ADD COLUMN ts TIMESTAMP;
+
 
 Se agrega un primary key compuesto por ts y id_m 
-alter table "timeSeries_measurement" add constraint ts primary key (ts,id_m);
+
+ALTER TABLE "timeSeries_measurement" ADD CONSTRAINT ts PRIMARY KEY (ts,id_m);
 
 Finalmente se crea la hypertabla
+
 SELECT create_hypertable('"timeSeries_measurement"','ts');
+
 
 La creacion del hypertable, no debe dar ningun problema
 
@@ -137,12 +144,6 @@ La creacion del hypertable, no debe dar ningun problema
 Para cargar datos iniciales en una tabla:
 
 python manage.py loaddata TimeSeries/SensorTypes.json 
-
-
-# Instalacion floppyforms
-MapWidget. Para poder usar el Point Field Widget es necesario tener instalado django-floppyforms para una manipulacion mas facil de GEOS geometry fields:
-
-$ pip install -U django-floppyforms
 
 # Instalacion Mapnik
 
