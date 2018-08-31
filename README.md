@@ -143,7 +143,9 @@ La creacion del hypertable, no debe dar ningun problema
 
 Para cargar datos iniciales en una tabla:
 
-python manage.py loaddata TimeSeries/SensorTypes.json 
+python manage.py loaddata TimeSeries/fixtures/variables.json
+
+python manage.py loaddata TimeSeries/fixtures/stationTypes.json 
 
 # Instalacion Mapnik
 
