@@ -114,15 +114,24 @@ $ python manage.py migrate
 Ahora se debe crear la hypertabla de timescaledb
 
 Debido a que en timescaledb el primary key siempre debe contener el campo de tiempo,
-se debe alterar la tabla
+se debe alterar la tabla:
 
-ALTER TABLE "timeSeries_measurement" ADD CONSTRAINT ts PRIMARY KEY (ts,id_m);
+Primero se debe eliminar los primary keys que creo django
 
-De esta manera, el primary key de la tabla "timeSeries_measurement" esta compuesto por (ts,id_m)
-y la creacion del hypertable, no debe dar ningun problema
+alter table "timeSeries_measurement" drop column id_m;
+alter table "timeSeries_measurement" drop column ts;
 
-Cree el hypertable de la siguiente manera
+Luego de debe agregar esas columnas otra vez:
+alter table "timeSeries_measurement" add column id_m SERIAL;
+alter table "timeSeries_measurement" add column ts TIMESTAMP;
+
+Se agrega un primary key compuesto por ts y id_m 
+alter table "timeSeries_measurement" add constraint ts primary key (ts,id_m);
+
+Finalmente se crea la hypertabla
 SELECT create_hypertable('"timeSeries_measurement"','ts');
+
+La creacion del hypertable, no debe dar ningun problema
 
 
 Para cargar datos iniciales en una tabla:
