@@ -1,10 +1,14 @@
-<html>
-  <head>
-    <title>Capas vectoriales</title>
-  </head>
-  <body>
-    <h1>RESCLIMA DURAN</h1>
-    {% if vectorlayers %}
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %} RESCLIMA DURAN | Capas Vectoriales{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" type="text/css">
+{% endblock %}
+
+{% block content %}
+{% if vectorlayers %}
       <b>Capas vectoriales:</b>
       <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
         {% for vectorlayer in vectorlayers %}
@@ -30,5 +34,5 @@
       </table>
     {% endif %}
     <button type="button" onClick='window.location="/vector/import";'>Importar Shapefile</button>
-  </body>
-</html>
+{% endblock %}
+

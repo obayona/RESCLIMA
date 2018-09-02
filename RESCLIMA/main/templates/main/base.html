@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>	
+<head>
+	<title>{% block title %}RESCLIMA | BUSCAR{% endblock %}</title>
+	<meta charset="UTF-8">
+	<meta name="description" content="Plataforma para buscar, visualiza y descargar datos geograficos y seies de tiempo">
+	<meta name="keywords" content="Capa, Shapefile, Raster, Serie de tiempo">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	{% block styles %}{% endblock %}
+	{% block scripts %}{% endblock %}
+	
+</head>
+<body>
+	<header class="page-topbar">
+		<h1>RESCLIMA DURAN</h1>
+		<div>
+			<a href="#">Acerca de |</a>
+			<a href="#">Contacto |</a>
+			{% if not user.is_authenticated %} 
+			<a href="{% url 'login' %}">Iniciar Sesi&oacute;n |</a>
+			{% else %}
+			<a href="{% url 'profile' %}">Perfil - {{user.username}} | </a>
+			<a href="{% url 'logout' %}" role="button">Cerrar Sesi&oacute;n?</a>
+			{% endif %}
+			
+       		</div>
+        </header>
+
+	<div>
+		{% block content %}
+		{% endblock %}
+	</div>	
+
+
+	<footer class="page-footer gradient-45deg-purple-deep-orange">
+		<h1>El footer</h1>
+	</footer>	
+</body>	
+</html>

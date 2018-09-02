@@ -1,12 +1,13 @@
-<html>
-  <head>
-    <title>Editar capa vectorial</title>
-  </head>
-  <body>
-    <body>
-      <h1>RESCLIMA DURAN</h1>
-      
+{% extends 'main/base.html' %}
+{% load static %}
 
+{% block title%}RESCLIMA | CAPA VECTORIAL{% endblock %}      
+
+{% block styles %}
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" type="text/css">
+{% endblock %}
+
+{% block content %}
       <div>
         {%if err_msg %}
           <b>{{err_msg}}</b>
@@ -45,5 +46,5 @@
             </p>
         </form>
       </div>
-  </body>
-</html>
+
+{% endblock %}

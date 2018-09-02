@@ -16,21 +16,21 @@ def login(request):
             return redirect('profile')
         else:
             print("ERROR DE AUTENTICACION...")
-            return render(request,'login.html', {'error':True})
+            return render(request,'main/login.html', {'error':True})
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'main/login.html', {})
 
 def logout(request):
     auth_logout(request)
-    return render(request, 'home.html', {})
+    return render(request, 'main/home.html', {})
 
 def noAccess(request):
-    return render(request, 'noAccess.html', {})
+    return render(request, 'main/noAccess.html', {})
 
 def home(request):
-    return render(request,"home.html")
+    return render(request,"main/home.html")
 
 @login_required()
 def profile(request):
     researcher = request.user.researcher
-    return render(request, 'profile.html', {'researcher': researcher, })
+    return render(request, 'main/profile.html', {'researcher': researcher, })
