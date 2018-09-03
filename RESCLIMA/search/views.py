@@ -12,7 +12,7 @@ def create_query(text, polygon):
 	#QUERY SOLO TEXTO
 	if (polygon==None):
 		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
-		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
+		qs = qs + ' AS rank FROM "layer_layer", plainto_tsquery(\'spanish\',%s)'
 		qs = qs + ' query WHERE query @@ textsearchable_index'
 		qs = qs + ' ORDER BY rank DESC LIMIT 10'
 		params.append(text)
@@ -21,7 +21,7 @@ def create_query(text, polygon):
 	#QUERY SOLO BBOX
 	elif (text==''):
 		qs = 'SELECT id, title, abstract, type, bbox' 
-		qs = qs + ' FROM "Layer_layer"'
+		qs = qs + ' FROM "layer_layer"'
 		qs = qs + ' WHERE ST_Intersects(bbox,%s)'
 		qs = qs + ' LIMIT 10'
 		params.append(polygon)
@@ -30,7 +30,7 @@ def create_query(text, polygon):
 	#QUERY TEXTO Y BBOX
 	else:
 		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
-		qs = qs + ' AS rank FROM "Layer_layer", plainto_tsquery(\'spanish\',%s)'
+		qs = qs + ' AS rank FROM "layer_layer", plainto_tsquery(\'spanish\',%s)'
 		qs = qs + ' query WHERE query @@ textsearchable_index AND ST_Intersects(bbox,%s)'
 		qs = qs + ' ORDER BY rank DESC LIMIT 10'
 		params.append(text)
