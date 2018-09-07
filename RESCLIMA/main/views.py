@@ -30,7 +30,7 @@ def noAccess(request):
 def home(request):
     return render(request,"main/home.html")
 
-@login_required()
+@login_required(login_url='noAccess')
 def profile(request):
     researcher = request.user.researcher
     return render(request, 'main/profile.html', {'researcher': researcher, })
