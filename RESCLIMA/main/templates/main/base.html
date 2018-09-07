@@ -21,7 +21,7 @@
 			<a href="{% url 'login' %}">Iniciar Sesi&oacute;n |</a>
 			{% else %}
 			<a href="{% url 'profile' %}">Perfil - {{user.username}} | </a>
-			<a href="{% url 'logout' %}" role="button">Cerrar Sesi&oacute;n?</a>
+			<a href="{% url 'logout' %}" role="button">Cerrar Sesi&oacute;n</a>
 			{% endif %}
 			
        		</div>
