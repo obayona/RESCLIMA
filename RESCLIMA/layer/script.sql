@@ -1,4 +1,3 @@
-ALTER TABLE "layer_layer" ADD COLUMN textsearchable_index tsvector;
 
 UPDATE "layer_layer" SET textsearchable_index = to_tsvector('spanish',coalesce(title,'') || ' ' || coalesce(abstract,''));
 
@@ -12,10 +11,16 @@ WHERE query @@ textsearchable_index
 ORDER BY rank DESC
 LIMIT 10;
 
-
+/*Trigger that fills the ts_index column before any insert or update in the Layer table*/
 CREATE TRIGGER tsvector_update_layer BEFORE INSERT OR UPDATE
 ON "layer_layer" FOR EACH ROW EXECUTE PROCEDURE
-tsvector_update_trigger("textsearchable_index", 'pg_catalog.spanish', title, abstract);
+tsvector_update_trigger("ts_index", 'pg_catalog.spanish', title, abstract);
+
+
+/*Trigger that fills the ts_index column before any insert or update in the Variable table*/
+CREATE TRIGGER tsvector_update_variable BEFORE INSERT OR UPDATE
+ON "timeSeries_variable" FOR EACH ROW EXECUTE PROCEDURE
+tsvector_update_trigger("ts_index", 'pg_catalog.spanish', name);
 
 
 CREATE OR REPLACE FUNCTION InsertSky2Measurements

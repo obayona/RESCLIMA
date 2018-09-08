@@ -154,6 +154,8 @@ celerybeat-schedule
 .venv
 venv/
 ENV/
+my_venv/
+*/my_venv/*
 
 # Spyder project settings
 .spyderproject
@@ -169,6 +171,7 @@ gdal-2.1.0/
 */migrations/
 RESCLIMA/TimeSeries/migrations/
 RESCLIMA/RESCLIMA/RESCLIMA/settings.py
-
+migrations/
+migrations/*
 
 
