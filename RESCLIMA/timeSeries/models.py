@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.gis.db import models
 from utils.fields import JSONField
 from django.utils import timezone
+from search.models import FilterSearchTable
 
-class Variable(models.Model):
+class Variable(FilterSearchTable):
     name = models.CharField(max_length=50)
     unit = models.CharField(max_length=50)
     symbol = models.CharField(max_length=10)
