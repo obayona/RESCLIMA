@@ -8,7 +8,7 @@
       "symbol": "C",
       "alias":"Temp, °C (LGR S/N: 10450278, SEN S/N: 10431781, LBL: AmbTemp)",
       "datatype":"float",
-      "categories": [1]
+      "categories": [2]
     } 
   },
   {
@@ -32,7 +32,7 @@
       "symbol": "mm",
       "alias":"Lluvia, mm (LGR S/N: 10450278, SEN S/N: 10440752, LBL: Lluvia)",
       "datatype":"float",
-      "categories": [1]
+      "categories": [2]
     } 
   },
   {
@@ -56,7 +56,7 @@
       "symbol": "m/s",
       "alias":"Velocidad del viento, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad del viento)",
       "datatype":"float",
-      "categories": [2]
+      "categories": [1]
     } 
   },
   {
@@ -68,7 +68,7 @@
       "symbol": "m/s",
       "alias":"Velocidad de Ráfagas, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad de rafagas)",
       "datatype":"float",
-      "categories": [2]
+      "categories": [1]
     } 
   },
   {
@@ -104,7 +104,7 @@
       "symbol": "",
       "alias":  "ImageURL",
       "datatype": "string",
-      "categories": [1]  
+      "categories": []  
     }
   },
   {
