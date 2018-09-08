@@ -5,9 +5,9 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
-        return "%s-%s" % (self.name)
+        return "%s" % (self.name)
     def __str__(self):
-        return "%s-%s" % (self.name)
+        return "%s" % (self.name)
 
     class Meta:
         verbose_name = "Categoria"

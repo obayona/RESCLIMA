@@ -1,10 +1,11 @@
-var BboxSelector = function(container){
+var BboxSelector = function(container,model){
 
+	console.log("el container id", container);
+	var container = document.getElementById(container)
+	console.log("El container",container)
 	var vectors; // capa vectorial
 	var box;
 	var transform;
-
-	var bbox = null;
 
 	// se crean los elementgos graficos
 
@@ -29,6 +30,7 @@ var BboxSelector = function(container){
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
+	console.log("aqui se cae")
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";
@@ -86,10 +88,6 @@ var BboxSelector = function(container){
     map.zoomToMaxExtent();
 
 
-	this.getBBox = function(){
-		return bbox;
-	}
-
 
 	function endDrag(bbox) {
 		var bounds = bbox.getBounds();
@@ -125,7 +123,7 @@ var BboxSelector = function(container){
       
     function setBounds(bounds) {
         if (bounds == null) {
-          bbox = null;
+          model.bbox = null;
         }
         else {
 			b = bounds.clone().transform(map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326"))
@@ -133,10 +131,9 @@ var BboxSelector = function(container){
 			bbox["minX"] = b.left;
 			bbox["minY"] = b.bottom;    
 			bbox["maxX"] = b.right;
-			bbox["maxY"] = b.top;  
+			bbox["maxY"] = b.top; 
+			model.bbox = bbox 
             
         }
     }
-
-
 }
