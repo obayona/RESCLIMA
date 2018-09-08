@@ -168,10 +168,10 @@ my_venv/
 /site
 
 gdal-2.1.0/
-*/migrations/
+*/migrations/*
 RESCLIMA/TimeSeries/migrations/
 RESCLIMA/RESCLIMA/RESCLIMA/settings.py
 migrations/
 migrations/*
-
-
+*settings.py
+settings.py
