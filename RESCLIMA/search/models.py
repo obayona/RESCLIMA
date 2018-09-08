@@ -14,5 +14,7 @@ class Category(models.Model):
         verbose_name_plural = "Categorias"
 
 class FilterSearchTable(models.Model):
-	ts_vector = SearchVectorField(null = True)
-	categories = models.ManyToManyField(Category, blank = True)
+    ts_vector = SearchVectorField(null = True)
+    categories = models.ManyToManyField(Category, blank = True)
+    class Meta:
+        abstract = True
