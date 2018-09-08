@@ -1,13 +1,14 @@
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from rasterLayers import views as rasterLayers_views
 
-urlpatterns = patterns('rasterLayers.views',
-	url(r'^$','list_rasterlayers',name='raster_list'),
-	url(r'^import$', 'import_raster'),
-	url(r'^view/(?P<rasterlayer_id>\d+)$', 'view_raster'),
-	url(r'^edit/(?P<rasterlayer_id>\d+)$', 'edit_raster'),
+urlpatterns =[
+	url(r'^$', rasterLayers_views.list_rasterlayers,name='raster_list'),
+	url(r'^import$', rasterLayers_views.import_raster),
+	url(r'^view/(?P<rasterlayer_id>\d+)$', rasterLayers_views.view_raster),
+	url(r'^edit/(?P<rasterlayer_id>\d+)$', rasterLayers_views.edit_raster),
 	# estilos
-	url(r'^import_style$', 'import_style', name="import_style"),
-	url(r'^delete_style/(?P<style_id>\d+)$', 'delete_style', name="delete_style"),
-	url(r'^export_style/(?P<style_id>\d+)$','export_style'),
-)
+	url(r'^import_style$', rasterLayers_views.import_style, name="import_style"),
+	url(r'^delete_style/(?P<style_id>\d+)$', rasterLayers_views.delete_style, name="delete_style"),
+	url(r'^export_style/(?P<style_id>\d+)$', rasterLayers_views.export_style),
+]
