@@ -1,8 +1,6 @@
 var BboxSelector = function(container,model){
 
-	console.log("el container id", container);
 	var container = document.getElementById(container)
-	console.log("El container",container)
 	var vectors; // capa vectorial
 	var box;
 	var transform;
@@ -30,7 +28,6 @@ var BboxSelector = function(container,model){
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
-	console.log("aqui se cae")
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";

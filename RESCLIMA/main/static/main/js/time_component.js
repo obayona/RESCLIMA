@@ -5,11 +5,18 @@ Vue.component("time_component",{
 			para los datos</p>
 			<div>
 		        <label for="Inicio">Inicio</label>
-		        <input type="date" v-model="shared.ini_date"/>
+		        <input
+				 type="date"
+				 v-model="shared.ini_date"
+				v-bind:max="shared.end_date"
+			/>
 		    </div>
     		<div>
         		<label for="Fin">Fin</label>
-        		<input type="date" v-model="shared.end_date"/>
+        		<input
+				 type="date"
+				 v-model="shared.end_date"
+				 v-bind:min="shared.ini_date"/>
     		</div>
 		</div>
 	`,
