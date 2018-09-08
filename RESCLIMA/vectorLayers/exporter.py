@@ -8,7 +8,7 @@ import utils
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from osgeo import osr
 from django.http import HttpResponse
-from django.core.servers.basehttp import FileWrapper
+from wsgiref.util import FileWrapper
 import json
 
 

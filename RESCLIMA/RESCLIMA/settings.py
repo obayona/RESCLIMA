@@ -88,10 +88,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'postgres',
-        'PASSWORD':'postgres',
-        'HOST': '192.168.3.246',
-	'PORT':5433
+        'USER':'obayona',
+        'PASSWORD':'EloyEcuador93',
+        'HOST': 'Localhost',
     }
 }
 
@@ -125,7 +124,7 @@ CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # paths for user data
-STYLE_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/styles/"
-RASTER_FILES_PATH = "/home_local/obayona/Documents/RESCLIMA/raster/"
+STYLE_FILES_PATH = "/home/vivi/Documents/RESCLIMA/styles/"
+RASTER_FILES_PATH = "/home/vivi/Documents/RESCLIMA/raster/"
 
 
