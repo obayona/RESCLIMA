@@ -40,11 +40,11 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.postgres',
     'layer',
+    'search',
     'style',
     'vectorLayers',
     'rasterLayers',
     'timeSeries',
-    'search',
     'tms',
     'main',
 )
@@ -88,10 +88,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'obayona',
-        'PASSWORD':'EloyEcuador93',
-        'HOST': 'Localhost',
-	'PORT':5432
+        'USER':'postgres',
+        'PASSWORD':'postgres',
+        'HOST': '192.168.3.246',
+	'PORT':5433
     }
 }
 
