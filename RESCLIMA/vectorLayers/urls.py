@@ -1,15 +1,16 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
+from vectorLayers import views as vectorLayers_views
 
-urlpatterns = patterns('vectorLayers.views',
-	url(r'^$','list_vectorlayers',name="vector_list"),
-	url(r'^import$', 'import_shapefile'),
-	url(r'^export/(?P<vectorlayer_id>\d+)$', 'export_shapefile'),
-	url(r'^geojson/(?P<vectorlayer_id>\d+)$', 'export_geojson'),
-	url(r'^view/(?P<vectorlayer_id>\d+)$', 'view_vectorlayer'),
-	url(r'^edit/(?P<vectorlayer_id>\d+)$', 'edit_vectorlayer'),
+urlpatterns =[
+	url(r'^$',vectorLayers_views.list_vectorlayers,name="vector_list"),
+	url(r'^import$', vectorLayers_views.import_shapefile),
+	url(r'^export/(?P<vectorlayer_id>\d+)$', vectorLayers_views.export_shapefile),
+	url(r'^geojson/(?P<vectorlayer_id>\d+)$', vectorLayers_views.export_geojson),
+	url(r'^view/(?P<vectorlayer_id>\d+)$', vectorLayers_views.view_vectorlayer),
+	url(r'^edit/(?P<vectorlayer_id>\d+)$', vectorLayers_views.edit_vectorlayer),
 	# estilos
-	url(r'^import_style/(?P<vectorlayer_id>\d+)$', 'import_style', name="import_style"),
-	url(r'^delete_style/(?P<style_id>\d+)$', 'delete_style', name="delete_style"),
-	url(r'^export_style/(?P<style_id>\d+)$','export_style'),
-	url('get-task-info/','get_task_info'),
-)
+	url(r'^import_style/(?P<vectorlayer_id>\d+)$', vectorLayers_views.import_style, name="import_style"),
+	url(r'^delete_style/(?P<style_id>\d+)$', vectorLayers_views.delete_style, name="delete_style"),
+	url(r'^export_style/(?P<style_id>\d+)$', vectorLayers_views.export_style),
+	url('get-task-info/', vectorLayers_views.get_task_info),
+]
