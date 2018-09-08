@@ -46,10 +46,24 @@ var app = new Vue({
 				console.log("ERROR: seleccione algun parametro de busqueda")
 				return
 			}
-			if(this.search_option=="Layers")
-				console.log("Buscar capas",query)
-			if(this.search_option=="Series")
-				console.log("Buscar series de tiempo",query)
+			var url = null;
+			if(this.search_option=="Layers"){
+				url = "search/layer";
+			}
+			if(this.search_option=="Series"){
+				url = "search/series";
+			}
+			console.log("Buscar esto",url,query);
+			var request = $.post(url,query);
+			request.done(function(response){
+				console.log(response);
+			});
+			request.progress(function(error){
+				console.log("Cargando resultados");
+			});
+			request.fail(function(error){
+				console.log(error);
+			});
 		}
 	}
 
