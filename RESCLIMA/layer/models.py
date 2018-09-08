@@ -1,8 +1,8 @@
 from django.contrib.gis.db import models
-
+from search.models import FilterSearchTable
 
 # Create your models here.
-class Layer(models.Model):
+class Layer(FilterSearchTable):
 	title = models.CharField(max_length=50,null=True)
 	abstract = models.TextField(max_length=500,null=True)
 	type = models.CharField(max_length=10)
