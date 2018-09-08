@@ -1,16 +1,29 @@
 {% load static %}
 <!DOCTYPE html>
 <html>	
+
 <head>
 	<title>{% block title %}RESCLIMA | BUSCAR{% endblock %}</title>
 	<meta charset="UTF-8">
-	<meta name="description" content="Plataforma para buscar, visualiza y descargar datos geograficos y seies de tiempo">
+	<meta name="description" content="Plataforma para buscar, visualizar y descargar datos geograficos y seies de tiempo">
 	<meta name="keywords" content="Capa, Shapefile, Raster, Serie de tiempo">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	{% block styles %}{% endblock %}
-	{% block scripts %}{% endblock %}
+
+	<link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/materialize.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/style.css' %}" type="text/css">
+	{% block styles %}
+	{% endblock %}
+	
+	<!-- jQuery Library -->
+	<script src="{% static "main/js/jquery.js" %}" type= "text/javascript"></script>
+  <!--materialize js-->
+  <script src="{% static "main/js/materialize.min.js" %}" type= "text/javascript"></script>
+	{% block scripts %}
+	{% endblock %}
 	
 </head>
+
 <body>
 	<header class="page-topbar">
 		<h1>RESCLIMA DURAN</h1>
@@ -31,10 +44,20 @@
 		{% block content %}
 		{% endblock %}
 	</div>	
-
-
-	<footer class="page-footer gradient-45deg-purple-deep-orange">
-		<h1>El footer</h1>
-	</footer>	
 </body>	
+
+	<!-- START FOOTER -->
+    <footer class="page-footer">
+			<div class="footer-copyright">
+			  <div class="container">
+				<span>Copyright ©
+				  <script type="text/javascript">
+					document.write(new Date().getFullYear());
+				  </script> <a class="grey-text text-lighten-4" href="http://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" target="_blank">PIXINVENT</a> All rights reserved.</span>
+				<span class="right hide-on-small-only"> Design and Developed by <a class="grey-text text-lighten-4" href="https://www.fiec.espol.edu.ec/es/cvr-robotica/">Centro de Visi&oacute;n y Rob&oacute;tica - ESPOL</a></span>
+			  </div>
+			</div>
+		  </footer>
+	  <!-- END FOOTER -->	
+
 </html>
