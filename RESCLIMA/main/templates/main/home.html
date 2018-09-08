@@ -3,45 +3,75 @@
 
 {% block title%}RESCLIMA | BUSCAR{% endblock %}
 
-{% block scripts %}
-    <script src="{% static "main/js/OpenLayers.js" %}" type= "text/javascript"></script>
-    <script src="{% static "main/js/BboxSelector.js" %}" type= "text/javascript"></script>
-    <script src="{% static "main/js/home.js" %}" type="text/javascript"></script> 
-{% endblock %}
-
 
 {% block content %}
+	<div>
+		<div id="searchForm" class="container-fluid">
+			<div class="row">
+				<div class="col-md-3">
+					<div style="height:100px;"></div>
+					<div>
+						<label>¿Qu&eacute;?</label>
+						<input 
+							type="search" 
+							v-model="textsearch"
+							v-on:focus="currentComponent='categories_component'" 
+							autofocus>
+					</div>
+					<div>
+						<label>¿D&oacute;nde?</label>
+						<input 
+							type="search"
+							v-on:focus="currentComponent='bbox_component'">
+					</div>
+					<div>
+						<label>¿Cu&aacute;ndo?</label>
+						<input 
+							type="text"
+							v-on:focus="currentComponent='time_component'">
+					</div>
+					<div>
+						<label>¿C&oacute;mo?</label>
+						<button
+							class="btn-default"
+							v-bind:class="{active: search_option === 'Layers'}"
+							v-on:click.prevent="search_option='Layers'">
+							Capas
+						</button>
+						<button
+							class="btn-default"
+							v-bind:class="{active: search_option === 'Series'}"
+							v-on:click.prevent="search_option='Series'">
+							Series de tiempo
+						</button>
+					</div>
+				</div>
+				<div class="col-md-9">
+					<keep-alive>
+					    <component v-bind:is="currentComponent"></component>
+					</keep-alive>
+				</div>
+			</div>
 
-    <div>
-        <input id = "search_input" type="text" placeholder="Buscar...">
-        <button id="search_button" type="button">º\</button>
-        <h4>
-            Ingrese las fechas para su consulta:
-        </h4>
-        <p><label>Inicio: </label><input type="date" name="data_date" id="data_date"/>
-            <label>Fin: </label><input type="date" name="data_date" id="data_date"/></p>
-    </div>
+			<div class="row">
+				<div class="col-md-2" style="padding:60px;">
+					<input type="button" value="Buscar" v-on:click="buscar">
+				</div>
+			</div>
+		</div>
+	</div>
     
-    <div class="con-checks">
-        <h4>
-            Tags:
-        </h4>
-        <input id="check1" type="checkbox" name="" value="check 1">
-        <label for="check1">Islas de calor</label>
-        
-        <input id="check2" type="checkbox" name="" value="check 2">
-        <label for="check2">Inundaciones</label>
-        
-        <input id="check3" type="checkbox" name="" value="check 3">
-        <label for="check3">Movilidad</label>
-    <div>
-    <br>
-    
-    <div id="bbox_selector_container">
-    </div>
-  
-    <div id="results_container">
-    </div>
 
 {% endblock %}
 
+
+{% block scripts_body  %}
+	<script src="{% static "main/js/vue.min.js" %}"></script>
+	<script src="{% static "main/js/categories_component.js" %}"></script>
+	<script src="{% static "main/js/OpenLayers.js" %}"></script>
+	<script src="{% static "main/js/model.js" %}"></script>
+	<script src="{% static "main/js/BboxSelector.js" %}"></script>
+	<script src="{% static "main/js/bbox_component.js" %}"></script>
+	<script src="{% static "main/js/time_component.js" %}"></script>
+	<script src="{% static "main/js/main.js" %}"></script>
+{% endblock%}

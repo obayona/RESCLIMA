@@ -43,8 +43,7 @@
 	<div>
 		{% block content %}
 		{% endblock %}
-	</div>	
-</body>	
+	</div>		
 
 	<!-- START FOOTER -->
     <footer class="page-footer">
@@ -58,6 +57,10 @@
 			  </div>
 			</div>
 		  </footer>
-	  <!-- END FOOTER -->	
+	  <!-- END FOOTER -->		
+	{% block scripts_body %}
+        {% endblock %}
+
+</body>
 
 </html>
