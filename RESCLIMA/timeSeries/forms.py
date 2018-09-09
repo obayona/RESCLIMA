@@ -30,3 +30,5 @@ class UploadFileForm(forms.Form):
     #model_choices = getModelChoices(automatic=False)
     #stationType = forms.CharField(widget=forms.Select(choices=model_choices))
     file = forms.FileField()
+
+

@@ -3,8 +3,7 @@ UPDATE "layer_layer" SET textsearchable_index = to_tsvector('spanish',coalesce(t
 
 CREATE INDEX textsearch_idx ON "layer_layer" USING GIN (textsearchable_index);
 
-/*Example of a query of fts over the variable table*/
-SELECT id,name FROM "timeSeries_variable" WHERE ts_index @@ plainto_tsquery('spanish','velocida');
+SELECT title,id FROM "Layer_layer" WHERE textsearchable_index @@ plainto_tsquery('spanish','Playas');
 
 SELECT title, id, abstract, ts_rank_cd(textsearchable_index, query) AS rank
 FROM "Layer_layer", plainto_tsquery('spanish','Playas') query

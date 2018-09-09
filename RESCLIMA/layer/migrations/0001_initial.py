@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             name='Layer',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ts_vector', django.contrib.postgres.search.SearchVectorField(null=True)),
+                ('ts_index', django.contrib.postgres.search.SearchVectorField(null=True)),
                 ('title', models.CharField(max_length=50, null=True)),
                 ('abstract', models.TextField(max_length=500, null=True)),
                 ('type', models.CharField(max_length=10)),

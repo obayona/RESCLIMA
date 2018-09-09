@@ -1,6 +1,7 @@
-django==1.8
+django==1.11
 mapnik
 lxml
 psycopg2
 python-dateutil
 configparser
+celery

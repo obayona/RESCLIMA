@@ -5,5 +5,5 @@ from .models import *
 admin.site.register(StationType)
 admin.site.register(Variable)
 admin.site.register(Station)
-admin.site.register(Measurement)
 admin.site.register(Provider)
+admin.site.register(Measurement)

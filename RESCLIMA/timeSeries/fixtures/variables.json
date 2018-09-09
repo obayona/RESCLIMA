@@ -7,7 +7,8 @@
       "unit": "Celsius",
       "symbol": "C",
       "alias":"Temp, °C (LGR S/N: 10450278, SEN S/N: 10431781, LBL: AmbTemp)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": [2]
     } 
   },
   {
@@ -18,7 +19,8 @@
       "unit": "Celsius",
       "symbol": "C",
       "alias":"HR, % (LGR S/N: 10450278, SEN S/N: 10431781, LBL: AmbHR)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     } 
   },
   {
@@ -29,7 +31,8 @@
       "unit": "Milinetros",
       "symbol": "mm",
       "alias":"Lluvia, mm (LGR S/N: 10450278, SEN S/N: 10440752, LBL: Lluvia)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": [2]
     } 
   },
   {
@@ -40,7 +43,8 @@
       "unit": "",
       "symbol": "ø",
       "alias":"Dirección del viento, ø (LGR S/N: 10450278, SEN S/N: 10468828, LBL: Direccion del viento)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     } 
   },
   {
@@ -51,7 +55,8 @@
       "unit": "metros sobre segundos",
       "symbol": "m/s",
       "alias":"Velocidad del viento, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad del viento)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": [1]
     } 
   },
   {
@@ -62,7 +67,8 @@
       "unit": "metros sobre segundos",
       "symbol": "m/s",
       "alias":"Velocidad de Ráfagas, m/s (LGR S/N: 10450278, SEN S/N: 10470750, LBL: Velocidad de rafagas)",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": [1]
     } 
   },
   {
@@ -73,7 +79,8 @@
       "unit": "Candela per square metre",
       "symbol": "cd/m2",
       "alias":"Luminance",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     }
   },
   {
@@ -84,7 +91,8 @@
       "unit": "Celsius",
       "symbol": "C",
       "alias":"Temperature",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": [2]
     }
   },
   {
@@ -95,7 +103,8 @@
       "unit": "",
       "symbol": "",
       "alias":  "ImageURL",
-      "datatype": "string"  
+      "datatype": "string",
+      "categories": []  
     }
   },
   {
@@ -106,7 +115,8 @@
       "unit": "",
       "symbol": "",
       "alias":  "Rain",
-      "datatype": "boolean"  
+      "datatype": "boolean",
+      "categories": []  
     }
   },
   {
@@ -117,7 +127,8 @@
       "unit": "Percentage",
       "symbol": "%",
       "alias":"Humidity",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     }
   },
   {
@@ -128,7 +139,8 @@
       "unit": "Milibar",
       "symbol": "mbar",
       "alias":"Pressure",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     }
   },
   {
@@ -139,7 +151,8 @@
       "unit": "Milivolts",
       "symbol": "mV",
       "alias":"Voltage",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     }
   },
   {
@@ -150,7 +163,8 @@
       "unit": "",
       "symbol": "",
       "alias":"Night",
-      "datatype":"boolean"
+      "datatype":"boolean",
+      "categories": []
     }
   },
   {
@@ -161,7 +175,8 @@
       "unit": "",
       "symbol": "",
       "alias":"UVIndex",
-      "datatype":"float"
+      "datatype":"float",
+      "categories": []
     }
   }
 ]

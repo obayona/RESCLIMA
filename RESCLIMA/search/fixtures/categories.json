@@ -1,0 +1,17 @@
+[
+    {
+     "model": "search.Category",
+      "pk": 1,
+      "fields": {
+        "name": "Velocidad"
+      } 
+    },
+    {
+     "model": "search.Category",
+      "pk": 2,
+      "fields": {
+        "name": "Clima"
+      } 
+    }
+  ]
+  
