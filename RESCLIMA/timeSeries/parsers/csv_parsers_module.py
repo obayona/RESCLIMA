@@ -224,3 +224,16 @@ def is_valid_len(f,min_length):
 		if i > min_length :
 			return True
 	return False
+
+def transformToSI_HOBO(measurements_dict):
+	m_values = measurements_dict.values()
+	m_keys = measurements_dict.keys()
+	#temperature
+	new_temp = m_values[0] + 273.15
+	measurements_dict[m_keys[0]] = new_temp
+	#humedad relativa
+	new_humidity = m_values[1]
+	#lluvia
+	#dir del viento
+	#vel del viento
+	#vel de rafagas
