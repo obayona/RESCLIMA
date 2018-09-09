@@ -48,13 +48,13 @@ var app = new Vue({
 			}
 			var url = null;
 			if(this.search_option=="Layers"){
-				url = "search/layer";
+				url = "search/layer/";
 			}
 			if(this.search_option=="Series"){
-				url = "search/series";
+				url = "search/series/";
 			}
 			console.log("Buscar esto",url,query);
-			var request = $.post(url,query);
+			var request = $.post(url,JSON.stringify(query));
 			request.done(function(response){
 				console.log(response);
 			});

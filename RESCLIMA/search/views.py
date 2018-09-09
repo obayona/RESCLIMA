@@ -4,55 +4,16 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
 from django.core.paginator import Paginator
-from django.contrib.gis.geos import Polygon
+import json
+import layer_searcher
 
-def create_query(text, polygon):
-	qs = ''
-	params = []
-	#QUERY SOLO TEXTO
-	if (polygon==None):
-		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
-		qs = qs + ' AS rank FROM "layer_layer", plainto_tsquery(\'spanish\',%s)'
-		qs = qs + ' query WHERE query @@ textsearchable_index'
-		qs = qs + ' ORDER BY rank DESC LIMIT 10'
-		params.append(text)
-		return qs, params
-	
-	#QUERY SOLO BBOX
-	elif (text==''):
-		qs = 'SELECT id, title, abstract, type, bbox' 
-		qs = qs + ' FROM "layer_layer"'
-		qs = qs + ' WHERE ST_Intersects(bbox,%s)'
-		qs = qs + ' LIMIT 10'
-		params.append(polygon)
-		return qs, params
-	
-	#QUERY TEXTO Y BBOX
-	else:
-		qs = 'SELECT id, title, abstract, type, bbox, ts_rank_cd(textsearchable_index, query)' 
-		qs = qs + ' AS rank FROM "layer_layer", plainto_tsquery(\'spanish\',%s)'
-		qs = qs + ' query WHERE query @@ textsearchable_index AND ST_Intersects(bbox,%s)'
-		qs = qs + ' ORDER BY rank DESC LIMIT 10'
-		params.append(text)
-		params.append(polygon)
-		return qs, params
-
-
-def create_polygon(minX, maxX, minY, maxY):
-	if (minX=='0' and maxX=='0' and minY=='0' and maxY=='0'):
-		return None
-	else:
-		polygon_str = "SRID=4326;POLYGON((%s %s,%s %s,%s %s,%s %s,%s %s))::geometry"%(float(minX),float(minY),float(minX),float(maxY),float(maxX),float(maxY),float(maxX),float(minY),float(minX),float(minY));
-		return polygon_str
 
 def search_layer(request):
-	minX = request.GET["left"];
-	maxX = request.GET["right"];
-	minY = request.GET["bottom"];
-	maxY = request.GET["top"];
-	user_query = request.GET["q"];
-	user_polygon = create_polygon(minX,maxX,minY,maxY)
-	qs,params = create_query(user_query, user_polygon)
+	print request.body
+	query_str = request.body;
+	query_dict = json.loads(query_str)
+        print query_dict
+	qs,params = layer_searcher.create_query(query_dict)
 	layers = []
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
@@ -109,3 +70,4 @@ def Paginate(request, queryset, pages):
 		}
  
 	return context
+
