@@ -23,6 +23,7 @@ def search_layer(request):
 			layer["title"] = row[1];
 			layer["abstract"] = row[2];
 			layer["type"] = row[3];
+			layer["selected"] = False;
 			layers.append(layer)
 
 	return JsonResponse({"layers":layers})
