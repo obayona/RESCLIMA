@@ -38,6 +38,14 @@ def getTsTextQuery(text, polygon, startDate, endDate):
 	if polygon != None:
 		qs = qs + 'ST_Intersects("timeSeries_station"."location", %s) AND '
 		params.append(polygon)
+	if startDate != None and endDate != None:
+		""" startDate and endDate are datetime instances
+		"""
+		startDateStr = startDate.strftime("%Y-%m-%d %H:%M:%S")
+		endDateStr = endDate.strftime("%Y-%m-%d %H:%M:%S")
+		qs = qs + '"timeSeries_station"."id" in ( SELECT "timeSeries_measurements"."idStation" FROM "timeSeries_measurements" WHERE %s <= "timeSeries_measurements"."ts" AND %s >= "timeSeries_measurements"."ts" ) AND '
+		params.append(startDateStr)
+		params.append(endDateStr)
 	qs = qs + '"timeSeries_variable"."ts_index" @@ to_tsquery(\'spanish\', %s) '
 	qs = qs + 'LIMIT 10;'
 	params.append(text)
