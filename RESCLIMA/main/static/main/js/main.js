@@ -16,6 +16,7 @@ var app = new Vue({
 		city:null,
 		search_option:'Layers',
 		currentComponent:"categories_component",
+		currentList:'layers_component',
 		shared: model
 	},
 	methods:{
@@ -48,15 +49,21 @@ var app = new Vue({
 			}
 			var url = null;
 			if(this.search_option=="Layers"){
-				url = "search/layer";
+				url = "search/layer/";
 			}
 			if(this.search_option=="Series"){
-				url = "search/series";
+				url = "search/series/";
 			}
 			console.log("Buscar esto",url,query);
-			var request = $.post(url,query);
+			var request = $.post(url,JSON.stringify(query));
 			request.done(function(response){
 				console.log(response);
+				var results = model.results;
+				var layers = response["layers"];
+				results.splice(0, results.length);
+				for (var i=0;i<layers.length; i++){
+					results.push(layers[i]);
+				}
 			});
 			request.progress(function(error){
 				console.log("Cargando resultados");

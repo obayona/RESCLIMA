@@ -75,9 +75,9 @@ class Measurement(models.Model):
     readings = JSONField(default = dict)
 
     def __unicode__(self):
-        return "%s %s %s %s" % (self.idStation,self.idProvider,self.datetime,self.readings)
+        return "%s %s %s %s" % (self.idStation,self.idProvider,self.ts,self.readings)
     def __str__(self):
-        return "%s %s %s %s" % (self.idStation,self.idProvider,self.datetime,self.readings)
+        return "%s %s %s %s" % (self.idStation,self.idProvider,self.ts,self.readings)
 
     class Meta:
         verbose_name = "Measurement"
