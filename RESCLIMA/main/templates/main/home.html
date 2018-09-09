@@ -54,6 +54,12 @@
 					</keep-alive>
 				</div>
 			</div>
+			<!-- Lista de resultados -->
+			<div class="row">
+				<keep-alive>
+					<component v-bind:is="currentList"></component>
+				</keep-alive>
+			</div>
 		</div>
 	</div>
     
@@ -69,5 +75,6 @@
 	<script src="{% static "main/js/BboxSelector.js" %}"></script>
 	<script src="{% static "main/js/bbox_component.js" %}"></script>
 	<script src="{% static "main/js/time_component.js" %}"></script>
+	<script src="{% static "main/js/layers_component.js" %}"></script>
 	<script src="{% static "main/js/main.js" %}"></script>
 {% endblock%}

@@ -16,6 +16,7 @@ var app = new Vue({
 		city:null,
 		search_option:'Layers',
 		currentComponent:"categories_component",
+		currentList:'layers_component',
 		shared: model
 	},
 	methods:{
@@ -57,6 +58,12 @@ var app = new Vue({
 			var request = $.post(url,JSON.stringify(query));
 			request.done(function(response){
 				console.log(response);
+				var results = model.results;
+				var layers = response["layers"];
+				results.splice(0, results.length);
+				for (var i=0;i<layers.length; i++){
+					results.push(layers[i]);
+				}
 			});
 			request.progress(function(error){
 				console.log("Cargando resultados");

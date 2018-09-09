@@ -9,10 +9,9 @@ import layer_searcher
 
 
 def search_layer(request):
-	print request.body
 	query_str = request.body;
 	query_dict = json.loads(query_str)
-        print query_dict
+	print query_dict
 	qs,params = layer_searcher.create_query(query_dict)
 	layers = []
 	with connection.cursor() as cursor:
@@ -28,7 +27,7 @@ def search_layer(request):
 
 	return JsonResponse({"layers":layers})
 
-def getTsTextQuery(text);
+def getTsTextQuery(text):
 	qs = 'SELECT "timeSeries_variable"."id", "timeSeries_station"."id" '
 	qs = qs + 'from "timeSeries_variable", "timeSeries_stationtype", "timeSeries_station", "timeSeries_stationtype_variables" '
 	qs = 'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
