@@ -207,13 +207,13 @@ def parseMeasure(measure,datatype):
 	if(datatype=="boolean"):
 		return True;
 
-def saveMeasurements(station,id_provider,measurements_dict,datetime = datetime.now()):
+def saveMeasurements(station,id_provider,measurements_dict,date_time = datetime.now()):
 
 	if id_provider == None and station!= None:
-		measurement = Measurement(idStation = station, datetime = datetime, readings = measurements_dict, idProvider = None)
+		measurement = Measurement(idStation = station, ts = date_time, readings = measurements_dict, idProvider = None)
 	else:
 		provider = Provider.objects.get(id=id_provider)
-		measurement = Measurement(idProvider = provider, datetime = datetime, readings = measurements_dict, idStation = None)
+		measurement = Measurement(idProvider = provider, ts = date_time, readings = measurements_dict, idStation = None)
 	measurement.save()
 
 # Valida si el archivo f 

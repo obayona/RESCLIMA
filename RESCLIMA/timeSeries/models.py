@@ -68,7 +68,7 @@ class Provider(models.Model):
 
 
 class Measurement(models.Model):
-    id_m = models.IntegerField(primary_key=True)
+    id_m = models.AutoField(primary_key=True)
     ts = models.DateTimeField(default=timezone.now)
     idStation = models.ForeignKey(Station, null=True, on_delete=models.CASCADE)
     idProvider = models.ForeignKey(Provider, null=True, on_delete=models.CASCADE)
