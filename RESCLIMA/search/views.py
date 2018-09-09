@@ -28,15 +28,19 @@ def search_layer(request):
 
 	return JsonResponse({"layers":layers})
 
-def getTsTextQuery(text):
+def getTsTextQuery(text, polygon, startDate, endDate):
+	params = []
 	qs = 'SELECT "timeSeries_variable"."id", "timeSeries_station"."id" '
 	qs = qs + 'from "timeSeries_variable", "timeSeries_stationtype", "timeSeries_station", "timeSeries_stationtype_variables" '
 	qs = 'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
 	qs = qs + '"timeSeries_stationtype"."id" = "timeSeries_stationtype_variables"."stationtype_id" AND '
 	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" AND '
-	qs = qs + '"timeSeries_variable"."ts_index" @@ plainto_tsquery("spanish", %s) '
+	if polygon != None:
+		qs = qs + 'ST_Intersects("timeSeries_station"."location", %s) AND '
+		params.append(polygon)
+	qs = qs + '"timeSeries_variable"."ts_index" @@ to_tsquery("spanish", %s) '
 	qs = qs + 'LIMIT 10;'
-	params = [text]
+	params.append(text)
 	return qs, params
 
 def getStationsVariables(text):
@@ -51,17 +55,6 @@ def getStationsVariables(text):
 			variableStation['id_variable'] = row[1]
 			variableStations.append(variableStation)
 	return variableStations
-
-	def filterStationsInBbox(variableStations, polygon):
-		filtVariableStations = []
-		if (polygon == None):
-			return variableStations
-		for variableStations 
-		
-
-
-and ST_interset(Station.bbox,"%bbox_user") // filtrando las estaciones que estan dentro del bbox
-and exitst(select * from measuement where station.id_station == masuement.id_station and ts > %inicial_date) and exist(select * from measuement where station.id_station == masuement.id_station and ts < %final_date) // validar las fechas
 
 
 """
