@@ -28,6 +28,28 @@ def search_layer(request):
 
 	return JsonResponse({"layers":layers})
 
+def getTsTextQuery(text);
+	qs = 'SELECT "timeSeries_variable"."id", "timeSeries_station"."id" '
+	qs = qs + 'from "timeSeries_variable", "timeSeries_stationtype", "timeSeries_station", "timeSeries_stationtype_variables" '
+	qs = 'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
+	qs = qs + '"timeSeries_stationtype"."id" = "timeSeries_stationtype_variables"."stationtype_id" AND '
+	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" AND '
+	qs = qs + '"timeSeries_variable"."ts_index" @@ plainto_tsquery("spanish", %s);'
+	params = [text]
+	return qs, params
+
+def getStationsVariables(text):
+	variableStationSet = set()
+	qs, params = getTsTextQuery(text)
+	with connection.cursor() as cursor:
+		cursor.execute(qs, params)
+		rows = cursor.fetchall()
+		for row in rows:
+			variableStation = {}
+			variableStation['id_station'] = row[0]
+			variableStation['id_variable'] = row[1]
+			variableStationSet.add(variableStation)
+
 """
 PARAMETROS:
 request: Request de la vista

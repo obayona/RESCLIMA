@@ -1,23 +1,73 @@
 {% extends 'main/base.html' %}
 {% load static %}
-
 {% block title%}RESCLIMA | PERFIL{% endblock %}
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}" type="text/css">
-{% endblock %}
-
 {% block content %}
+<!-- START MAIN -->
+<div id="header">
+  <!-- START WRAPPER -->
+  <div class="wrapper">
+    <!-- START CONTENT -->
+    <section id="content">
+            <!--start container-->
+            <div class="container">
+              <div id="profile-page" class="section">
+                <!-- profile-page-header -->
+                <div id="profile-page-header" class="card">
+                        <div class="card-image waves-effect waves-block waves-light">
+                                <img class="activator" src="{% static 'main/images/14.png' %}" alt="user background">
+                              </div>
+                        <figure class="card-profile-image">
+                                <img src="{% static 'main/images/perfil.png' %}" alt="profile image" class="circle z-depth-2 responsive-img activator gradient-45deg-light-blue-cyan gradient-shadow">
+                              </figure>
+                              <div class="card-content">
+                                <div class="row pt-2">
+                                  <div class="col s12 m3 offset-m2">
+                                    <h4 class="card-title grey-text text-darken-4">{{ researcher.name }} {{ researcher.last_name }}</h4>
+                                    <p class="medium-small grey-text">{{ researcher.institution }}</p>
+                                  </div>
+                                </div>
+                              </div>
+                </div>
+                <!-- profile-page-content -->
+                <div id="profile-page-content" class="row">
+                    <div id="profile-page-sidebar" class="col s12 m4">
+                            <ul id="profile-page-about-details" class="collection z-depth-1">
+                                    <li class="collection-item">
+                                      <div class="row">
+                                        <div class="col s5">
+                                          <i class="material-icons left">poll</i> Series de tiempo</div>
+                                        <div class="col s7 right-align">
+                                            <button class="btn waves-effect waves-light col s12" type="button" onClick='window.location="/series";'>Ver</button><br>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li class="collection-item">
+                                      <div class="row">
+                                        <div class="col s5">
+                                          <i class="material-icons left">place</i> Capas vectoriales</div>
+                                        <div class="col s7 right-align">
+                                            <button class="btn waves-effect waves-light col s12" type="button" onClick='window.location="/vector";'>Ver</button><br>
+                                        </div>
+                                      </div>
+                                    </li>
+                                    <li class="collection-item">
+                                      <div class="row">
+                                        <div class="col s5">
+                                          <i class="material-icons left">domain</i> Capas raster</div>
+                                        <div class="col s7 right-align">
+                                            <button class="btn waves-effect waves-light col s12" type="button" onClick='window.location="/raster";'>Ver</button><br>
+                                        </div>
+                                      </div>
+                                    </li>
+                            </ul>
+                    </div>
+                </div>    
 
-    <td>{{ researcher.name }}</td>
-    <td>{{ researcher.last_name }}</td>
-    <br><td>{{ researcher.institution }}</td></br>
-    <br><br><b>Opciones:</b><br><br>
-    <button type="button" onClick='window.location="/";'>Buscar</button><br>
-    <button type="button" onClick='window.location="/series";'>Time Series</button><br>
-    <button type="button" onClick='window.location="/vector";'>Vector Layers</button><br>
-    <button type="button" onClick='window.location="/raster";'>Raster Layers</button>
- 
-
+              </div>
+            </div>
+        </section>
+    </div>
+</div>    
 {% endblock content %}
 
