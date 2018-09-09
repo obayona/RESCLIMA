@@ -73,7 +73,7 @@ def getTsTextQuery(text):
 	qs = 'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
 	qs = qs + '"timeSeries_stationtype"."id" = "timeSeries_stationtype_variables"."stationtype_id" AND '
 	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" AND '
-	qs = qs + '"timeSeries_variable"."ts_index" @@ plainto_tsquery("spanish", %s) '
+	qs = qs + '"timeSeries_variable"."ts_index" @@ to_tsquery("spanish", %s) '
 	qs = qs + 'LIMIT 10;'
 	params = [text]
 	return qs, params
@@ -95,12 +95,12 @@ def getStationsVariables(text):
 		filtVariableStations = []
 		if (polygon == None):
 			return variableStations
-		for variableStations 
+		#for variableStations 
 		
 
 
-and ST_interset(Station.bbox,"%bbox_user") // filtrando las estaciones que estan dentro del bbox
-and exitst(select * from measuement where station.id_station == masuement.id_station and ts > %inicial_date) and exist(select * from measuement where station.id_station == masuement.id_station and ts < %final_date) // validar las fechas
+#and ST_interset(Station.bbox,"%bbox_user") // filtrando las estaciones que estan dentro del bbox
+#and exitst(select * from measuement where station.id_station == masuement.id_station and ts > %inicial_date) and exist(select * from measuement where station.id_station == masuement.id_station and ts < %final_date) // validar las fechas
 
 
 """

@@ -208,12 +208,12 @@ def parseMeasure(measure,datatype):
 		return True;
 
 def saveMeasurements(station,id_provider,measurements_dict,date_time = datetime.now()):
-
+	new_measurements_dict = transformToSI_HOBO(measurements_dict)
 	if id_provider == None and station!= None:
-		measurement = Measurement(idStation = station, ts = date_time, readings = measurements_dict, idProvider = None)
+		measurement = Measurement(idStation = station, ts = date_time, readings = new_measurements_dict, idProvider = None)
 	else:
 		provider = Provider.objects.get(id=id_provider)
-		measurement = Measurement(idProvider = provider, ts = date_time, readings = measurements_dict, idStation = None)
+		measurement = Measurement(idProvider = provider, ts = date_time, readings = new_measurements_dict, idStation = None)
 	measurement.save()
 
 # Valida si el archivo f 
@@ -233,7 +233,8 @@ def transformToSI_HOBO(measurements_dict):
 	measurements_dict[m_keys[0]] = new_temp
 	#humedad relativa
 	new_humidity = m_values[1]
-	#lluvia
-	#dir del viento
-	#vel del viento
-	#vel de rafagas
+	#lluvia esta en milimetros
+	#dir del viento esta en grados
+	#vel del viento esta en m/s
+	#vel de rafagas esta en m/s
+	return measurements_dict
