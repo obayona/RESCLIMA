@@ -1,26 +1,70 @@
-{% extends 'main/base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html>	
 
-{% block title%}RESCLIMA | LOGIN{% endblock %}
+<head>
+	<title>RESCLIMA | LOGIN</title>
+  <meta charset="UTF-8">
+  
+	<link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/materialize.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/style.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/page-center.css' %}" type="text/css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	<!-- jQuery Library -->
+	<script src="{% static 'main/js/jquery.js' %}" type= "text/javascript"></script>
+	<script src="{% static 'main/js/jquery-3.2.1.min.js' %}" type= "text/javascript"></script>
+  <!--materialize js-->
+	<script src="{% static 'main/js/materialize.min.js' %}" type= "text/javascript"></script>
+	<script src="{% static 'main/js/plugins.min.js' %}" type= "text/javascript"></script>
+</head>
 
-{% block styles %}
-    <link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}" type="text/css">
-{% endblock %}
-
-
-{% block content %}
-
-<div class="wrapper">
-    <form class="form-signin" method="post">
+<body class="cyan">
+  <div id="login-page" class="row">
+    <div class="col s12 z-depth-4 card-panel">
+      <form class="login-form" method="post">
       {% csrf_token %}
-      <h2 class="form-signin-heading" style="text-align: center;">Ingreso al sistema</h2>
-      <input type="text" class="form-control" name="username" placeholder="Usuario" required="" autofocus="" style="text-align: center;"/>
-      <input type="password" class="form-control" name="password" placeholder="Contraseña" required="" style="text-align: center;"/>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Ingresar</button>
+      <!-- Titulo -->
+      <div class="row">
+          <div class="input-field col s12 center">
+            <p class="center login-form-text">Ingreso al sistema</p>
+          </div>
+        </div>
+      <!-- Ingreso usuario -->
+      <div class="row margin">
+          <div class="input-field col s12">
+            <i class="material-icons prefix pt-5">person_outline</i>
+            <input type="text" class="form-control" name="username" placeholder="Usuario" required=""/>
+          </div>
+      </div>
+      <!-- Ingreso contraseña -->
+      <div class="row margin">
+          <div class="input-field col s12">
+            <i class="material-icons prefix pt-5">lock_outline</i>
+            <input type="password" class="form-control" name="password" placeholder="Contraseña"/>
+          </div>
+      </div>
+      <!-- Boton ingreso -->
+      <div class="row">
+          <div class="input-field col s12">
+            <button class="btn waves-effect waves-light col s12" type="submit">Ingresar</button>
+          </div>
+      </div>
       {% if error %}
-        <h4 style="color: rgb(128, 0, 0);text-align: center;">Credenciales inválidas, intente nuevamente</h4>
+        <h5 style="color:#ff9100;text-align: center;">Credenciales inválidas, intente nuevamente</h5>
       {% endif %}
-    </form>
-</div>
 
-{% endblock content %}
+      <div class="row">
+          <div class="input-field col s6 m6 l6">
+            <p class="margin medium-small"><a href="#">Register Now!</a></p>
+          </div>
+          <div class="input-field col s6 m6 l6">
+            <p class="margin right-align medium-small"><a href="#">Forgot password ?</a></p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+

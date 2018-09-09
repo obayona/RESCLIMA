@@ -1,9 +1,10 @@
-<html>
-  <head>
-    <title>Capas raster</title>
-  </head>
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | CAPAS RASTER{% endblock %}
+
+{% block content %}
   <body>
-    <h1>RESCLIMA DURAN</h1>
     {% if rasterlayers %}
       <b>Capas raster:</b>
       <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
@@ -52,4 +53,4 @@
     <button type="button" onClick='window.location="/raster/import_style";'>Importar estilo</button>
 
   </body>
-</html>
+{% endblock content %}

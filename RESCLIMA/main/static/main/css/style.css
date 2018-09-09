@@ -2384,9 +2384,49 @@ small {
   }
 }
 
-.side-nav .collapsible-body > ul:not(.collapsible) > li.active a,
-.side-nav.fixed .collapsible-body > ul:not(.collapsible) > li.active a {
-  background: #7e57c2;
+.card {
+  border-radius: 3px;
+}
+
+.nav-expanded .brand-sidebar {
+  background: #9c2e9d !important;
+}
+
+body.layout-semi-dark h1 span.logo-text {
+  padding-left: 0px;
+}
+
+body.layout-semi-dark #header .header-search-wrapper {
+  margin: 10px auto 0 80px;
+}
+
+body.layout-semi-dark #header .header-search-wrapper.sideNav-lock {
+  margin: 10px auto 0 260px;
+}
+
+body.layout-semi-dark #main .side-nav {
+  background: linear-gradient(45deg, #00AEFF 50%, #3369E6 100%) !important;
+}
+
+body.layout-semi-dark #main .side-nav .collapsible-body, body.layout-semi-dark #main .side-nav.fixed .collapsible-body {
+  background: transparent !important;
+}
+
+body.layout-semi-dark #main .side-nav .collapsible-header:after {
+  color: #f3f3f3;
+}
+
+body.layout-semi-dark #main #left-sidebar-nav .brand-sidebar {
+  background: linear-gradient(45deg, #1691f5 0%, #3369E6 100%) !important;
+  box-shadow: none;
+}
+
+body.layout-semi-dark #main #left-sidebar-nav .brand-sidebar .logo-wrapper {
+  padding: 22px 10px;
+}
+
+body.layout-semi-dark #main .side-nav .collapsible-body > ul:not(.collapsible) > li.active, body.layout-semi-dark #main .side-nav.fixed .collapsible-body > ul:not(.collapsible) > li.active {
+  background: linear-gradient(45deg, #00AEFF 0%, #3369E6 100%) !important;
 }
 
 /*----------------------------------------
@@ -6440,7 +6480,7 @@ header .brand-logo img {
   right: 5px;
   top: -20px;
   color: #ffffff;
-  background-color: #7e57c2;
+  background-color: #29b6f6;
   margin: 0 -.8em;
   border-radius: 50%;
   padding: 2px 5px;
@@ -7481,11 +7521,11 @@ th {
 }
 
 .fc-state-active {
-  color: #7e57c2 !important;
+  color: #29b6f6 !important;
 }
 
 .fc-state-down {
-  color: #7e57c2 !important;
+  color: #29b6f6 !important;
 }
 
 /*----------------------------------------

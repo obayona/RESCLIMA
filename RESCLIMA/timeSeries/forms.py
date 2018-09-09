@@ -18,8 +18,8 @@ def getModelChoices(automatic):
     return model_choices
 
 class StationForm(forms.Form):
-    model_choices = getModelChoices(automatic=None)
-    stationType = forms.CharField(widget=forms.Select(choices=model_choices))
+    #model_choices = getModelChoices(automatic=None)
+    #stationType = forms.CharField(widget=forms.Select(choices=model_choices))
     serialNum = forms.CharField(label=u"Número serial",widget=forms.TextInput())
     latitude = forms.FloatField(label="Latitud",required=False, widget=forms.NumberInput(attrs={'step': '0.000001'}))
     longitude = forms.FloatField(label="Longitud", required=False, widget=forms.NumberInput(attrs={'step': '0.000001'}))
@@ -27,6 +27,6 @@ class StationForm(forms.Form):
     token = forms.CharField(label="Token", required=False, widget=forms.TextInput())
 
 class UploadFileForm(forms.Form):
-    model_choices = getModelChoices(automatic=False)
-    stationType = forms.CharField(widget=forms.Select(choices=model_choices))
+    #model_choices = getModelChoices(automatic=False)
+    #stationType = forms.CharField(widget=forms.Select(choices=model_choices))
     file = forms.FileField()

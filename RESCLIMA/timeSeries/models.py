@@ -23,7 +23,7 @@ class Variable(FilterSearchTable):
 class StationType(models.Model):
     brand = models.CharField(max_length=30)
     model = models.CharField(max_length=30)
-    automatic = models.BooleanField(default=False);
+    automatic = models.BooleanField(default=False)
     variables = models.ManyToManyField(Variable, blank = True)
 
     def __unicode__(self):
@@ -40,8 +40,8 @@ class Station(models.Model):
     location = models.PointField(srid=4326)
     active = models.BooleanField()
     stationType = models.ForeignKey(StationType, on_delete=models.CASCADE)
-    frequency = models.FloatField(blank=True,null=True);
-    token = models.CharField(max_length=30, blank=True, null=True);
+    frequency = models.FloatField(blank=True,null=True)
+    token = models.CharField(max_length=30, blank=True, null=True)
 
     def __unicode__(self):
         return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)
