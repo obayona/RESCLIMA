@@ -4,10 +4,11 @@ from django.http import HttpResponse
 from timeSeries.forms import *
 from parsers.csv_parsers_module import *
 from django.contrib import messages
-from models import StationType, Station;
+from models import StationType, Station
 from django.contrib.gis.geos import Point
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='noAccess')
 def show_options(request):
     return render(request,"home_series.html")
 
