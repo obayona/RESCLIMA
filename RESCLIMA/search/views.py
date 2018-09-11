@@ -4,8 +4,21 @@ from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
 from django.core.paginator import Paginator
+from models import Category
 import json
 import layer_searcher
+
+def categories_json(request):
+	categories = Category.objects.all()
+	result = []
+	for category in categories:
+		result.append({"id":category.id,
+			      "name":category.name,
+			      "selected":False})
+
+	result_json = json.dumps({"categories":result});
+	return HttpResponse(result_json,content_type='application/json')
+			
 
 
 def search_layer(request):
