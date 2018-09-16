@@ -24,7 +24,7 @@ def categories_json(request):
 def search_layer(request):
 	query_str = request.body;
 	query_dict = json.loads(query_str)
-	print query_dict
+	print "el query de busqueda ******",query_dict
 	qs,params = layer_searcher.create_query(query_dict)
 	layers = []
 	with connection.cursor() as cursor:
@@ -39,7 +39,11 @@ def search_layer(request):
 			layer["selected"] = False;
 			layers.append(layer)
 
-	return JsonResponse({"layers":layers})
+	return JsonResponse({"results":layers})
+
+def search_series(request):
+	return JsonResponse({"results":[]})
+
 
 def getTsTextQuery(text, polygon, startDate, endDate):
 	params = []

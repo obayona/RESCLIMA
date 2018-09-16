@@ -1,68 +1,44 @@
-
-var isEmpty = function(obj) {
-    for (var prop in obj){
-    	if (obj.hasOwnProperty(prop)){
-    		return false;
-    	}
-    }
-    return true;
-};
+const router = new VueRouter({
+  mode: 'history'
+})
 
 
 var app = new Vue({
+	router,
 	el:'#searchForm',
 	data:{
-		textsearch:'',
 		city:null,
-		search_option:'Layers',
 		currentComponent:"categories_component",
-		currentList:'layers_component',
-		shared: model
+		shared:store
+	},
+	computed:{
+		resultsList:function(){
+			console.log(this.shared.search_option + "_component")
+			return this.shared.search_option + "_component";
+		}
 	},
 	methods:{
 		buscar:function(){
-			var query = {}
-			var model = this.shared
-			if(this.textsearch!=''){
-				query["text"]=this.textsearch;
-			}
-			if(model.ini_date && model.end_date){
-				query["ini"]=model.ini_date
-				query["end"]=model.end_date
-			}
-			if(model.bbox){
-				query["bbox"]=model.bbox
-			}
-			var selectedCategories = []
-			for(var i=0; i<model.categories.length; i++){
-				var category = model.categories[i]
-				if(category["selected"]){
-					selectedCategories.push(category["id"])
-				}
-			}
-			if(selectedCategories.length>0){
-				query.categories = selectedCategories
-			}
-			if(isEmpty(query)){
-				console.log("ERROR: seleccione algun parametro de busqueda")
-				return
+			var data = this.shared.getPostData()
+			console.log(data)
+			if(data==null){
+				console.log("Error: debe haber al menos un parametro")
 			}
 			var url = null;
-			if(this.search_option=="Layers"){
-				url = "search/layer/";
+			if(this.shared.search_option == "layers"){
+				url = "search/layers/";
 			}
-			if(this.search_option=="Series"){
+			if(this.shared.search_option == "series"){
 				url = "search/series/";
 			}
-			console.log("Buscar esto",url,query);
-			var request = $.post(url,JSON.stringify(query));
+			var request = $.post(url,data);
 			request.done(function(response){
 				console.log(response);
-				var results = model.results;
-				var layers = response["layers"];
+				var results = store.results;
+				var  results_response= response["results"];
 				results.splice(0, results.length);
-				for (var i=0;i<layers.length; i++){
-					results.push(layers[i]);
+				for (var i=0;i< results_response.length; i++){
+					results.push(results_response[i]);
 				}
 			});
 			request.progress(function(error){
