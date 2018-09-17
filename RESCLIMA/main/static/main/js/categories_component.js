@@ -19,6 +19,7 @@ var category_component = Vue.component("categories_component",{
 	mounted(){
 		var url = "search/categories/";
 		var self = this;
+		var categories_string = self.$route.query["categories"]
 		var request = $.get(url);
 		request.done(function(response){
 			var categories = response.categories;
@@ -26,7 +27,6 @@ var category_component = Vue.component("categories_component",{
                                 var category = categories[i];
                                 self.shared.categories.push(category);
                         }
-                        var categories_string = self.$route.query["categories"]
                         if(categories_string){
 				selectedCategories = categories_string.split(",")
 				for(var i=0; i< selectedCategories.length; i++){
