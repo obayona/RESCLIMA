@@ -15,7 +15,7 @@ var store = {
 	end_date:'',
 	search_option:'layers',
 	layers:[],
-	series[],
+	series:[],
 
 	// retorna el modelo como un diccionario, 
 	// cuyas claves seran los paramatros de un query string 
