@@ -6,7 +6,7 @@ Vue.component("layers_component",{
 					<button>Visualizar</button>
 					<button>Descargar</button>
 				</div>
-				<div v-for="layer in shared.results">
+				<div v-for="layer in shared.layers">
 					<div class="card">
 						<div class="card-content">
 							<span class="card-title">

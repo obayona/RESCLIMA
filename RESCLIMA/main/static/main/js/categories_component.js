@@ -1,11 +1,9 @@
 var category_component = Vue.component("categories_component",{
 	template: `
 		<div>
-			<p>Puede seleccionar categorias
-			para mejorar la b&uacute;squeda</p>
-
+			<h4>Seleccione categorias para mejorar la b&uacute;squeda</h4>
 			<div>
-			     <div
+				<div
 				v-for="category in shared.categories"
 				class="chip z-depth-3"
 				v-bind:class="{cyan: category.selected}"
@@ -17,17 +15,22 @@ var category_component = Vue.component("categories_component",{
 		</div>
 	`,
 	mounted(){
+		// se obtienen las categorias seleccionadas desde el url
+		var categories_string = this.$route.query["categories"];
+		// se obtienen las categorias desde el servidor
 		var url = "search/categories/";
 		var self = this;
 		var request = $.get(url);
 		request.done(function(response){
 			var categories = response.categories;
-                        for(var i=0; i < categories.length; i++){
-                                var category = categories[i];
-                                self.shared.categories.push(category);
-                        }
-                        var categories_string = self.$route.query["categories"]
-                        if(categories_string){
+			// setea las categorias traidas del servidor
+			// en el store de datos global
+			for(var i=0; i < categories.length; i++){
+				var category = categories[i];
+				self.shared.categories.push(category);
+			}
+			// si hay categorias seleccionadas, se las selecciona
+			if(categories_string){
 				selectedCategories = categories_string.split(",")
 				for(var i=0; i< selectedCategories.length; i++){
 					var idCategory = selectedCategories[i]
@@ -38,7 +41,7 @@ var category_component = Vue.component("categories_component",{
 						}
 					}
 				}
-			}		
+			}
 		});
 		request.fail(function(){
 			console.log("Error fatal")
@@ -46,16 +49,19 @@ var category_component = Vue.component("categories_component",{
 	},
 	data(){
 		return {
-			shared:store
+			shared:store // referencia al store global
 		}
 	},
 	methods:{
+		// se ejecuta cuando se da click en una categoria
 		selectCategory(category){
+			// se marca o desmarca la categoria
 			category.selected = !category.selected
+			// se actualiza el url
 			var params = this.shared.getQueryParams()
-			console.log("se reemplaza el url",params)
 			this.$router.replace({query:params})
 		}
 	}
 })
+
 
