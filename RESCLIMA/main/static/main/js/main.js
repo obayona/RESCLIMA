@@ -25,16 +25,26 @@ var app = new Vue({
 				return;
 			}
 			var url = null;
-			if(this.shared.search_option == "layers"){
+			var option = this.shared.search_option;
+			if(option == "layers"){
 				url = "search/layers/";
 			}
-			if(this.shared.search_option == "series"){
+			if(option == "series"){
 				url = "search/series/";
 			}
 			var request = $.post(url,data);
 			request.done(function(response){
 				console.log("la respuesta",response);
-				var results = store.results;
+				var results = null;
+				// dependiendo de la opcion
+				// el resultado que envia el servidor
+				// sera copiado en un arreglo adecuado
+				if(option=="layers"){
+					results = store.layers;
+				}
+				if(option=="series"){
+					results = store.series;
+				}
 				var  results_response= response["results"];
 				results.splice(0, results.length);
 				for (var i=0;i< results_response.length; i++){
