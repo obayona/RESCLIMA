@@ -15,13 +15,13 @@ LIMIT 10;
 /*Trigger that fills the ts_index column before any insert or update in the Layer table*/
 CREATE TRIGGER tsvector_update_layer BEFORE INSERT OR UPDATE
 ON "layer_layer" FOR EACH ROW EXECUTE PROCEDURE
-tsvector_update_trigger("ts_index", 'pg_catalog.spanish', title, abstract);
+tsvector_update_trigger("ts_index", 'pg_catalog.spanish', title, abstract, categories_string);
 
 
 /*Trigger that fills the ts_index column before any insert or update in the Variable table*/
 CREATE TRIGGER tsvector_update_variable BEFORE INSERT OR UPDATE
 ON "timeSeries_variable" FOR EACH ROW EXECUTE PROCEDURE
-tsvector_update_trigger("ts_index", 'pg_catalog.spanish', name);
+tsvector_update_trigger("ts_index", 'pg_catalog.spanish', name, categories_string);
 
 
 CREATE OR REPLACE FUNCTION InsertSky2Measurements
