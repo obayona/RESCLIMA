@@ -38,7 +38,7 @@ def search_layer(request):
 			layer["type"] = row[3];
 			layer["selected"] = False;
 			layers.append(layer)
-
+	print layers
 	return JsonResponse({"results":layers})
 
 def search_series(request):
