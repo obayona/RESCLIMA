@@ -1,8 +1,8 @@
 var category_component = Vue.component("categories_component",{
 	template: `
 		<div>
-			<h4>Seleccione categorias para mejorar la b&uacute;squeda</h4>
-			<div>
+			<h5>Seleccione categorias para mejorar la b&uacute;squeda</h5>
+			<div style="width:500px">
 				<div
 				v-for="category in shared.categories"
 				class="chip z-depth-3"

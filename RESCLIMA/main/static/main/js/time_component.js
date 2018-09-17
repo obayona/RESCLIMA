@@ -2,7 +2,7 @@ Vue.component("time_component",{
 	template: `
 		<div>
 			<h4>Seleccione un rango de fechas</h4>
-			<div>
+			<div style="width:150px;">
 				<label for="Inicio">Inicio</label>
 				<input
 				type="date"
@@ -10,7 +10,7 @@ Vue.component("time_component",{
 				v-on:input="updateIniDate($event.target.value)"
 				v-bind:max="shared.end_date"/>
 			</div>
-			<div>
+			<div style="width:150px;">
 				<label for="Fin">Fin</label>
 				<input
 				type="date"
