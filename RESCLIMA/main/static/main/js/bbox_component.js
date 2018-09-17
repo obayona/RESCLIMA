@@ -1,4 +1,4 @@
-
+// componente del bbox
 
 Vue.component("bbox_component",{
 	template: `
@@ -8,8 +8,13 @@ Vue.component("bbox_component",{
 		</div>
 	`,
 	mounted(){
+		// se inicializa el objeto BboxSelector,
+		// recibe un callback cuando actualiza el bbox
 		bboxSelector = new BboxSelector("container",this.setBBox)
+		// se obtiene el bbox del url
 		var bbox_string = this.$route.query["bbox"];
+		// si hay bbox en el url, se actualiza el bbox
+		// global
 		if(bbox_string){
 			var bbox_data = bbox_string.split(",");
 			var left = parseFloat(bbox_data[0]);
@@ -25,14 +30,14 @@ Vue.component("bbox_component",{
 				return;
 			} 
 		 	if(rigth < -180 || rigth > 180){ 
-                                return;
-                        }
+		 		return;
+            }
  			if(bottom < -90 || bottom > 90){ 
-                                return;
-                        }
-			if(top < -90 || top > 90){ 
-                                return;
-                        }
+ 				return;
+            }
+			if(top < -90 || top > 90){
+				return;
+			}
 			// se valida si el bbox es valido
 			if(left > rigth){
 				return;
@@ -43,7 +48,7 @@ Vue.component("bbox_component",{
 						
 			// se setea el bbox en el selector
 			bboxSelector.setBBox(left,bottom, rigth, top);
-			// se crea el bbox del modelo de datos
+			// se crea el bbox del store de datos
 			bbox = {}
 			bbox["minX"] = left;
 			bbox["minY"] = bottom;
@@ -59,6 +64,8 @@ Vue.component("bbox_component",{
 		}
 	},
 	methods:{
+		// callback que se llama cuando bboxSelector, 
+		// actualiza el bbox
 		setBBox(bbox){
 			if(bbox==null){
 				this.shared.bbox = null
@@ -70,9 +77,11 @@ Vue.component("bbox_component",{
 				this.shared.bbox["maxX"] = bbox.right;
 				this.shared.bbox["maxY"] = bbox.top;
 			}
+			// actualiza el url
 			var params = this.shared.getQueryParams();
 			this.$router.replace({query:params});
 		}
 	}
 
 })
+

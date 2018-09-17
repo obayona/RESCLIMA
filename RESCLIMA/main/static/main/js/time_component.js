@@ -1,67 +1,75 @@
 Vue.component("time_component",{
 	template: `
 		<div>
-			<p>Puede seleccionar un rango de fechas
-			para los datos</p>
+			<h4>Seleccione un rango de fechas</h4>
 			<div>
-		        <label for="Inicio">Inicio</label>
-		        <input
-				 type="date"
+				<label for="Inicio">Inicio</label>
+				<input
+				type="date"
 				v-bind:value="shared.ini_date"
-				 v-on:input="updateIniDate($event.target.value)"
-				v-bind:max="shared.end_date"
-			/>
-		    </div>
-    		<div>
-        		<label for="Fin">Fin</label>
-        		<input
-				 type="date"
-				 v-bind:value="shared.end_date"
-                                 v-on:input="updateEndDate($event.target.value)"
-				 v-bind:min="shared.ini_date"/>
-    		</div>
+				v-on:input="updateIniDate($event.target.value)"
+				v-bind:max="shared.end_date"/>
+			</div>
+			<div>
+				<label for="Fin">Fin</label>
+				<input
+				type="date"
+				v-bind:value="shared.end_date"
+				v-on:input="updateEndDate($event.target.value)"
+				v-bind:min="shared.ini_date"/>
+			</div>
 		</div>
 	`,
 	mounted(){
+		// se obtienen las fechas del url
 		var ini_date = this.$route.query["ini"];
 		var end_date = this.$route.query["end"];
-		if(ini_date && end_date){
-			var d1 = Date.parse(ini_date);
-			var d2 = Date.parse(end_date);
-			
-			if(!d1 || !d2){
-				return;
-			}
+		var d1=null,d2=null;
+		if(ini_date){
+			d1 = Date.parse(ini_date);
+		}
+		if(end_date){
+			d2 = Date.parse(end_date);
+		}
+		// si las dos fechas estan definidas
+		if(d1 && d2){
+			// se comprueba que fecha ini 
+			// sea menor que fecha end
 			if(d1>d2){
 				return;
 			}
 		}
-		
-		if (ini_date){
+		// se setean las fechas en el store de datos global
+		if(d1){
 			this.shared.ini_date = ini_date;
 		}
-               if (end_date){ 
-                        this.shared.end_date = end_date;
-                }
+		if(d2){
+			this.shared.end_date = end_date;
+		}
 		
 	},
 	data(){
 		return {
-			shared: store
+			shared: store // referencia al store de datos global
 		}
 	},
 	methods:{
+		// se ejecuta cuando el usuario ingresa una fecha ini
 		updateIniDate(ini_date){
+			// se actualiza el store
 			this.shared.ini_date = ini_date;
+			// se actualiza el url
 			var params = this.shared.getQueryParams();
-                        this.$router.replace({query:params});
-
+			this.$router.replace({query:params});
 		},
+		// se ejecuta cuando el usuario ingresa una fecha end
 		updateEndDate(end_date){
+			// se actualiza el store
 			this.shared.end_date = end_date;
-			console.log("actualizo end date", end_date)
-                        var params = this.shared.getQueryParams();
-                        this.$router.replace({query:params});
+			// se actualiza el url
+			var params = this.shared.getQueryParams();
+			this.$router.replace({query:params});
 		}
 	}
 })
+
