@@ -1,4 +1,4 @@
-var BboxSelector = function(container,model){
+var BboxSelector = function(container,callback){
 
 	var container = document.getElementById(container)
 	var vectors; // capa vectorial
@@ -16,7 +16,7 @@ var BboxSelector = function(container,model){
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
 	newAreaBtn.type = "button";
-  	newAreaBtn.value = unescape("Dibuje nueva %E1rea");
+	newAreaBtn.value = unescape("Dibuje nueva %E1rea");
 	newAreaBtn.style.display = 'none';
 	newAreaBtn.addEventListener("click",function(event){
 		dragNewBox();
@@ -31,7 +31,7 @@ var BboxSelector = function(container,model){
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";
-	
+
 
 	// inicializacion del mapa
 	var map = new OpenLayers.Map({
@@ -41,50 +41,57 @@ var BboxSelector = function(container,model){
 		numZoomLevels:11,
 		units: 'm'
 	});
-    var osm = new OpenLayers.Layer.OSM();
-    var StyleMap = new OpenLayers.StyleMap({
-                    // a nice style for the transformation box
-                    "transform": new OpenLayers.Style({
+	var osm = new OpenLayers.Layer.OSM();
+	var StyleMap = new OpenLayers.StyleMap({
+	                // a nice style for the transformation box
+	                "transform": new OpenLayers.Style({
 			                        display: "${getDisplay}",
 			                        cursor: "${role}",
 			                        pointRadius: 5,
 			                        fillColor: "white",
 			                        fillOpacity: 1,
 			                        strokeColor: "black"
-                  				 })
-                	});
-    vectors = new OpenLayers.Layer.Vector("Vector Layer", {
-    	styleMap: StyleMap
-    });
+	              				 })
+	            	});
+	vectors = new OpenLayers.Layer.Vector("Vector Layer", {
+		styleMap: StyleMap
+	});
 
-    map.addLayers([osm,vectors]);
-
-
-    box = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon, {
-      handlerOptions: {
-        sides: 4,
-        snapAngle: 90,
-        irregular: true,
-        persist: true
-      }
-    });
-    box.handler.callbacks.done = endDrag;
-    console.log(box.handler.callbacks);
-    map.addControl(box);
-
-    transform = new OpenLayers.Control.TransformFeature(vectors, {
-      renderIntent:"transform",
-      rotate: false,
-      irregular: true
-    });
-    transform.events.register("transformcomplete", transform, boxResize);
-    map.addControl(transform);  
-    map.addControl(box);
-    box.activate();
-
-    map.zoomToMaxExtent();
+	map.addLayers([osm,vectors]);
 
 
+	box = new OpenLayers.Control.DrawFeature(vectors, OpenLayers.Handler.RegularPolygon, {
+	  handlerOptions: {
+	    sides: 4,
+	    snapAngle: 90,
+	    irregular: true,
+	    persist: true
+	  }
+	});
+	box.handler.callbacks.done = endDrag;
+	map.addControl(box);
+
+	transform = new OpenLayers.Control.TransformFeature(vectors, {
+	  renderIntent:"transform",
+	  rotate: false,
+	  irregular: true
+	});
+	transform.events.register("transformcomplete", transform, boxResize);
+	map.addControl(transform);  
+	map.addControl(box);
+	box.activate();
+
+	map.zoomToMaxExtent();
+
+
+	this.setBBox = function(left,bottom, rigth, top){
+		var bounds = new OpenLayers.Bounds(left,bottom, rigth, top);
+		bounds = bounds.transform(new OpenLayers.Projection("EPSG:4326"),map.getProjectionObject())
+		drawBox(bounds);
+		box.deactivate();
+		instruction.innerHTML = "Modifique el &aacute;rea o ...";
+		newAreaBtn.style.display = "block";   
+	}
 
 	function endDrag(bbox) {
 		var bounds = bbox.getBounds();
@@ -93,44 +100,39 @@ var BboxSelector = function(container,model){
 		box.deactivate();
 		instruction.innerHTML = "Modifique el &aacute;rea o ...";
 		newAreaBtn.style.display = "block";        
-     }
-      
-    function dragNewBox() {
-        box.activate();
-        transform.deactivate();
-        vectors.destroyFeatures();
-        
-        instruction.innerHTML = "Dibuje un &aacute;rea";
-        newAreaBtn.style.display = 'none';
-        
-        setBounds(null); 
-    }
-      
+	 }
+	  
+	function dragNewBox() {
+		box.activate();
+		transform.deactivate();
+		vectors.destroyFeatures();
+
+		instruction.innerHTML = "Dibuje un &aacute;rea";
+		newAreaBtn.style.display = 'none';
+
+		setBounds(null); 
+	}
+	  
 	function boxResize(event) {
-        setBounds(event.feature.geometry.bounds);
-    }
-      
-    function drawBox(bounds) {
-        var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
+		setBounds(event.feature.geometry.bounds);
+	}
+	  
+	function drawBox(bounds) {
+		var feature = new OpenLayers.Feature.Vector(bounds.toGeometry());
 		feature.style = {fillColor: "#9FBFDC",
 						 fillOpacity: 0.5};
-        vectors.addFeatures(feature);
-        transform.setFeature(feature);
+		vectors.addFeatures(feature);
+		transform.setFeature(feature);
 	}
-      
-    function setBounds(bounds) {
-        if (bounds == null) {
-          model.bbox = null;
-        }
-        else {
+	  
+	function setBounds(bounds) {
+		if (bounds == null) {
+			callback(null)
+		}
+		else {
 			b = bounds.clone().transform(map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326"))
-			bbox = {};
-			bbox["minX"] = b.left;
-			bbox["minY"] = b.bottom;    
-			bbox["maxX"] = b.right;
-			bbox["maxY"] = b.top; 
-			model.bbox = bbox 
-            
-        }
-    }
+			callback(b)
+		}
+	}
 }
+

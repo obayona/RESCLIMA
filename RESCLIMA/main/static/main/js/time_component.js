@@ -20,9 +20,37 @@ Vue.component("time_component",{
     		</div>
 		</div>
 	`,
+	mounted(){
+		var ini_date = this.$route.query["ini"];
+		var end_date = this.$route.query["end"];
+		if(ini_date && end_date){
+			var d1 = Date.parse(ini_date);
+			var d2 = Date.parse(end_date);
+			if(d1>d2){
+				return;
+			}
+		}
+
+		if (ini_date){
+			this.shared.ini_date = ini_date;
+		}
+               if (end_date){ 
+                        this.shared.end_date = end_date;
+                }
+	},
 	data(){
 		return {
-			shared: model
+			shared: store
 		}
+	},
+	watch:{
+		'shared.ini_date':function(oldValue,newValue){
+			var params = this.shared.getQueryParams()
+			this.$router.replace({query:params})
+		},
+               	'shared.end_date':function(oldValue,newValue){
+                        var params = this.shared.getQueryParams()
+                        this.$router.replace({query:params})
+                }
 	}
 })

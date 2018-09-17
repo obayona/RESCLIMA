@@ -24,7 +24,7 @@ Vue.component("layers_component",{
 	`,
 	data(){
 		return {
-			shared:model
+			shared:store
 		}
 	}
 

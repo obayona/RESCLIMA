@@ -13,7 +13,7 @@
 						<label>¿Qu&eacute;?</label>
 						<input 
 							type="search" 
-							v-model="textsearch"
+							v-model="shared.text"
 							v-on:focus="currentComponent='categories_component'" 
 							autofocus>
 					</div>
@@ -33,14 +33,14 @@
 						<label>¿C&oacute;mo?</label>
 						<button
 							class="btn-default"
-							v-bind:class="{active: search_option === 'Layers'}"
-							v-on:click.prevent="search_option='Layers'">
+							v-bind:class="{active: shared.search_option === 'layers'}"
+							v-on:click.prevent="shared.search_option='layers'">
 							Capas
 						</button>
 						<button
 							class="btn-default"
-							v-bind:class="{active: search_option === 'Series'}"
-							v-on:click.prevent="search_option='Series'">
+							v-bind:class="{active: shared.search_option === 'series'}"
+							v-on:click.prevent="shared.search_option='series'">
 							Series de tiempo
 						</button>
 					</div>
@@ -49,15 +49,15 @@
 					</div>
 				</div>
 				<div class="col-md-9">
-					<keep-alive>
-					    <component v-bind:is="currentComponent"></component>
-					</keep-alive>
+                                        <categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
+                                        <bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
+                                        <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>
 				</div>
 			</div>
 			<!-- Lista de resultados -->
 			<div class="row">
 				<keep-alive>
-					<component v-bind:is="currentList"></component>
+					<component v-bind:is='shared.search_option+"_component"'></component>
 				</keep-alive>
 			</div>
 		</div>
@@ -69,12 +69,14 @@
 
 {% block scripts_body  %}
 	<script src="{% static "main/js/vue.min.js" %}"></script>
+	<script src="{% static "main/js/vue-router.min.js" %}"></script>
 	<script src="{% static "main/js/categories_component.js" %}"></script>
 	<script src="{% static "main/js/OpenLayers.js" %}"></script>
-	<script src="{% static "main/js/model.js" %}"></script>
+	<script src="{% static "main/js/store.js" %}"></script>
 	<script src="{% static "main/js/BboxSelector.js" %}"></script>
 	<script src="{% static "main/js/bbox_component.js" %}"></script>
 	<script src="{% static "main/js/time_component.js" %}"></script>
 	<script src="{% static "main/js/layers_component.js" %}"></script>
+	<script src="{% static "main/js/series_component.js" %}"></script>
 	<script src="{% static "main/js/main.js" %}"></script>
 {% endblock%}
