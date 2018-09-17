@@ -35,17 +35,17 @@
 							class="btn-default"
 							v-bind:class="{active: shared.search_option === 'layers'}"
 							v-on:click.prevent="shared.search_option='layers'">
-							Capas
+							<i class="material-icons">map</i>Capas
 						</button>
 						<button
 							class="btn-default"
 							v-bind:class="{active: shared.search_option === 'series'}"
 							v-on:click.prevent="shared.search_option='series'">
-							Series de tiempo
+							<i class="material-icons">show_chart</i>Series de tiempo
 						</button>
 					</div>
 					<div style="padding:60px;">
-						<input type="button" value="Buscar" v-on:click="buscar">
+						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
 					</div>
 				</div>
 				<div class="col-md-9">

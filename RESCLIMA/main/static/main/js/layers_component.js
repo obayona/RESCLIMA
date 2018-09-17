@@ -3,8 +3,14 @@ Vue.component("layers_component",{
 		<div>
 			<div v-if="shared.layers.length > 0">
 				<div>
-					<button v-bind:disabled="selected_count==0">Visualizar</button>
-					<button v-bind:disabled="selected_count==0">Descargar</button>
+					<a
+					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+					v-bind:disabled="selected_count==0">
+						<i class="material-icons left">remove_red_eye</i>Visualizar</a>
+					<a
+					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+					v-bind:disabled="selected_count==0">
+						<i class="material-icons left">file_download</i>Descargar</a>
 				</div>
 				<div v-for="layer in shared.layers">
 					<div class="card">
