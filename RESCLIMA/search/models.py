@@ -15,6 +15,6 @@ class Category(models.Model):
 
 class FilterSearchTable(models.Model):
     ts_index = SearchVectorField(null = True, blank=True)
-    categories = models.ManyToManyField(Category, blank = True)
+    categories_string = models.TextField(blank=True, max_length=600, null=True)
     class Meta:
         abstract = True
