@@ -18,7 +18,7 @@ var store = {
 	series:[],
 
 	// retorna el modelo como un diccionario, 
-	// cuyas claves seran los paramatros de un query string 
+	// cuyas claves seran los parametros de un query string 
 	// de un URL y cuyos valores seran los valores del query string 
 	getQueryParams:function(){
 		var queryDict = {}
