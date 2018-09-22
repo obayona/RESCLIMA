@@ -1,0 +1,82 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | BUSCAR{% endblock %}
+
+
+{% block content %}
+	<div>
+		<div id="searchForm" class="container-fluid">
+			<div class="row">
+				<div class="col-md-3">
+					<div>
+						<label>¿Qu&eacute;?</label>
+						<input 
+							type="search" 
+							v-model="shared.text"
+							v-on:focus="currentComponent='categories_component'" 
+							autofocus>
+					</div>
+					<div>
+						<label>¿D&oacute;nde?</label>
+						<input 
+							type="search"
+							v-on:focus="currentComponent='bbox_component'">
+					</div>
+					<div>
+						<label>¿Cu&aacute;ndo?</label>
+						<input 
+							type="text"
+							v-on:focus="currentComponent='time_component'">
+					</div>
+					<div>
+						<label>¿C&oacute;mo?</label>
+						<button
+							class="btn-default"
+							v-bind:class="{active: shared.search_option === 'layers'}"
+							v-on:click.prevent="shared.search_option='layers'">
+							<i class="material-icons">map</i>Capas
+						</button>
+						<button
+							class="btn-default"
+							v-bind:class="{active: shared.search_option === 'series'}"
+							v-on:click.prevent="shared.search_option='series'">
+							<i class="material-icons">timeline</i>Series de tiempo
+						</button>
+					</div>
+					<div style="padding:60px;">
+						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
+					</div>
+				</div>
+				<div class="col-md-9">
+                                        <categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
+                                        <bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
+                                        <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>
+				</div>
+			</div>
+			<!-- Lista de resultados -->
+			<div class="row">
+				<keep-alive>
+					<component v-bind:is='shared.search_option+"_component"'></component>
+				</keep-alive>
+			</div>
+		</div>
+	</div>
+    
+
+{% endblock %}
+
+
+{% block scripts_body  %}
+	<script src="{% static "main/js/vue.min.js" %}"></script>
+	<script src="{% static "main/js/vue-router.min.js" %}"></script>
+	<script src="{% static "main/js/categories_component.js" %}"></script>
+	<script src="{% static "main/js/OpenLayers.js" %}"></script>
+	<script src="{% static "main/js/store.js" %}"></script>
+	<script src="{% static "main/js/BboxSelector.js" %}"></script>
+	<script src="{% static "main/js/bbox_component.js" %}"></script>
+	<script src="{% static "main/js/time_component.js" %}"></script>
+	<script src="{% static "main/js/layers_component.js" %}"></script>
+	<script src="{% static "main/js/series_component.js" %}"></script>
+	<script src="{% static "main/js/main.js" %}"></script>
+{% endblock%}
