@@ -8,12 +8,12 @@ def getTsTextQuery(query_object):
 	qs = qs + 'from "timeSeries_variable", "timeSeries_stationtype", "timeSeries_station", "timeSeries_stationtype_variables" '
 	qs = qs +'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
 	qs = qs + '"timeSeries_stationtype"."id" = "timeSeries_stationtype_variables"."stationtype_id" AND '
-	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" AND '
+	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" '
 	if(query_object.has_key("bbox")):
 		bbox_str = create_str_polygon_postgis(query_object["bbox"])
 		if bbox_str == None:
 			return "Error"
-		qs = qs + 'ST_Intersects("timeSeries_station"."location", %s)'
+		qs = qs + 'AND ST_Intersects("timeSeries_station"."location", %s)'
 		params.append(bbox_str)
 
 	if(query_object.has_key("ini_date") and query_object.has_key("end_date")):
