@@ -42,34 +42,45 @@ def search_layer(request):
 	return JsonResponse({"results":layers})
 
 def search_series(request):
-	query_str = request.body;
-	query_dict = json.loads(query_str)
-	print "el diccionario de busqueda ******",query_dict
-	qs,params = series_searcher.getTsTextQuery(query_dict)
-	series = []
-	variablesStations = {}
+	return JsonResponse({"results":[]})
+
+
+def getTsTextQuery(text, polygon, startDate, endDate):
+	params = []
+	qs = 'SELECT "timeSeries_variable"."id", "timeSeries_variable"."name", "timeSeries_station"."id" '
+	qs = qs + 'from "timeSeries_variable", "timeSeries_stationtype", "timeSeries_station", "timeSeries_stationtype_variables" '
+	qs = 'WHERE "timeSeries_station"."stationType_id" = "timeSeries_stationtype"."id" AND '
+	qs = qs + '"timeSeries_stationtype"."id" = "timeSeries_stationtype_variables"."stationtype_id" AND '
+	qs = qs + '"timeSeries_stationtype_variables"."variable_id" = "timeSeries_variable"."id" AND '
+	if polygon != None:
+		qs = qs + 'ST_Intersects("timeSeries_station"."location", %s) AND '
+		params.append(polygon)
+	if startDate != None and endDate != None:
+		""" startDate and endDate are datetime instances
+		"""
+		startDateStr = startDate.strftime("%Y-%m-%d %H:%M:%S")
+		endDateStr = endDate.strftime("%Y-%m-%d %H:%M:%S")
+		qs = qs + '"timeSeries_station"."id" in ( SELECT "timeSeries_measurements"."idStation" FROM "timeSeries_measurements" WHERE %s <= "timeSeries_measurements"."ts" AND %s >= "timeSeries_measurements"."ts" ) AND '
+		params.append(startDateStr)
+		params.append(endDateStr)
+	qs = qs + '"timeSeries_variable"."ts_index" @@ to_tsquery(\'spanish\', %s) '
+	qs = qs + 'LIMIT 10;'
+	params.append(text)
+	return qs, params
+
+def getStationsVariables(text):
+	variableStations = []
+	qs, params = getTsTextQuery(text)
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		for row in rows:
-			#first we have to group by variable id the stations that measure that variable
-			if(variablesStations.has_key(row[2])):
-				variablesStations[row[2]]["stations_ids"].append(row[0])
-			else:
-				serieData={}
-				serieData["variable_id"] = row[0]
-				serieData["variable_name"] = row[1]
-				serieData["stations_ids"] = []
-				serieData["stations_ids"].append(row[2])
-				serieData["selected"] = False
-				variablesStations[row[0]] = serieData
-	#we then push to an array
-	for id in variablesStations.keys():
-		series.append(variablesStations[id])
-	return JsonResponse({"results":series})
-
-
-
+			variableStation = {}
+			variableStation['id_variable'] = row[0]
+			variableStation['name_variable'] = row[1]
+			variableStation['id_station'] = row[2]
+			variableStations.append(variableStation)
+	return JsonResponse({"variableStations":variableStations})
 
 """
 PARAMETROS:

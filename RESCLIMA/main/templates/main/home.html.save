@@ -6,9 +6,9 @@
 
 {% block content %}
 	<div>
-		<div id="searchForm" class="container">
+		<div id="searchForm" class="container-fluid">
 			<div class="row">
-				<div class="col s3">
+				<div class="col-md-3">
 					<div>
 						<label>¿Qu&eacute;?</label>
 						<input 
@@ -33,13 +33,13 @@
 						<label>¿C&oacute;mo?</label>
 						<button
 							class="btn-default"
-							v-bind:class="{cyan: shared.search_option === 'layers'}"
+							v-bind:class="{active: shared.search_option === 'layers'}"
 							v-on:click.prevent="shared.search_option='layers'">
-							<i class="material-icons">layers</i>Capas
+							<i class="material-icons">map</i>Capas
 						</button>
 						<button
 							class="btn-default"
-							v-bind:class="{cyan: shared.search_option === 'series'}"
+							v-bind:class="{active: shared.search_option === 'series'}"
 							v-on:click.prevent="shared.search_option='series'">
 							<i class="material-icons">timeline</i>Series de tiempo
 						</button>
@@ -48,7 +48,7 @@
 						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
 					</div>
 				</div>
-				<div class="col s9">
+				<div class="col-md-9">
                                         <categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
                                         <bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
                                         <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>

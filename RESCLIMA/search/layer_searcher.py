@@ -1,5 +1,5 @@
 # encoding: utf-8
-
+from utils import parseUserTextInput;
 
 def create_str_polygon_postgis(polygon_dict):
 	minX = polygon_dict["minX"];
@@ -16,63 +16,44 @@ def create_str_polygon_postgis(polygon_dict):
 def appendQueryPart(query,query_part, separator):
 	return query + separator + query_part
 
-# Genera un query dinamico depenciendo
+# Genera un query dinamico dependiendo
 # de las opciones de query_object
 def create_query(query_object):
-	# TODO: validar si es vacio
-	
+	# opciones de busqueda
+	text = query_object.get("text","")
+	categories = query_object.get("categories", [])
+	bbox = query_object.get("bbox", None)
+	ini_date = query_object.get("ini_date",None)
+	end_date = query_object.get("end_date",None)
+
 	# sql statements
 	select_stm = 'SELECT l.id, l.title, l.abstract, l.type, l.bbox';
-	categories = []
-	if query_object.has_key("categories"):
-		categories = query_object["categories"]
 
-	if len(categories)>0:
-		from_stm = 'FROM "layer_layer" AS l, "layer_layer_categories" AS lc,"search_category" AS c';
-	else:
-		from_stm = 'FROM "layer_layer" AS l';
+	from_stm = 'FROM "layer_layer" AS l';
 	where_stm = 'WHERE';
 	where_filters = [];
 	params = []
-	# opciones de busqueda
-	text = None
-	bbox = None
-	categories = []
-	end_date = None
-	ini_date = None
 
-	if(query_object.has_key("text")):
-		filter_str = 'ts_index @@ plainto_tsquery(\'spanish\',%s)'
+	if(text or len(categories)>0):
+		ts_query_str = parseUserTextInput(text,categories);
+		filter_str = 'ts_index @@ to_tsquery(\'spanish\',%s)'
 		where_filters.append(filter_str);
-		params.append(query_object["text"]);
-
-	if(len(categories)>0):
-		filter_str = "l.id = lc.layer_id and c.id=lc.category_id and ("
-		for i,category in enumerate(categories):
-			part_str = "c.id = %s";
-			params.append(category);
-			if (i==0):
-				filter_str = filter_str + part_str;
-			else:
-				filter_str = filter_str + " or " + part_str;
-		filter_str = filter_str + ")";
-		where_filters.append(filter_str)
+		params.append(ts_query_str);
 
 
-	if(query_object.has_key("bbox")):
-		bbox_str = create_str_polygon_postgis(query_object["bbox"]);
+	if(bbox):
+		bbox_str = create_str_polygon_postgis(bbox);
 		if bbox_str == None:
 			return "Error";
 		filter_str = 'ST_Intersects(bbox,%s)';
 		where_filters.append(filter_str);
 		params.append(bbox_str);
 
-	if(query_object.has_key("ini_date") and query_object.has_key("end_date")):
+	if(ini_date and end_date):
 		filter_str = 'data_date >= %s and data_date <= %s';
 		where_filters.append(filter_str)
-		params.append(query_object["ini_date"]);
-		params.append(query_object["end_date"]);
-
+		params.append(ini_date);
+		params.append(end_date);
 
 	sql_query = select_stm;
 	sql_query = appendQueryPart(sql_query,from_stm," ");
@@ -84,6 +65,7 @@ def create_query(query_object):
 		else:
 			sql_query = appendQueryPart(sql_query,f," and ");
 
-
+	print sql_query, params
 	return sql_query, params
+
 
