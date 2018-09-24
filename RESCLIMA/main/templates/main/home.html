@@ -6,9 +6,9 @@
 
 {% block content %}
 	<div>
-		<div id="searchForm" class="container-fluid">
+		<div id="searchForm" class="container">
 			<div class="row">
-				<div class="col-md-3">
+				<div class="col s3">
 					<div>
 						<label>¿Qu&eacute;?</label>
 						<input 
@@ -48,7 +48,7 @@
 						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
 					</div>
 				</div>
-				<div class="col-md-9">
+				<div class="col s9">
                                         <categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
                                         <bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
                                         <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>

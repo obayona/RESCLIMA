@@ -18,16 +18,17 @@ import vectorLayers.utils as utils
 @transaction.atomic
 def import_vector_layer(vectorlayer_params):
 	# se extraen los parametros del vector layer
-	temp_dir = vectorlayer_params["temp_dir"];
+	temp_dir = vectorlayer_params["temp_dir"]
 	vectorlayer_name = vectorlayer_params["vectorlayer_name"]
 	encoding  = vectorlayer_params["encoding"]
 	title = vectorlayer_params["title"]
 	abstract = vectorlayer_params["abstract"]
 	date_str = vectorlayer_params["date_str"] # fecha como string
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d') # fecha como objeto datetime
+	categories_string = vectorlayer_params["categories_string"] # string de categorias
 
 
-	result = {};
+	result = {}
 	# se abre el shapefile con la libreria OGR
 	try:
 		datasource = ogr.Open(os.path.join(temp_dir,vectorlayer_name))
@@ -39,9 +40,9 @@ def import_vector_layer(vectorlayer_params):
 		print str(e)
 		# si la capa no es valida se borra la carpeta temporal
 		#shutil.rmtree(temp_dir)
-		result["error"] = str(x) + str(y) +  " La capa vectorial no es válid " + str(e) + os.path.join(temp_dir,vectorlayer_name);
+		result["error"] = str(x) + str(y) +  " La capa vectorial no es válid " + str(e) + os.path.join(temp_dir,vectorlayer_name)
 		#return {'current': total_user, 'total': total_user, 'percent': 100}
-		return result;
+		return result
 
 	# actualiza el porcentaje de avance de la tarea: 5%
 	result["error"]=None
@@ -63,6 +64,7 @@ def import_vector_layer(vectorlayer_params):
 							  title=title,
 							  abstract=abstract,
 							  data_date=data_date,
+							  categories_string=categories_string,
 							  type="vector")
 	vectorlayer.save()
 
@@ -139,7 +141,7 @@ def import_vector_layer(vectorlayer_params):
 				shutil.rmtree(temp_dir)
 				vectorlayer.delete()
 				# retorna un objeto con error
-				result["error"]="Error al obtener los valores del atributo " + str(attr.name);
+				result["error"]="Error al obtener los valores del atributo " + str(attr.name)
 				return result
 			attr_value = AttributeValue(feature=feature,attribute=attr,value=value)
 			attr_value.save()
@@ -162,10 +164,10 @@ def import_vector_layer(vectorlayer_params):
 		(maxX,maxY),(maxX,minY),(minX,minY))
 	bbox = Polygon(coords)
 
-	vectorlayer.bbox = bbox;
+	vectorlayer.bbox = bbox
 
 	# se guarda la capa
-	vectorlayer.save();
+	vectorlayer.save()
 	# se actualiza el progreso
 	result["percent"]= 90
 	current_task.update_state(state='PROGRESS',meta=result)
@@ -173,5 +175,6 @@ def import_vector_layer(vectorlayer_params):
 	shutil.rmtree(temp_dir)
 
 	result["percent"]=100
-	return result;
+	return result
+
 

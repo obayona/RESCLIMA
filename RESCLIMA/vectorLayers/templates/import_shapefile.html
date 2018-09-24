@@ -4,6 +4,10 @@
 {% block title%}RESCLIMA | BUSCAR{% endblock %}
 
 
+  {% block scripts %}
+  <script src="{% static 'vectorLayers/js/import_shapefile.js' %}" type= "text/javascript"></script>
+  {% endblock %}
+
 {% block content %}
 
 <div class="section">
@@ -11,6 +15,11 @@
 		<div class="col s12 m12 l6">				
 				<div class="card-panel">
 					<h4>Importar Shapefile</h4>
+
+					<div class="row">
+						<div id="errorMsg"></div>
+					</div>
+
 					<div class="row">
 						<form enctype="multipart/form-data" method="post" action="import" id="shapefileForm" class="col s12">
 							<!-- File chooser --> 
@@ -22,7 +31,7 @@
 										<input type="file" name="import_files" required="" multiple="" id="id_import_files">
 									</div>
 									<div class="file-path-wrapper">
-										<input class="file-path validate" type="text" placeholder="Seleccione archivos: .shp, .shx, .dbf, .prj, optional archivos .sld">
+										<input class="file-path validate" type="text" placeholder="Seleccione archivos: .shp, .shx, .dbf, .prj">
 									</div>
 								</div>
 							</div>
@@ -30,9 +39,9 @@
 							<div class="row">
 								<div class="input-field col s12">
 									<select name="encoding" id="id_encoding" class="initialized">
-										<option value="ascii">ASCII</option>
-										<option value="latin1">Latin-1</option>
 										<option value="utf8">UTF-8</option>
+										<option value="latin1">Latin-1</option>
+										<option value="ascii">ASCII</option>
 									</select>
 									<label for="id_encoding">Codificaci&oacute;n</label>
 								</div>
@@ -58,6 +67,21 @@
 									<input type="date" name="data_date" id="data_date">
 								</div>
 							</div>
+							<!-- Categorias -->
+							<div class="row">
+								<div class="col s12">
+									<label for="categories">Categorias</label>
+									<div id="categories">
+										{% for category in categories %}
+											<div 
+											class="chip z-depth-3"
+											onclick="markCategory(event)">
+												{{category.name}}
+											</div>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
 
 							<!-- Botones -->
 							<div class="row">
@@ -67,13 +91,17 @@
 								<button type="button" id="Cancel" onClick='window.location="/vector";' class="btn waves-effect waves-light">
 									<i class="material-icons">cancel</i>Cancelar
 								</button>
-                        				</div>
+							</div>
 						</form>
 					</div>
-					<div class="row">
-						<div id="errorMsg"></div>
-						<h3 id="uploadPercent"></h3>
+					
+					<div class="row" id="progress-container" style="visibility:hidden;">
+						<div class="progress">
+							<div id="uploadPercent" class="determinate" style="width: 0%"></div>
+						</div>
+						<p id="uploadPercentLabel"></p>
 					</div>
+
 				</div>
 
 		</div>
@@ -82,94 +110,5 @@
 </div>
 
 
-{% endblock %}
-
-{% block scripts_body %}
-  <script>
-    var form = $("#shapefileForm");
-
-    function renderProcess(task_id){
-      $.ajax({
-            type: 'get',
-            url: '/vector/get-task-info/',
-            data: {'task_id': task_id},
-            success: function (data) {
-               console.log(data);
-		 if (data.state == 'PENDING') {
-                    uploadPercent.innerHTML = "Procesando 0%"
-                }
-                else if (data.state == 'PROGRESS' || data.state == 'SUCCESS') {
-                    uploadPercent.innerHTML = "Procesando " + data.result.percent + "%"
-                }
-                if (data.state != 'SUCCESS') {
-                    setTimeout(function () {
-                        renderProcess(task_id)
-                    }, 100);
-                }
-            },
-            error: function (data) {
-                errorMsg.innerHTML = "Error " + data.error;
-            }
-        });
-    }
-
-    function createXHR(){
-      var xhr = new window.XMLHttpRequest();
-      xhr.upload.addEventListener("progress",function(evt){
-        if (evt.lengthComputable) {
-          var percentComplete = evt.loaded / evt.total;
-          percentComplete = parseInt(percentComplete * 100);
-          if (percentComplete === 100){
-            uploadPercent.innerHTML = "Completado, espere por favor"
-            return;
-          }
-          uploadPercent.innerHTML = "Subido " + String(percentComplete) + "% ..."
-        }
-
-      },false);
-      return xhr;
-    }
-
-    function successHandler(data){
-      console.log(data)
-      if(!data.error){
-        renderProcess(data.task_id);
-      }
-      else{
-        errorMsg.innerHTML = "<b><i>"+data.error+"</i></b>"
-        uploadPercent.innerHTML = "";
-      }
-    }
-
-    function errorHandler(data){
-      console.error(data)
-      status = String(data.status);
-      msg = "<b><i>Ha ocurrido un error " + status+ " en el servidor</i></b>"
-      errorMsg.innerHTML = msg;
-      uploadPercent.innerHTML = "";
-    }
-    
-    function formSubmit(){
-      var data = new FormData(form.get(0));
-      $.ajax({
-        type: form.attr('method'),
-        url: form.attr('action'),
-        data: data,
-        processData: false,
-        contentType: false,
-        xhr: createXHR,
-        success: successHandler,
-        error: errorHandler
-      });
-
-      return false;
-    }
-
-    $(document).ready(function() {
-      document.getElementById('data_date').valueAsDate = new Date();
-      form.submit(formSubmit);
-    });
- 
-  </script>
 {% endblock %}
 
