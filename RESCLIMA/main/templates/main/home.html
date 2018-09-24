@@ -33,13 +33,13 @@
 						<label>¿C&oacute;mo?</label>
 						<button
 							class="btn-default"
-							v-bind:class="{active: shared.search_option === 'layers'}"
+							v-bind:class="{cyan: shared.search_option === 'layers'}"
 							v-on:click.prevent="shared.search_option='layers'">
 							<i class="material-icons">layers</i>Capas
 						</button>
 						<button
 							class="btn-default"
-							v-bind:class="{active: shared.search_option === 'series'}"
+							v-bind:class="{cyan: shared.search_option === 'series'}"
 							v-on:click.prevent="shared.search_option='series'">
 							<i class="material-icons">timeline</i>Series de tiempo
 						</button>

@@ -1,7 +1,7 @@
 import re
 
 def parseUserTextInput(text,categories):
-	pattern = re.compile(r'\w+')
+	pattern = re.compile(r'\w+',re.UNICODE)
 	tokens = re.findall(pattern, text)
 	ts_query_str = ""
 	num_tokens = len(tokens)

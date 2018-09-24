@@ -16,7 +16,7 @@ def create_str_polygon_postgis(polygon_dict):
 def appendQueryPart(query,query_part, separator):
 	return query + separator + query_part
 
-# Genera un query dinamico depenciendo
+# Genera un query dinamico dependiendo
 # de las opciones de query_object
 def create_query(query_object):
 	# opciones de busqueda
@@ -36,7 +36,6 @@ def create_query(query_object):
 
 	if(text or len(categories)>0):
 		ts_query_str = parseUserTextInput(text,categories);
-		print ts_query_str
 		filter_str = 'ts_index @@ to_tsquery(\'spanish\',%s)'
 		where_filters.append(filter_str);
 		params.append(ts_query_str);
