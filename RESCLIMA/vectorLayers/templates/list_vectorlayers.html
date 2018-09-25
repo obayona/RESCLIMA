@@ -4,34 +4,34 @@
 {% block title %} RESCLIMA DURAN | Capas Vectoriales{% endblock %}
 
 {% block content %}
-  <body>
-    <b>Capas vectoriales:</b> <br><br>
-    {% if vectorlayers %}
-      <b>Capas vectoriales:</b>
-      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
-        {% for vectorlayer in vectorlayers %}
-          <tr>
-            <td>
-              <span style="font-family:monospace">{{ vectorlayer.title}}</span>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
-            </td>
-            <td>&nbsp;</td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-    <button type="button" onClick='window.location="/vector/import";'>Importar Shapefile</button>
-  </body>>
+	{% if vectorlayers %}
+		<h4>Capas vectoriales:</h4>
+		<table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
+		{% for vectorlayer in vectorlayers %}
+			<tr>
+				<td>
+					<span style="font-family:monospace">{{ vectorlayer.title}}</span>
+				</td>
+				<td>
+					<a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
+				</td>
+				<td>
+					<a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
+				</td>
+				<td>
+					<a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
+				</td>
+				<td>
+					<a href="#">Eliminar</a>
+				</td>
+			</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		<h4>No hay capas</h4>
+	{% endif %}
+	<button class="btn default" type="button" onClick='window.location="/vector/import"'>Importar Shapefile</button>
+	<div style="height:100px;"></div>
 {% endblock %}
+
 

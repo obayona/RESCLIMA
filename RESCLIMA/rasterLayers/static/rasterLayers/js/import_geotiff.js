@@ -1,45 +1,3 @@
-// renderiza el progreso del procesamiento
-// de la capa
-function renderProcess(task_id){
-	$.ajax({
-		type: 'get',
-		url: '/vector/get-task-info/',
-		data: {'task_id': task_id},
-		success: function (data) {
-			// recibe un objeto 
-			// data{"result":{"percent":porcentaje,"error":"mensaje de error"}
-			// ,"state":estado del task}
-
-			// hace visible la barra
-			var progressContainer = document.getElementById("progress-container");
-			progressContainer.style.visibility = "visible";
-
-			if (data.state == 'PENDING') {
-				uploadPercent.style.width = "0%";
-				uploadPercentLabel.innerText = "Procesando 0%";
-			}
-			else if (data.state == 'PROGRESS') {
-				var percentComplete_str = data.result.percent + "%"
-				uploadPercent.style.width = percentComplete_str;
-				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
-			}
-			else if(data.state == 'SUCCESS'){
-				document.location.href = "/vector/"
-			}
-			if (data.state != 'SUCCESS') {
-				setTimeout(function () {
-					renderProcess(task_id)
-				}, 100);
-			}
-		},
-		error: function (data) {
-			var error_msg = "Error " + data.error;
-			renderError(error_msg);
-		}
-	});
-}
-
-
 function renderError(error){
 	errorMsg.innerHTML = '<div class="red"><b>' + error + '</b></div>'
 	var progressContainer = document.getElementById("progress-container");
@@ -73,22 +31,14 @@ function createXHR(){
 	return xhr;
 }
 
-
 // se ejecuta cuando la subida de los datos
 // es exitosa
 function successHandler(data){
-	
-	// recibe un objeto 
-	//data{"error":"mensaje de error","task_id":id del task}
-
-	// si no hay error se muestra el
-	// porcentaje de procesamiento
-	if(!data.error){
-		renderProcess(data.task_id);
-	}// si hay un error se muestra
+	if(data=="OK"){
+		window.location = "/raster"
+	}
 	else{
-		// pendiente mejora aspecto del error
-		renderError(data.error);
+		renderError(data);
 	}
 }
 
@@ -113,54 +63,25 @@ function getCategoriesString(){
 
 // revisa las condiciones de los
 // archivos
-function checkFiles(){
-	var file_input = document.getElementById("id_import_files");
+function checkFile(){
+	var file_input = document.getElementById("id_import_file");
 	var list_files = file_input.files;
+	var fileName = list_files[0].name
 
-	var required_extensions = ["shp", "shx", "dbf", "prj"];
-	var has_extension = {};
-	for(var i=0; i<required_extensions.length; i++){
-		var extension = required_extensions[i];
-		has_extension[extension] = false
-	}
-	filename = null;
-	for(var i=0; i<list_files.length; i++){
-		var f = list_files[i];
-		console.log(f.name)
-		var parts = f.name.split(".");
-		console.log(parts) 
-		if(parts.length!=2){
-			return "Los archivos deben tener extension ni contener puntos en el nombre" 
-		}
-		// se obtiene el nombre y extension del archivo
-		var fname = parts[0].toLowerCase();
-		var extension = parts[1].toLowerCase();
-		// se comprueba que todos los archivos se llamen igual
-		if(filename==null){
-			filename = fname
-		}
-		else if(filename!=fname){
-			return "Todos los archivos deben tener el mismo nombre";
-		}
+	var parts = fileName.split(".");
 
-		if (required_extensions.includes(extension)){
-			has_extension[extension] = true;
-		}
-		else{
-			return "No se admite archivo con extension " + extension;
-		}
+	if(parts.length!=2){
+		return "El archivo debe tener extension y no contener puntos en el nombre" 
 	}
-	// se valida que los archivos requeridos existan
-	for(var i=0; i<required_extensions.length; i++){
-		var extension = required_extensions[i];
-		if(!has_extension[extension]){
-			return "Archivo perdido requerido ."+extension
-		}
+	// se obtiene el nombre y extension del archivo
+	var fname = parts[0].toLowerCase();
+	var extension = parts[1].toLowerCase();
+
+	if(extension!="tiff" & extension!="tif"){
+		return "La extension debe ser tif"
 	}
 	return null;
-
 }
-
 
 // se ejecuta cuando se da click en una categoria
 function markCategory(event){
@@ -178,7 +99,7 @@ function markCategory(event){
 function formSubmit(e){
 	e.preventDefault(e);
 	
-	var formImport = $("#shapefileForm");
+	var formImport = $("#rasterForm");
 	// se obtiene los datos del formulario
 	var data = new FormData(formImport.get(0));
 	// se obtiene el string de categorias
@@ -186,7 +107,7 @@ function formSubmit(e){
 	data.append("categories_string",categories_string);
 
 	// se checkean las condiciones de los archivos
-	var result = checkFiles();
+	var result = checkFile();
 	if(result){
 		alert(result);
 		return;
@@ -208,7 +129,6 @@ function formSubmit(e){
 
 $(document).ready(function() {
 	document.getElementById('data_date').valueAsDate = new Date();
-	var formImport = $("#shapefileForm");
+	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
-

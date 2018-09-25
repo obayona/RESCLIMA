@@ -18,66 +18,68 @@ import json
 
 
 def list_rasterlayers(request):
-    rasterlayers = RasterLayer.objects.all().order_by("upload_date");
-    styles = Style.objects.filter(type="raster");
-    obj = {'rasterlayers':rasterlayers,'styles':styles}
-    return render(request,"list_rasterlayers.html",obj)
+	rasterlayers = RasterLayer.objects.all().order_by("upload_date");
+	styles = Style.objects.filter(type="raster");
+	obj = {'rasterlayers':rasterlayers,'styles':styles}
+	return render(request,"list_rasterlayers.html",obj)
 
 def import_raster(request):
-    if request.method == "GET":
-        form = ImportRasterForm()
-        return render(request, "import_raster.html",{'form':form})
-    elif request.method == "POST":
-        form = ImportRasterForm(request.POST,request.FILES)
-        if form.is_valid():
-            err_msg = importer.import_data(request)
-        else:
-            err_msg = form.errors;
-        if err_msg == None:
-            return HttpResponse("OK")
-        else:
-            return HttpResponse(err_msg);
+	if request.method == "GET":
+		form = ImportRasterForm()
+		return render(request, "import_raster.html",{'form':form})
+	elif request.method == "POST":
+		result = {}
+		try:
+			print "se ejecuta la tarea en import_raster"
+			result = importer.import_data(request)
+			print "el resultado de la tarea en import_raster", result
+			return HttpResponse(json.dumps(result),content_type='application/json')
+		except Exception as e:
+			print "El error en import_raster", e
+			result["error"]=str(e);
+			return HttpResponse(json.dumps(result),content_type='application/json')
 
 
 def view_raster(request,rasterlayer_id):
-    try:
-        rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
-        bbox = rasterlayer.bbox.geojson
-        # se comprueba si tiene estilo
-        layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
-        legend = [];
-        if layer_styles.count()==1:
-            style = layer_styles[0]
-            legend = getColorMap(style);
+	try:
+		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
+		bbox = rasterlayer.bbox.geojson
+		# se comprueba si tiene estilo
+		layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
+		legend = [];
+		if layer_styles.count()==1:
+			style = layer_styles[0]
+			legend = getColorMap(style);
 
-    except RasterLayer.DoesNotExist:
-        return HttpResponseNotFound()
+	except RasterLayer.DoesNotExist:
+		return HttpResponseNotFound()
 
-    obj = {"rasterlayer":rasterlayer,
-           "bbox":bbox,
-           "legend":legend}
-    return render(request,"view_raster.html",obj)
+	obj = {"rasterlayer":rasterlayer,
+		"bbox":bbox,
+		"legend":legend}
+
+	return render(request,"view_raster.html",obj)
 
 
 def updateRasterLayer(rasterlayer,request):
-    try:
-        title = request.POST["title"]
-        abstract = request.POST["abstract"]
-        id_style = request.POST["style"]
-        if(title=="" or abstract==""):
-            return "Error en el formulario"
+	try:
+		title = request.POST["title"]
+		abstract = request.POST["abstract"]
+		id_style = request.POST["style"]
+		if(title=="" or abstract==""):
+			return "Error en el formulario"
 
-        rasterlayer.title = title;
-        rasterlayer.abstract = abstract;
-        rasterlayer.save()
-        if id_style != "null":
-            style = Style.objects.get(id=id_style)
-            style.layers.add(rasterlayer)
-            style.save()
-        else:
-            rasterlayer.style_set.clear()
-    except Exception as e:
-        return "Error " + str(e)
+		rasterlayer.title = title;
+		rasterlayer.abstract = abstract;
+		rasterlayer.save()
+		if id_style != "null":
+			style = Style.objects.get(id=id_style)
+			style.layers.add(rasterlayer)
+			style.save()
+		else:
+			rasterlayer.style_set.clear()
+	except Exception as e:
+		return "Error " + str(e)
 
 
 def edit_raster(request, rasterlayer_id):
@@ -179,3 +181,4 @@ def export_style(request,style_id):
   except Exception as e:
     print e
     return HttpResponseNotFound()
+

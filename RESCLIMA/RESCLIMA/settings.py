@@ -126,6 +126,6 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 # paths for user data
 STYLE_FILES_PATH = "/home/vivi/Documents/RESCLIMA/styles/"
-RASTER_FILES_PATH = "/home/vivi/Documents/RESCLIMA/raster/"
+RASTER_FILES_PATH = "/home/manager/rasters/"
 
 
