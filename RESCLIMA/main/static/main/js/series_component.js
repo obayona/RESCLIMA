@@ -1,6 +1,9 @@
 Vue.component("series_component",{
 	// este componente debe reaccionar al arreglo de resultados
 	// this.shared.series
+
+	//PONER COMO DESCRIPCION NUMERO DE ESTACIONES
+	
 	template: `
 		<div>
 			<div v-if="shared.series.length > 0">
