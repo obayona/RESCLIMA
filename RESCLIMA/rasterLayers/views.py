@@ -12,10 +12,10 @@ from style.models import Style
 import datetime
 import time
 import importer
+from search.models import Category
 from style.utils import transformSLD
 from style.utils import getColorMap
 import json
-
 
 def list_rasterlayers(request):
 	rasterlayers = RasterLayer.objects.all().order_by("upload_date");
@@ -25,8 +25,8 @@ def list_rasterlayers(request):
 
 def import_raster(request):
 	if request.method == "GET":
-		form = ImportRasterForm()
-		return render(request, "import_raster.html",{'form':form})
+		categories = Category.objects.all();
+		return render(request, "import_raster.html",{'categories':categories})
 	elif request.method == "POST":
 		result = {}
 		try:
@@ -181,4 +181,5 @@ def export_style(request,style_id):
   except Exception as e:
     print e
     return HttpResponseNotFound()
+
 
