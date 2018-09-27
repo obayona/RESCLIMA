@@ -29,7 +29,7 @@ Vue.component("series_component",{
 								<label v-bind:for="serie.variable_id"></label>
 								{{serie.variable_name}}
 							</span>
-							<p>{{serie.stations_ids}}</p>
+							<p>Se han encontrado {{serie.amount_stations}} estaciones en la búsqueda.</p>
 						</div>
 					</div>		
 				</div>
