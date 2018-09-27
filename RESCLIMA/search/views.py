@@ -66,6 +66,7 @@ def search_series(request):
 				variablesStations[row[0]] = serieData
 	#we then push to an array
 	for id in variablesStations.keys():
+		variablesStations[id]['amount_stations'] = len(variablesStations[id]['stations_ids'])
 		series.append(variablesStations[id])
 	return JsonResponse({"results":series})
 
