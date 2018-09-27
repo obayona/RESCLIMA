@@ -57,7 +57,9 @@ var app = new Vue({
 			request.fail(function(error){
 				console.log(error);
 			});
-		}
+		},
+
+		
 	}
 
 })
