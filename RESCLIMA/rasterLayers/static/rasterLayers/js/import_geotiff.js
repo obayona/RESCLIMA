@@ -1,3 +1,46 @@
+// renderiza el progreso del procesamiento
+// de la capa
+function renderProcess(task_id){
+	$.ajax({
+		type: 'get',
+		url: '/vector/get-task-info/',
+		data: {'task_id': task_id},
+		success: function (data) {
+			// recibe un objeto 
+			// data{"result":{"percent":porcentaje,"error":"mensaje de error"}
+			// ,"state":estado del task}
+
+			// hace visible la barra
+			var progressContainer = document.getElementById("progress-container");
+			progressContainer.style.visibility = "visible";
+
+			if (data.state == 'PENDING') {
+				uploadPercent.style.width = "0%";
+				uploadPercentLabel.innerText = "Procesando 0%";
+			}
+			else if (data.state == 'PROGRESS') {
+				var percentComplete_str = data.result.percent + "%"
+				uploadPercent.style.width = percentComplete_str;
+				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
+			}
+			else if(data.state == 'SUCCESS'){
+				document.location.href = "/raster/"
+			}
+			if (data.state != 'SUCCESS') {
+				setTimeout(function () {
+					renderProcess(task_id)
+				}, 100);
+			}
+		},
+		error: function (data) {
+			console.log("renderError",data);
+			var error_msg = "Error " + data.error;
+			renderError(error_msg);
+		}
+	});
+}
+
+
 function renderError(error){
 	errorMsg.innerHTML = '<div class="red"><b>' + error + '</b></div>'
 	var progressContainer = document.getElementById("progress-container");
@@ -34,11 +77,17 @@ function createXHR(){
 // se ejecuta cuando la subida de los datos
 // es exitosa
 function successHandler(data){
-	if(data=="OK"){
-		window.location = "/raster"
-	}
+	// recibe un objeto 
+	//data{"error":"mensaje de error","task_id":id del task}
+
+	// si no hay error se muestra el
+	// porcentaje de procesamiento
+	if(!data.error){
+		renderProcess(data.task_id);
+	}// si hay un error se muestra
 	else{
-		renderError(data);
+		// pendiente mejora aspecto del error
+		renderError(data.error);
 	}
 }
 
@@ -46,6 +95,7 @@ function successHandler(data){
 function errorHandler(data){
 	status = String(data.status);
 	msg = "Ha ocurrido un error " + status+ " en el servidor"
+	console.log("renderError",data);
 	renderError(msg);
 }
 
@@ -132,3 +182,4 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+

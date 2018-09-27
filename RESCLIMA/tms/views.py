@@ -128,7 +128,7 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		file_path = rasterlayer.file_path
 		file_name = rasterlayer.file_name
 		file_format = rasterlayer.file_format
-		ext = "."+file_format
+		ext = file_format
 		file_name = file_name.replace(ext,"-proj"+ext)
 		fullName = join(file_path,file_name)
 		numBands = rasterlayer.numBands
@@ -169,8 +169,8 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		map.zoom_to_box(mapnik.Box2d(minLong, minLat, maxLong, maxLat))
 		image = mapnik.Image(TILE_WIDTH, TILE_HEIGHT)
 		mapnik.render(map, image)
-		imageData = image.tostring('png')
 
+		imageData = image.tostring('png')
 		return HttpResponse(imageData, content_type="image/png")
 	except:
 		traceback.print_exc()
