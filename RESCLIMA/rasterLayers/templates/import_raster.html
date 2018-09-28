@@ -35,7 +35,7 @@
 							<!-- Titulo -->
 							<div class="row">
 								<div class="input-field col s12">
-									<input type="text" name="title" required="" id="id_title">
+									<input type="text" name="title" required="" id="id_title" data-length="50">
 									<label for="id_title">T&iacute;tulo</label>
 								</div>
 							</div>
@@ -70,12 +70,16 @@
 								</div>
 							</div>
 
+							<div class="row">
+								<div style="heigth:30px;"></div>
+							</div>
+
 							<!-- Botones -->
 							<div class="row">
 								<button type="submit" id="Upload" name="action" class="btn waves-effect waves-light">
 									<i class="material-icons">file_upload</i>Subir
 								</button>
-								<button type="button" id="Cancel" onClick='window.location="/raster";' class="btn waves-effect waves-light">
+								<button type="button" id="Cancel" onClick='window.location="/raster";' class="btn waves-effect waves-light red accent-2">
 									<i class="material-icons">cancel</i>Cancelar
 								</button>
 							</div>
@@ -97,4 +101,5 @@
 </div>
  
 {% endblock %}
+
 

@@ -1,9 +1,11 @@
+
+
 // renderiza el progreso del procesamiento
 // de la capa
 function renderProcess(task_id){
 	$.ajax({
 		type: 'get',
-		url: '/vector/get-task-info/',
+		url: '/get-task-info/',
 		data: {'task_id': task_id},
 		success: function (data) {
 			// recibe un objeto 
@@ -19,7 +21,7 @@ function renderProcess(task_id){
 				uploadPercentLabel.innerText = "Procesando 0%";
 			}
 			else if (data.state == 'PROGRESS') {
-				var percentComplete_str = data.result.percent + "%"
+				var percentComplete_str = data.result.percent.toFixed(2) + "%"
 				uploadPercent.style.width = percentComplete_str;
 				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
 			}
@@ -92,7 +94,7 @@ function successHandler(data){
 	}
 }
 
-// se ejecuta si ocurre un error en la subida el form
+// se ejecuta si ocurre un error en la subida del form
 function errorHandler(data){
 	status = String(data.status);
 	msg = "Ha ocurrido un error " + status+ " en el servidor"
@@ -126,9 +128,7 @@ function checkFiles(){
 	filename = null;
 	for(var i=0; i<list_files.length; i++){
 		var f = list_files[i];
-		console.log(f.name)
 		var parts = f.name.split(".");
-		console.log(parts) 
 		if(parts.length!=2){
 			return "Los archivos deben tener extension ni contener puntos en el nombre" 
 		}
@@ -188,9 +188,13 @@ function formSubmit(e){
 	// se checkean las condiciones de los archivos
 	var result = checkFiles();
 	if(result){
-		alert(result);
+		renderError(result);
 		return;
 	}
+
+	// se desactiva el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = true;
 
 	// se envian los datos al servidor
 	$.ajax({
@@ -211,4 +215,5 @@ $(document).ready(function() {
 	var formImport = $("#shapefileForm");
 	formImport.submit(formSubmit);
 });
+
 

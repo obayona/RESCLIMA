@@ -3,7 +3,7 @@
 function renderProcess(task_id){
 	$.ajax({
 		type: 'get',
-		url: '/vector/get-task-info/',
+		url: '/get-task-info/',
 		data: {'task_id': task_id},
 		success: function (data) {
 			// recibe un objeto 
@@ -19,7 +19,7 @@ function renderProcess(task_id){
 				uploadPercentLabel.innerText = "Procesando 0%";
 			}
 			else if (data.state == 'PROGRESS') {
-				var percentComplete_str = data.result.percent + "%"
+				var percentComplete_str = data.result.percent.toFixed(2) + "%"
 				uploadPercent.style.width = percentComplete_str;
 				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
 			}
@@ -33,7 +33,6 @@ function renderProcess(task_id){
 			}
 		},
 		error: function (data) {
-			console.log("renderError",data);
 			var error_msg = "Error " + data.error;
 			renderError(error_msg);
 		}
@@ -95,7 +94,6 @@ function successHandler(data){
 function errorHandler(data){
 	status = String(data.status);
 	msg = "Ha ocurrido un error " + status+ " en el servidor"
-	console.log("renderError",data);
 	renderError(msg);
 }
 
@@ -159,9 +157,13 @@ function formSubmit(e){
 	// se checkean las condiciones de los archivos
 	var result = checkFile();
 	if(result){
-		alert(result);
+		renderError(result);
 		return;
 	}
+
+	// se desactiva el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = true;
 
 	// se envian los datos al servidor
 	$.ajax({
@@ -182,4 +184,5 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+
 

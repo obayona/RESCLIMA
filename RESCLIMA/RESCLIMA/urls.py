@@ -19,16 +19,18 @@ from main.views import *
 
 urlpatterns = [
     #URLS DE INCIO/CIERRE/PERMISOS
-    url(r'^$', home, name="home"),
-    url(r'^login/$', login, name="login"),
-    url(r'^logout/$', logout, name="logout"),
-    url(r'^noAccess/$', noAccess, name="noAccess"),
-    
-    url(r'^profile/$', profile, name="profile"),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^search/',include("search.urls")),
-    url(r'^vector/', include("vectorLayers.urls")),
-    url(r'^series/', include("timeSeries.urls")),
-    url(r'^raster/', include("rasterLayers.urls")),
-    url(r'^tms/', include("tms.urls")),
+	url(r'^$', home, name="home"),
+	url(r'^login/$', login, name="login"),
+	url(r'^logout/$', logout, name="logout"),
+	url(r'^noAccess/$', noAccess, name="noAccess"),
+	url(r'^get-task-info/',get_task_info,name="taskInfo"),
+
+	url(r'^profile/$', profile, name="profile"),
+	url(r'^admin/', include(admin.site.urls)),
+	url(r'^search/',include("search.urls")),
+	url(r'^vector/', include("vectorLayers.urls")),
+	url(r'^series/', include("timeSeries.urls")),
+	url(r'^raster/', include("rasterLayers.urls")),
+	url(r'^tms/', include("tms.urls")),
 ]
+

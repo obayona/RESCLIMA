@@ -12,5 +12,4 @@ urlpatterns =[
 	url(r'^import_style/(?P<vectorlayer_id>\d+)$', vectorLayers_views.import_style, name="import_style"),
 	url(r'^delete_style/(?P<style_id>\d+)$', vectorLayers_views.delete_style, name="delete_style"),
 	url(r'^export_style/(?P<style_id>\d+)$', vectorLayers_views.export_style),
-	url('get-task-info/', vectorLayers_views.get_task_info),
 ]

@@ -5,7 +5,6 @@ from django.http import HttpResponseRedirect
 from models import VectorLayer
 from search.models import Category
 from style.models import Style
-from style.forms import ImportStyleForm
 from style.utils import transformSLD
 import importer, exporter
 from RESCLIMA import settings
@@ -14,25 +13,13 @@ import time
 import json
 import utils
 from os.path import join
-from celery.result import AsyncResult
 
 
 def list_vectorlayers(request):
 	vectorlayers = VectorLayer.objects.all().order_by("upload_date");
 	return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
-def get_task_info(request):
-	task_id = request.GET.get('task_id', None)
-	if task_id is not None:
-		task = AsyncResult(task_id)
-		print "Lo que recupero  ",task, task.state,task.result,task.backend
-		data = {
-			'state': task.state,
-			'result': task.result,
-	    }
-		return HttpResponse(json.dumps(data), content_type='application/json')
-	else:
-		return HttpResponse('No job id given.')
+
 
 def import_shapefile(request):
 	if request.method == "GET":
@@ -77,11 +64,16 @@ def updateVectorLayer(vectorlayer,request):
 	try:
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
-		if(title=="" or abstract==""):
-			return "Error en el formulario"
+		date_str = request.POST["data_date"] # fecha como string
+		# fecha como objeto datetime
+		data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d') 
+		categories_string = request.POST["categories_string"]
 
+		# se actualiza la capa
 		vectorlayer.title = title;
 		vectorlayer.abstract = abstract;
+		vectorlayer.data_date = data_date;
+		vectorlayer.categories_string = categories_string;
 		vectorlayer.save()
 	except Exception as e:
 		return "Error " + str(e)
@@ -94,15 +86,20 @@ def edit_vectorlayer(request,vectorlayer_id):
 		return HttpResponseNotFound()
 
 	if request.method == "GET":
-		params = {"vectorlayer":vectorlayer,"err_msg":None}
+		categories = Category.objects.all();
+		params = {"vectorlayer":vectorlayer,"categories":categories}
 		return render(request,"update_vectorlayer.html",params)
 
 	elif request.method == "POST":
 		err_msg = updateVectorLayer(vectorlayer,request)
 		if(err_msg==None):
 			return HttpResponseRedirect("/vector")
-		params = {"vectorlayer":vectorlayer,"err_msg":err_msg}
-		return render(request,"update_vectorlayer.html",params)  
+		else:
+			categories = Category.objects.all();
+			params = {"vectorlayer":vectorlayer,
+					  "err_msg":err_msg,
+					  "categories":categories}
+			return render(request,"update_vectorlayer.html",params)
 
 
 # Styles
@@ -144,19 +141,16 @@ def import_style(request,vectorlayer_id):
 		return HttpResponseNotFound()
 
 	if request.method == "GET":
-		form = ImportStyleForm()
-		return render(request,"import_style.html",{"form":form});
+		params = {"vectorlayer_id":vectorlayer_id}
+		return render(request,"import_style.html",params);
 
 	if request.method == "POST":
-		err_msg = None
-		form = ImportStyleForm(request.POST,request.FILES)
-		if form.is_valid():
-			err_msg = importStyle(request,vectorlayer)
-			if(err_msg==None):
-				return HttpResponseRedirect("/vector")
-
-	params = {"form":form,"err_msg":err_msg}
-	return render(request,"import_style.html",params)
+		err_msg = importStyle(request,vectorlayer)
+		if(err_msg==None):
+			return HttpResponseRedirect("/vector/edit/"+vectorlayer_id)
+		else:
+			params = {"vectorlayer_id":vectorlayer_id,"err_msg":err_msg}
+			return render(request,"import_style.html",params)
 
 def delete_style(request,style_id):
 	try:
@@ -178,4 +172,5 @@ def export_style(request,style_id):
 	except Exception as e:
 		print e
 		return HttpResponseNotFound()
+
 
