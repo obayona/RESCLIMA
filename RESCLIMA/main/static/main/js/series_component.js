@@ -10,7 +10,7 @@ Vue.component("series_component",{
 				<div>
 					<a
 					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
-					v-bind:disabled="selected_count==0">
+					v-bind:disabled="selected_count==0" v-on:click="visualizarSeries">
 						<i class="material-icons left">remove_red_eye</i>Visualizar</a>
 					<a
 					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
@@ -51,6 +51,15 @@ Vue.component("series_component",{
 				this.selected_count +=1;
 			if(serie.selected==false)
 				this.selected_count -=1;
-		}
+		},
+		visualizarSeries(){
+			//redirect to the url to visualize the selected time series
+			var url = "search/series/visualize/" + this.shared.getSeriesParams();
+			console.log("Url de series a visualizar: "+ url)
+			//this.$router.push({ name: url})
+			//this.$router.push({ name: "search/series/visualize", params: this.shared.series})
+			this.$router.replace({query:this.shared.getSeriesParams});
+		},
+		
 	}
 })

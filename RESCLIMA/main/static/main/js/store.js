@@ -83,6 +83,27 @@ var store = {
 		console.log("esto estoy mandando", queryDict)
 		return JSON.stringify(queryDict)
 	},
+	getSeriesParams:function(){
+		//get the selected series objects inside shared, and form the url to visualize the series
+		var selected_series_str="?variables=";
+		for (var i=0;i<this.series.length; i++){
+			var current = this.series[i];
+			if(current["selected"]){
+				selected_series_str+=current["variable_id"]+"=[";
+				iters = current["stations_ids"].length;
+				for(var i=0; i<iters; i++){
+					if(i!=iters-1){
+						selected_series_str+=current["stations_ids"][i]+",";
+					}
+					else{
+						selected_series_str+=current["stations_ids"][i]+"];";
+					}
+					
+				}
+			}
+		}
+		return selected_series_str;
+	}
 	
 }
 
