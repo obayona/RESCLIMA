@@ -30,8 +30,8 @@ def import_data(request):
 	for f in list_files:
 		parts = os.path.splitext(f.name)
 		# se obtiene el nombre y extension del archivo
-		fname = parts[0].lower()
-		extension = parts[1].lower()
+		fname = parts[0]
+		extension = parts[1]
 		# se comprueba que todos los archivos se llamen igual
 		if(filename==None):
 			filename = fname
@@ -53,8 +53,8 @@ def import_data(request):
 
 	# se guardan los archivos en una carpeta temporal
 	temp_dir = tempfile.mkdtemp()
-	vectorlayer_name = filename + ".shp" # nombre del archivo shapefile
-	
+	vectorlayer_name = filename + ".shp" # nombre del archivo shapefile	
+
 	for ftemp in list_files:
 
 		# si el objeto ftemp de tipo UploadedFile, 
@@ -71,17 +71,23 @@ def import_data(request):
 
 		# nueva ubicacion del archivo
 		ftemp_path_dst = os.path.join(temp_dir,ftemp.name)
-		print ftemp_path_dst
+		ftemp_path_dst = ftemp_path_dst.decode('utf8')
+
 		if (hasattr(ftemp,'temporary_file_path')):
+			print "en el disco"
 			# el archivo ya esta en disco
 			ftemp_path = ftemp.temporary_file_path()
+			ftemp_path = ftemp_path.decode('utf8')
 			# mueve el archivo
 			shutil.move(ftemp_path,ftemp_path_dst)
 		else:
+			print "en memoria"
 			# el archivo esta en memoria
 
 			# se crea un archivo en el directorio temporal
 			f = open(ftemp_path_dst, 'wb+')
+
+			print "el archivo se ceo bien"
 			# se guardan los datos en el archivo	
 			for chunk in ftemp.chunks():
 				f.write(chunk)
@@ -89,6 +95,7 @@ def import_data(request):
 				
 		ftemp.close()
 
+	print "todo bien"
 	# se llama a la tarea de celery
 	# para que se ejecute asincronicamente
 	vectorlayer_params = {}
@@ -104,5 +111,6 @@ def import_data(request):
 	# se retorna el id task
 	result["error"] = None
 	result["task_id"] = task.id;
+	print "todo correcto"
 	return result;
 

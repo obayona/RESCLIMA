@@ -10,22 +10,36 @@ function renderProcess(task_id){
 			// data{"result":{"percent":porcentaje,"error":"mensaje de error"}
 			// ,"state":estado del task}
 
-			// hace visible la barra
+			if(data["result"]["error"]){
+				renderError(data["result"]["error"]);
+				return;
+			}
+
+			// se hace visible la barra
+			// de progreso
 			var progressContainer = document.getElementById("progress-container");
 			progressContainer.style.visibility = "visible";
 
+			// si el estado de la tarea en celery
+			// es PENDING. Se muestra un mensaje: Procesando 0%
 			if (data.state == 'PENDING') {
 				uploadPercent.style.width = "0%";
 				uploadPercentLabel.innerText = "Procesando 0%";
 			}
-			else if (data.state == 'PROGRESS') {
+			// Si el estado de la tarea en Celery es PROGRESS o SUCCESS
+			// se muestra el progreso actual en la barra
+			else if (data.state == 'PROGRESS' || data.state == 'SUCCESS') {
 				var percentComplete_str = data.result.percent.toFixed(2) + "%"
 				uploadPercent.style.width = percentComplete_str;
 				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
 			}
-			else if(data.state == 'SUCCESS'){
+			
+			// Si el estado es SUCCESS, se redirije a /vector/
+			if(data.state == 'SUCCESS'){
 				document.location.href = "/raster/"
 			}
+			// si el estado es diferente de SUCCESS
+			// se vuelve  a pedir informacion de la tarea de Celery 
 			if (data.state != 'SUCCESS') {
 				setTimeout(function () {
 					renderProcess(task_id)
@@ -184,5 +198,6 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+
 
 
