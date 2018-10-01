@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import shutil
 import os
 import datetime
 from osgeo import gdal
@@ -18,20 +17,42 @@ def import_raster_layer(rasterlayer_params):
 	extension = rasterlayer_params["extension"]
 	title = rasterlayer_params["title"]
 	abstract = rasterlayer_params["abstract"]
-	date_str = rasterlayer_params["date_str"] # fecha como string
-	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d') # fecha como objeto datetime
+	# fecha como string
+	date_str = rasterlayer_params["date_str"]
+	# fecha como objeto datetime
+	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	categories_string = rasterlayer_params["categories_string"]
 
-	# result del task
-	result = {};
+	'''
+	Diccionario con el resultado de la operacion.
+	Este diccionario  estara  dentro de un objeto 
+	celery.result.AsyncResult
+	result = {
+				"error": string  con  mensaje de error, 
+						 si no hay error, esta clave no 
+						 existira o sera None
+				"percent": porcentaje de progreso de la
+						   operacion
+			}
+	'''
+	result = {}
 
-	# se actualiza el progreso
+	# se actualiza el progreso 5%
 	result["error"]=None
 	result["percent"]=5
 	current_task.update_state(state='PROGRESS',meta=result)
 
 	# se reproyecta la capa a EPSG:3857
-	gdal.Warp(fullName_proj,fullName, dstSRS="EPSG:3857")
+	try:
+		gdal.Warp(fullName_proj,fullName, dstSRS="EPSG:3857")
+	except Exception as e:
+		# se borra todo
+		os.remove(fullName)
+		os.remove(fullName_proj)
+		# se actualiza con un error
+		result["error"]="Error al proyectar a EPSG:3857"+str(e)
+		current_task.update_state(state='FAILURE',meta=result)
+		return result
 
 	# se actualiza el progreso
 	result["error"]=None
@@ -40,6 +61,15 @@ def import_raster_layer(rasterlayer_params):
 
 	# se obtiene informacion de la capa
 	datasource = gdal.Open(fullName)
+	if(datasource==None):
+		# se borra todo
+		os.remove(fullName)
+		os.remove(fullName_proj)
+		# se actualiza con un error
+		result["error"]="Error al abrir la capa"
+		current_task.update_state(state='FAILURE',meta=result)
+		return result
+
 	numBands = datasource.RasterCount
 	srs_wkt = datasource.GetProjection()
 
@@ -50,6 +80,8 @@ def import_raster_layer(rasterlayer_params):
 
 	# se obtiene el bbox
 	bbox = getBBox(datasource)
+	if bbox==None:
+		print "esta capa no se puede visualizar"
 
 	# se actualiza el progreso
 	result["error"]=None

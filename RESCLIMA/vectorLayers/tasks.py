@@ -30,9 +30,9 @@ def import_vector_layer(vectorlayer_params):
 	categories_string = vectorlayer_params["categories_string"]
 
 	'''
-	Diccionario con  el resultado   de la operacion,
-	tiene las claves. Este diccionario estara dentro 
-	de un objeto celery.result.AsyncResult
+	Diccionario con el resultado de la operacion.
+	Este  diccionario  estara dentro de un objeto 
+	celery.result.AsyncResult
 	result = {
 				"error": string  con  mensaje de error, 
 						 si no hay error, esta clave no 
