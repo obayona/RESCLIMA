@@ -1,12 +1,32 @@
 # -*- encoding: utf-8 -*-
-import os 
+import os
 import tempfile
 import shutil
 from tasks import import_vector_layer
 
-# pendiente estilos
+''' 
+Funcion para importar los datos de
+un shapefile. Recibe un request de
+django
+(django.http.request.HttpRequest).
+Valida   y  guarda  los  archivos.
+Ejecuta  una tarea  de  Celery que
+guardara los datos  en la  base de
+datos.
+'''
 def import_data(request):
-	# objeto con el resultado de la operacion
+	'''
+	result={}: Diccionario con el resultado
+	de la operacion. El diccionario tiene los
+	siguientes keys:
+	{
+		"error": es un string con mensaje de error
+				 o None si no hay error,
+		"task_id": string con el id de la tarea de Celery.
+				   Si hay error el diccionario no tendra
+				   este key
+	}
+	'''
 	result = {}
 
 	# se obtienen las variables del POST
@@ -17,9 +37,11 @@ def import_data(request):
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
 
-
-	# se verifica que esten unicamente los archivos requeridos
-	# y que todos deben tener el mismo nombre
+	'''
+	Se verifica que esten unicamente los archivos
+	requeridos y que todos  deben tener  el mismo
+	nombre (Este es  un  requisito  de shapefile)
+	'''
 	required_extensions = [".shp", ".shx", ".dbf", ".prj"]
 	has_extension = {}
 
@@ -28,8 +50,8 @@ def import_data(request):
 
 	filename = None;
 	for f in list_files:
-		parts = os.path.splitext(f.name)
 		# se obtiene el nombre y extension del archivo
+		parts = os.path.splitext(f.name)
 		fname = parts[0]
 		extension = parts[1]
 		# se comprueba que todos los archivos se llamen igual
@@ -48,55 +70,59 @@ def import_data(request):
 	# se valida que los archivos requeridos existan
 	for extension in required_extensions:
 		if (not(has_extension[extension])):
-			result["error"] = "Archivo perdido requerido ."+extension
+			result["error"] = "Archivo perdido requerido ." + extension
 			return result
 
-	# se guardan los archivos en una carpeta temporal
+	# se crea una una carpeta temporal
+	# para guardar los archivos
 	temp_dir = tempfile.mkdtemp()
-	vectorlayer_name = filename + ".shp" # nombre del archivo shapefile	
+	vectorlayer_name = filename + ".shp" # nombre del archivo shapefile
 
 	for ftemp in list_files:
-
-		# si el objeto ftemp de tipo UploadedFile, 
-		# tiene el atributo: ftemp.file.name
-		# significa que ftemp es una instancia de TemporaryUploadedFile
-		# lo que siginifica que el archivo esta guardado en el disco.
-		# Si ftemp no tiene el atributo: ftemp.file.name, 
-		# ftemp es una instancia de InMemoryUploadedFile, 
-		# lo que significa que los datos del archivo estan en memoria.
-		# Si loas archivos ya estan en el disco, se los mueve hacia un directorio
-		# temporal.
-		# Si los archivos estan memoria, se los escribe en el disco dentro del
-		# directorio temporal
+		'''
+		Si el objeto  ftemp de tipo  UploadedFile, tiene
+		el atributo: ftemp.file.name significa que ftemp
+		es una instancia de TemporaryUploadedFile lo que
+		siginifica  que el archivo  esta  guardado en el
+		disco en un directorio temporal.
+		Si ftemp no tiene el  atributo: ftemp.file.name,
+		ftemp es una  instancia de InMemoryUploadedFile,
+		lo que significa que los datos del archivo estan
+		en memoria.
+		Si los  archivos  ya  estan en el  disco, se los
+		mueve hacia el directorio temporal temp_dir.
+		Si los archivos estan memoria, se los escribe en
+		el disco dentro del directorio temporal temp_dir
+		'''
 
 		# nueva ubicacion del archivo
 		ftemp_path_dst = os.path.join(temp_dir,ftemp.name)
-		ftemp_path_dst = ftemp_path_dst.encode('utf-8')		
+		# se codifica a utf-8 el nombre del archivo
+		ftemp_path_dst = ftemp_path_dst.encode('utf-8')
 
 		if (hasattr(ftemp,'temporary_file_path')):
-			print "en el disco"
 			# el archivo ya esta en disco
 			ftemp_path = ftemp.temporary_file_path()
 			# mueve el archivo
 			shutil.move(ftemp_path,ftemp_path_dst)
 		else:
-			print "en memoria"
 			# el archivo esta en memoria
 			
 			# se crea un archivo en el directorio temporal
 			f = open(ftemp_path_dst, 'wb+')
 			
-			print "el archivo se creo bien"
-			# se guardan los datos en el archivo	
+			# se guardan los datos en el archivo
 			for chunk in ftemp.chunks():
 				f.write(chunk)
 			f.close()
 				
 		ftemp.close()
 
-	print "todo bien"
 	# se llama a la tarea de celery
 	# para que se ejecute asincronicamente
+	
+	# La tarea de celery requiere un diccionario
+	# con parametros
 	vectorlayer_params = {}
 	vectorlayer_params["temp_dir"] = temp_dir
 	vectorlayer_params["vectorlayer_name"] = vectorlayer_name
@@ -107,9 +133,8 @@ def import_data(request):
 	vectorlayer_params["categories_string"] = categories_string
 
 	task = import_vector_layer.delay(vectorlayer_params)
-	# se retorna el id task
+	# se retorna que no hay error y el id del task
 	result["error"] = None
 	result["task_id"] = task.id;
-	print "todo correcto"
-	return result;
 
+	return result;
