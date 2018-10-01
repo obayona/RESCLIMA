@@ -49,10 +49,9 @@ def import_vector_layer(vectorlayer_params):
 	except Exception as e:
 		# si la capa no es valida se borra la carpeta temporal
 		shutil.rmtree(temp_dir)
-		print "el super error****",e
-		# se envia un mensaje de error
+		# actualiza con un mensaje de error
 		result["error"] = " La capa vectorial no es válida " + str(e)
-		current_task.update_state(state='FAIL',meta=result)
+		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
 	# actualiza el porcentaje de avance de la tarea: 5%
@@ -154,10 +153,11 @@ def import_vector_layer(vectorlayer_params):
 				# si hay un error en un valor se cancela todo
 				shutil.rmtree(temp_dir)
 				vectorlayer.delete()
-				# retorna un objeto con error
+				# actualiza porque hay error
 				result["error"]="Error al obtener los valores del atributo " + str(attr.name)
-				current_task.update_state(state='FAIL',meta=result)
+				current_task.update_state(state='FAILURE',meta=result)
 				return result
+
 			attr_value = AttributeValue(feature=feature,attribute=attr,value=value)
 			attr_value.save()
 		# se actualiza el porcentaje de avance
@@ -191,6 +191,4 @@ def import_vector_layer(vectorlayer_params):
 
 	result["percent"]=100
 	return result
-
-
 

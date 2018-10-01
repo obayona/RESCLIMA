@@ -54,7 +54,7 @@ def get_task_info(request):
 		return HttpResponse(json.dumps(data), content_type='application/json')
 	else:
 		data = {}
-		data["state"]="FAIL"
+		data["state"]="FAILURE"
 		data["result"]={"error":"Error, el task se perdió"}
 		return HttpResponse(json.dumps(data), content_type='application/json')
 
