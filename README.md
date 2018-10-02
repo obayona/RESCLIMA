@@ -14,15 +14,15 @@ Aplicacion web hecha en Django.
 Carpeta con datos de prueba
 
 
-- ShapeEditor/
+- StationsScripts/
 
-Es un proyecto en Django con la implementacion del upload y download de un shapefile (Va a ser eliminado)
+Scripts para descargar los datos de las estaciones meteorologicas
 
 
 -------------------------
 # Dependencias
 
-Django 1.8
+Django 1.11
 
 postgres 10
 
@@ -33,8 +33,6 @@ gdal
 mapnik
 
 lxml
-
-floppyforms
 
 TimescaleDB
 
@@ -66,21 +64,25 @@ from osgeo import ogr
 https://askubuntu.com/questions/1009975/unable-to-install-postgresql-10-on-ubuntu-16-04
 
 
-# Instalacion Postgis
+# Instalacion Postgis (Ubuntu)
 
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+
 $ sudo apt-get update
+
 $ sudo apt-get install postgis
 
 Se debe instalar PostGIS version 2.4.4
 
 
-# Instala TimescaleDB
+# Instala TimescaleDB (Ubuntu)
 
 $ sudo add-apt-repository ppa:timescale/timescaledb-ppa
+
 $ sudo apt-get update
 
 Instalar para postgres 10:
+
 $ sudo apt install timescaledb-postgresql-10
 
 $ sudo nano /etc/postgresql/(postgres_version)/main/postgresql.conf
@@ -147,9 +149,14 @@ python manage.py loaddata TimeSeries/fixtures/variables.json
 
 python manage.py loaddata TimeSeries/fixtures/stationTypes.json 
 
+En RESCLIMA/RESCLIMA se encuentra un script.sql con TRIGGERS, INDEX y FUNCTIONS. Entonces hay que conectarse a la base de datos y ejecutar ese script 
+
 # Instalacion Mapnik
 
 $ sudo pip install mapnik
 
 
+# Configurar Proyecto
+
+En setting.py se debe modificar los parametros: STYLE_FILES_PATH y RASTER_FILES_PATH
 
