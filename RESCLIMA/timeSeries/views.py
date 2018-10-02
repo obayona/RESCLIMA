@@ -84,9 +84,6 @@ def upload_file(request):
 
 
 def visualize(request):
-    return HttpResponse("OK")
-
-def get_measurements(request):
 	if request.method == 'GET':
 		if 'variables' in request.GET:
 			variablesStr = request.GET['variables']
@@ -101,3 +98,5 @@ def get_measurements(request):
 				stations = []
 				for stationId in stationsList:
 					stations.append(int(stationId))
+	return HttpResponse("OK")
+
