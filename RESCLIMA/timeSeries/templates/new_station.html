@@ -1,7 +1,7 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title%}RESCLIMA | SERIES DE TIEMPO{% endblock %}
+{% block title%}RESCLIMA | INGRESAR ESTACION{% endblock %}
 
 {% block content %}
 <div class="section">
@@ -42,21 +42,21 @@
 						<!--Latitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_latitude" name="latitude" required="" type="number" />
+								<input id="id_latitude" name="latitude" required="" type="number" min="-90.0" max="90.0"/>
 								<label for="id_latitude">Latitud</label>
 							</div>
 						</div>
 						<!--longitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_longitude" name="longitude" required="" type="number" />
+								<input id="id_longitude" name="longitude" required="" type="number" min="-180.0" max="180.0"/>
 								<label for="id_longitude">Longitud</label>
 							</div>
 						</div>
 						<!--Frecuencia-->
 						<div class="row optional">
 							<div class="input-field col s12">
-								<input id="id_frequency" name="frequency" step="1" type="number"/>
+								<input id="id_frequency" name="frequency" step="1" type="number" min="15" max="60" value="15"/>
 								<label for="id_frequency">Frecuencia de requerimientos (en minutos)</label>
 							</div>
 						</div>
@@ -95,19 +95,23 @@
 
 	var form = $("#StationForm");
 
-	function errorHandler(data){
-		status = String(data.status);
-		msg = "<b><i>Ha ocurrido un error " + status+ " en el servidor</i></b>"
-		errorMsg.innerHTML = msg;
-		console.log(data);
+	function renderError(error){
+		errorMsg.innerHTML = '<div class="red"><b>' + error + '</b></div>'
+		window.scrollTo(0, 0);
 	}
 
-	function successHandler(data){
-		if(data=="OK"){
-		window.location = "/series"
+	function errorHandler(data){
+		status = String(data.status);
+		msg = "Ha ocurrido un error " + status+ " en el servidor"
+		renderError(error);
+	}
+
+	function successHandler(errorMsg){
+		if(errorMsg!="None"){
+			renderError(errorMsg);
 		}
 		else{
-		errorMsg.innerHTML = "<b><i>"+data+"</i></b>"
+			window.location = "/series"
 		}
 	}
 
@@ -167,5 +171,3 @@
 
 </script>
 {% endblock %}
-
-

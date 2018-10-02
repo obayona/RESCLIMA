@@ -21,14 +21,19 @@ def addSensor(data):
 		frequency = data["frequency"];
 		token = data["token"];
 
+		# se recupera el tipo de estacion
 		stationType = StationType.objects.get(id=stationType_id);
 		automatic = stationType.automatic;
+		# se crea una estacion
 		station = Station();
 		station.serialNum = serialNum;
 		station.location = Point(longitude,latitude);
 		station.active = True;
 		station.stationType = stationType;
 
+		# si la estacion es automatica
+		# se agregan la frecuencia
+		# y el token
 		if(automatic==True):
 			if(frequency == "" or token == ""):
 				return "Error: faltan argumentos";
@@ -48,22 +53,10 @@ def new_sensor(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
 		options = {'stationTypes':station_types}
-		return render(request, 'new_sensor.html',options)
+		return render(request, 'new_station.html',options)
 	elif request.method == "POST":
-		err_msg = None;
-		'''
-		form = StationForm(request.POST)
-		if form.is_valid():
-			err_msg = addSensor(request.POST);
-		else:
-			err_msg = form.errors
-
-		if(err_msg==None):
-			return HttpResponse("OK")
-		else:
-			return HttpResponse(err_msg);
-		'''
-		return HttpResponse("OK")
+		err_msg = addSensor(request.POST);
+		return HttpResponse(err_msg);
 
 
 def upload_file(request):
