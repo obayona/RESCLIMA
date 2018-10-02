@@ -98,6 +98,13 @@ def edit_vectorlayer(request,vectorlayer_id):
 					  "categories":categories}
 			return render(request,"update_vectorlayer.html",params)
 
+def delete_vectorLayer(request,vectorlayer_id):
+	try:
+		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
+		vectorlayer.delete();
+		return HttpResponse("OK");
+	except VectorLayer.DoesNotExist:
+		return HttpResponseNotFound()
 
 # Styles
 def importStyle(request,vectorlayer):
