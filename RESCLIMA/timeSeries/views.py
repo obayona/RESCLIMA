@@ -85,3 +85,19 @@ def upload_file(request):
 
 def visualize(request):
     return HttpResponse("OK")
+
+def get_measurements(request):
+	if request.method == 'GET':
+		if 'variables' in request.GET:
+			variablesStr = request.GET['variables']
+			print variablesStr
+			variables = variablesStr.strip().split['|']
+			for variable in variables:
+				stationsStrStart = variable.strip().find('[')
+				stationsStrEnd = variable.strip().find(']')
+				variableId = int(variable.strip()[0:stationsStrStart])
+				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
+				stationsList = stationsList.strip().split(',')
+				stations = []
+				for stationId in stationsList:
+					stations.append(int(stationId))
