@@ -1,5 +1,7 @@
 # encoding: utf-8
 from layer_searcher import create_str_polygon_postgis
+from utils import parseUserTextInput;
+
 
 def getTsTextQuery(query_object):
 	#query object fields : text, polygon, startDate, endDate
@@ -24,23 +26,16 @@ def getTsTextQuery(query_object):
 		qs = qs + 'AND "timeSeries_station"."id" in ( SELECT "timeSeries_measurements"."idStation" FROM "timeSeries_measurements" WHERE %s <= "timeSeries_measurements"."ts" AND %s >= "timeSeries_measurements"."ts" ) '
 		params.append(startDateStr)
 		params.append(endDateStr)
-	if(query_object.has_key("text")):
-		qs = qs + 'AND "timeSeries_variable"."ts_index" @@ to_tsquery(\'spanish\', %s) '
-		params.append(query_object["text"])
+	if(query_object.has_key("text") or query_object.has_key("categories") ):
+		#check if the user entered a text or categories to the search
+		text = query_object.get("text","")
+		categories = query_object.get("categories", [])
+		if(text or len(categories)>0):
+			ts_query_str = parseUserTextInput(text,categories);
+			qs = qs + 'AND "timeSeries_variable"."ts_index" @@ to_tsquery(\'spanish\', %s) '
+			params.append(ts_query_str)
 	qs = qs + 'LIMIT 10;'
 	print("EL QUERY DE BUSQUEDA  "+ qs)
 	return qs, params
 
-""""def getStationsVariables(text):
-	variableStations = []
-	qs, params = getTsTextQuery(text)
-	with connection.cursor() as cursor:
-		cursor.execute(qs, params)
-		rows = cursor.fetchall()
-		for row in rows:
-			variableStation = {}
-			variableStation['id_station'] = row[0]
-			variableStation['name'] = row[1]
-			variableStation['id_variable'] = row[2]
-			variableStations.append(variableStation)
-	return variableStations"""
+
