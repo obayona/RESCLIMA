@@ -102,6 +102,12 @@ var store = {
 			}
 		}
 		selected_series_str = selected_series_str.substring(0, selected_series_str.length - 1);
+		if(this.ini_date!=''){
+			selected_series_str+="&ini_date="+this.ini_date;
+		}
+		if(this.end_date!=''){
+			selected_series_str+="&end_date="+this.end_date;
+		}
 		return selected_series_str;
 	}
 	
