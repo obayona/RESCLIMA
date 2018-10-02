@@ -14,11 +14,6 @@ Aplicacion web hecha en Django.
 Carpeta con datos de prueba
 
 
-- RESCLIMA/
-
-Aplicacion Web de django
-
-
 - StationsScripts/
 
 Scripts para descargar los datos de las estaciones meteorologicas
@@ -72,7 +67,9 @@ https://askubuntu.com/questions/1009975/unable-to-install-postgresql-10-on-ubunt
 # Instalacion Postgis (Ubuntu)
 
 $ sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+
 $ sudo apt-get update
+
 $ sudo apt-get install postgis
 
 Se debe instalar PostGIS version 2.4.4
@@ -81,9 +78,11 @@ Se debe instalar PostGIS version 2.4.4
 # Instala TimescaleDB (Ubuntu)
 
 $ sudo add-apt-repository ppa:timescale/timescaledb-ppa
+
 $ sudo apt-get update
 
 Instalar para postgres 10:
+
 $ sudo apt install timescaledb-postgresql-10
 
 $ sudo nano /etc/postgresql/(postgres_version)/main/postgresql.conf
