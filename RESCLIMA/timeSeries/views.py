@@ -88,7 +88,7 @@ def visualize(request):
 		if 'variables' in request.GET:
 			variablesStr = request.GET['variables']
 			print variablesStr
-			variables = variablesStr.strip().split['|']
+			variables = variablesStr.strip().split('|')
 			for variable in variables:
 				stationsStrStart = variable.strip().find('[')
 				stationsStrEnd = variable.strip().find(']')
