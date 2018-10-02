@@ -63,7 +63,7 @@ def import_data(request):
 	if (hasattr(ftemp,'temporary_file_path')):
 		ftemp_path = ftemp.temporary_file_path()
 		# mueve el archivo
-		shutil.move(ftemp,fullName)
+		shutil.move(ftemp_path,fullName)
 	else:
 		# el archivo esta en memoria y se debe 
 		# escribir en el disco
@@ -79,9 +79,8 @@ def import_data(request):
 	# para crear el nuevo nombre
 	fullName_u = fullName.decode('utf-8')
 	fullName_proj = fullName_u.replace(extension,"-proj"+extension)
-	# se lo tranforma el nuevo unicode a str	
+	# se lo tranforma el nuevo unicode a str
 	fullName_proj = fullName_proj.encode('utf-8')
-
 	# se ejecuta la tarea en Celery
 	rasterlayer_params = {}
 	rasterlayer_params["path"] = path

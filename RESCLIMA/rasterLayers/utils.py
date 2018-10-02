@@ -4,6 +4,8 @@ from django.contrib.gis.geos import Polygon
 
 def getBBox(datasource):
 	gt = datasource.GetGeoTransform()
+	if gt==None:
+		return None
 	cols = datasource.RasterXSize
 	rows = datasource.RasterYSize
 	ext=[]

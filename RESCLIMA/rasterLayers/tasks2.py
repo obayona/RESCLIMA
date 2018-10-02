@@ -42,22 +42,36 @@ def import_raster_layer(rasterlayer_params):
 	result["percent"]=5
 	current_task.update_state(state='PROGRESS',meta=result)
 
+	print "intentando transformar la capa"
 	# se reproyecta la capa a EPSG:3857
-	datasource = gdal.Warp(fullName_proj,fullName, dstSRS="EPSG:3857")
-	if datasource==None:
+	try:
+		gdal.Warp(fullName_proj,fullName, dstSRS="EPSG:3857")
+	except Exception as e:
+		print "error mortal"
 		# se borra todo
 		os.remove(fullName)
-		if os.path.exists(fullName_proj):
-			os.remove(fullName_proj)
+		os.remove(fullName_proj)
 		# se actualiza con un error
-		result["error"]="Error al proyectar a EPSG:3857"
+		result["error"]="Error al proyectar a EPSG:3857"+str(e)
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
+	print "capa abierta"
 	# se actualiza el progreso
 	result["error"]=None
 	result["percent"]=20
 	current_task.update_state(state='PROGRESS',meta=result)
+
+	# se obtiene informacion de la capa
+	datasource = gdal.Open(fullName)
+	if(datasource==None):
+		# se borra todo
+		os.remove(fullName)
+		os.remove(fullName_proj)
+		# se actualiza con un error
+		result["error"]="Error al abrir la capa"
+		current_task.update_state(state='FAILURE',meta=result)
+		return result
 
 	numBands = datasource.RasterCount
 	srs_wkt = datasource.GetProjection()
