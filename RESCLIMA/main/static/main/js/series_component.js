@@ -54,11 +54,10 @@ Vue.component("series_component",{
 		},
 		visualizarSeries(){
 			//redirect to the url to visualize the selected time series
-			var url = "search/series/visualize/" + this.shared.getSeriesParams();
+			var url = "series/view/" + this.shared.getSeriesParams();
 			console.log("Url de series a visualizar: "+ url)
-			//this.$router.push({ name: url})
-			//this.$router.push({ name: "search/series/visualize", params: this.shared.series})
-			this.$router.replace({query:this.shared.getSeriesParams});
+			this.$router.replace(url);
+			this.$router.go();
 		},
 		
 	}

@@ -82,3 +82,6 @@ def upload_file(request):
 		else:
 			return HttpResponse(err_msg);
 
+
+def visualize(request):
+    return HttpResponse("OK")
