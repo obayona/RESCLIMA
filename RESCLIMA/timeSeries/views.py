@@ -98,5 +98,12 @@ def visualize(request):
 				stations = []
 				for stationId in stationsList:
 					stations.append(int(stationId))
+		ini_date = ''
+		end_date = ''
+		if 'ini_date' in request.GET:
+			ini_date = request.GET['ini_date']
+		if 'end_date' in request.GET:
+			end_date = request.GET['end_date']
+		#Call to series_searcher.py method
 	return HttpResponse("OK")
 
