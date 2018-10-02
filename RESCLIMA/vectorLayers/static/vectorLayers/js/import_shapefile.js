@@ -61,6 +61,9 @@ function renderError(error){
 	var progressContainer = document.getElementById("progress-container");
 	progressContainer.style.visibility = "hidden";
 	window.scrollTo(0, 0);
+	// se activa el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = false;
 }
 
 // crea un objeto xmlhttprequest 

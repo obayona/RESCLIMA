@@ -28,15 +28,12 @@ def import_shapefile(request):
 	elif request.method == "POST":
 		result = {}
 		try:
-			print "se ejecuta la tarea en import_shapefile"
+			# se ejecuta la tarea de Celery
 			result = importer.import_data(request)
-			print "el resultado de la tarea en import_shapefile", result
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
-			print "El error en import_shapefile", e
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
-    
 
 def export_shapefile(request, vectorlayer_id):
 	try:
@@ -149,7 +146,7 @@ def import_style(request,vectorlayer_id):
 
 	if request.method == "GET":
 		params = {"vectorlayer_id":vectorlayer_id}
-		return render(request,"import_style.html",params);
+		return render(request,"vectorLayers/import_style.html",params);
 
 	if request.method == "POST":
 		err_msg = importStyle(request,vectorlayer)
@@ -157,7 +154,7 @@ def import_style(request,vectorlayer_id):
 			return HttpResponseRedirect("/vector/edit/"+vectorlayer_id)
 		else:
 			params = {"vectorlayer_id":vectorlayer_id,"err_msg":err_msg}
-			return render(request,"import_style.html",params)
+			return render(request,"vectorLayers/import_style.html",params)
 
 def delete_style(request,style_id):
 	try:
@@ -177,7 +174,6 @@ def export_style(request,style_id):
 		sld = f.read()
 		return HttpResponse(sld)
 	except Exception as e:
-		print e
 		return HttpResponseNotFound()
 
 

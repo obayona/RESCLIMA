@@ -89,19 +89,19 @@ var store = {
 		for (var i=0;i<this.series.length; i++){
 			var current = this.series[i];
 			if(current["selected"]){
-				selected_series_str+=current["variable_id"]+"=[";
+				selected_series_str+=current["variable_id"]+"[";
 				iters = current["stations_ids"].length;
-				for(var i=0; i<iters; i++){
-					if(i!=iters-1){
-						selected_series_str+=current["stations_ids"][i]+",";
+				for(var j=0; j<iters; j++){
+					if(j!=iters-1){
+						selected_series_str+=current["stations_ids"][j]+",";
 					}
 					else{
-						selected_series_str+=current["stations_ids"][i]+"];";
+						selected_series_str+=current["stations_ids"][j]+"]|";
 					}
-					
 				}
 			}
 		}
+		selected_series_str = selected_series_str.substring(0, selected_series_str.length - 1);
 		return selected_series_str;
 	}
 	

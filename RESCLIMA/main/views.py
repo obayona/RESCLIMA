@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
@@ -44,10 +45,16 @@ def get_task_info(request):
 	if task_id is not None:
 		task = AsyncResult(task_id)
 		print "Lo que recupero  ",task, task.state,task.result,task.backend
-		data = {
-			'state': task.state,
-			'result': task.result,
-		}
+		data = {}
+		data["state"] = task.state
+		if (task.result):
+			data["result"] = task.result
+		else:
+			data["result"] = {}
 		return HttpResponse(json.dumps(data), content_type='application/json')
 	else:
-		return HttpResponse('No job id given.')
+		data = {}
+		data["state"]="FAILURE"
+		data["result"]={"error":"Error, el task se perdió"}
+		return HttpResponse(json.dumps(data), content_type='application/json')
+

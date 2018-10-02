@@ -1,0 +1,72 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | IMPORTAR SERIES DE TIEMPO{% endblock %}
+
+{% block content %}
+
+<div class="section">
+	<div class="row">
+		<div class="col s12 m12 l6">
+			<div class="card-panel">
+				<h4>Importar archivo CSV</h4>
+
+				<div class="row" id="errorMsg">
+					{% if err_msg %}
+					<div class="red"><b>{{err_msg}}</b></div>
+					{% endif %}
+				</div>
+
+				<div class="row">
+					<form method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+						<!-- Tipo de estacion -->
+						<div class="row">
+							<div class="col s12">
+								{% if stationTypes %}
+								<div><label>Tipo de estaci&oacute;n</label></div>
+								<select name="stationType" id="id_stationType">
+									{% for stationType in stationTypes %}
+									<option value = {{stationType.id}}>{{stationType}}</option>
+									{% endfor %}
+								</select>
+								{% endif %}
+							</div>
+						</div>
+						<!-- File chooser --> 
+						<div class="row">
+							<label for="id_import_files">Importar archivo CSV</label>
+							<div class="file-field input-field">
+								<div class="btn">
+									<span>Archivos</span>
+									<input type="file" name="file" required="" id="id_file">
+								</div>
+								<div class="file-path-wrapper">
+									<input class="file-path validate" type="text" placeholder="Seleccione archivo .csv">
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div style="heigth:30px;"></div>
+						</div>
+						
+						<!--Botones-->
+						<div class="row">
+							<button type="submit" id="Upload" name="action" class="btn waves-effect waves-light">
+								<i class="material-icons">file_upload</i>Subir
+							</button>
+							<button type="button" id="Cancel" onClick='window.location="/vector";' class="btn waves-effect waves-light red accent-2">
+								<i class="material-icons">cancel</i>Cancelar
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+
+
+

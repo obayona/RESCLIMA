@@ -90,7 +90,7 @@ def tileMap(request, version, rasterlayer_id):
 
 
 def _unitsPerPixel(zoomLevel):
-	# ancho del mundo = 20026376.39 + 20048966.10 = 40075342.49
+    # ancho del mundo = 20026376.39 + 20048966.10 = 40075342.49
     # 40075342.49/256=156544.3066
     return 156544.3066/math.pow(2,zoomLevel)
 
