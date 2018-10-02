@@ -1,9 +1,12 @@
+# -*- encoding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from celery.result import AsyncResult
+import json
 
 #METODOS DE ACCESO
 def login(request):
@@ -34,3 +37,24 @@ def home(request):
 def profile(request):
 	researcher = request.user.researcher
 	return render(request, 'main/profile.html', {'researcher': researcher, })
+
+
+# retorna informacion de una tarea de Celery
+def get_task_info(request):
+	task_id = request.GET.get('task_id', None)
+	if task_id is not None:
+		task = AsyncResult(task_id)
+		print "Lo que recupero  ",task, task.state,task.result,task.backend
+		data = {}
+		data["state"] = task.state
+		if (task.result):
+			data["result"] = task.result
+		else:
+			data["result"] = {}
+		return HttpResponse(json.dumps(data), content_type='application/json')
+	else:
+		data = {}
+		data["state"]="FAILURE"
+		data["result"]={"error":"Error, el task se perdió"}
+		return HttpResponse(json.dumps(data), content_type='application/json')
+

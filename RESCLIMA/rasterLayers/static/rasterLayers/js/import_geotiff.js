@@ -3,29 +3,43 @@
 function renderProcess(task_id){
 	$.ajax({
 		type: 'get',
-		url: '/vector/get-task-info/',
+		url: '/get-task-info/',
 		data: {'task_id': task_id},
 		success: function (data) {
 			// recibe un objeto 
 			// data{"result":{"percent":porcentaje,"error":"mensaje de error"}
 			// ,"state":estado del task}
 
-			// hace visible la barra
+			if(data["result"]["error"]){
+				renderError(data["result"]["error"]);
+				return;
+			}
+
+			// se hace visible la barra
+			// de progreso
 			var progressContainer = document.getElementById("progress-container");
 			progressContainer.style.visibility = "visible";
 
+			// si el estado de la tarea en celery
+			// es PENDING. Se muestra un mensaje: Procesando 0%
 			if (data.state == 'PENDING') {
 				uploadPercent.style.width = "0%";
 				uploadPercentLabel.innerText = "Procesando 0%";
 			}
-			else if (data.state == 'PROGRESS') {
-				var percentComplete_str = data.result.percent + "%"
+			// Si el estado de la tarea en Celery es PROGRESS o SUCCESS
+			// se muestra el progreso actual en la barra
+			else if (data.state == 'PROGRESS' || data.state == 'SUCCESS') {
+				var percentComplete_str = data.result.percent.toFixed(2) + "%"
 				uploadPercent.style.width = percentComplete_str;
 				uploadPercentLabel.innerText = "Procesando "+percentComplete_str;
 			}
-			else if(data.state == 'SUCCESS'){
+			
+			// Si el estado es SUCCESS, se redirije a /vector/
+			if(data.state == 'SUCCESS'){
 				document.location.href = "/raster/"
 			}
+			// si el estado es diferente de SUCCESS
+			// se vuelve  a pedir informacion de la tarea de Celery 
 			if (data.state != 'SUCCESS') {
 				setTimeout(function () {
 					renderProcess(task_id)
@@ -33,7 +47,6 @@ function renderProcess(task_id){
 			}
 		},
 		error: function (data) {
-			console.log("renderError",data);
 			var error_msg = "Error " + data.error;
 			renderError(error_msg);
 		}
@@ -46,6 +59,10 @@ function renderError(error){
 	var progressContainer = document.getElementById("progress-container");
 	progressContainer.style.visibility = "hidden";
 	window.scrollTo(0, 0);
+
+	// se activa el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = false;
 }
 
 // crea un objeto xmlhttprequest 
@@ -95,7 +112,6 @@ function successHandler(data){
 function errorHandler(data){
 	status = String(data.status);
 	msg = "Ha ocurrido un error " + status+ " en el servidor"
-	console.log("renderError",data);
 	renderError(msg);
 }
 
@@ -159,9 +175,13 @@ function formSubmit(e){
 	// se checkean las condiciones de los archivos
 	var result = checkFile();
 	if(result){
-		alert(result);
+		renderError(result);
 		return;
 	}
+
+	// se desactiva el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = true;
 
 	// se envian los datos al servidor
 	$.ajax({
@@ -182,4 +202,6 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+
+
 

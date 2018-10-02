@@ -9,6 +9,7 @@ from forms import ImportStyleForm
 from RESCLIMA import settings
 from models import RasterLayer
 from style.models import Style
+from search.models import Category
 import datetime
 import time
 import importer
@@ -66,12 +67,18 @@ def updateRasterLayer(rasterlayer,request):
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
 		id_style = request.POST["style"]
-		if(title=="" or abstract==""):
-			return "Error en el formulario"
+		date_str = request.POST["data_date"] # fecha como string
+		# fecha como objeto datetime
+		data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
+		categories_string = request.POST["categories_string"]
 
-		rasterlayer.title = title;
-		rasterlayer.abstract = abstract;
+		rasterlayer.title = title
+		rasterlayer.abstract = abstract
+		rasterlayer.data_date = data_date
+		rasterlayer.categories_string = categories_string
 		rasterlayer.save()
+
+		# se actualiza el estilo
 		if id_style != "null":
 			style = Style.objects.get(id=id_style)
 			style.layers.add(rasterlayer)
@@ -83,103 +90,106 @@ def updateRasterLayer(rasterlayer,request):
 
 
 def edit_raster(request, rasterlayer_id):
-    try:
-        rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
-    except RasterLayer.DoesNotExist:
-        return HttpResponseNotFound()
+	try:
+		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
+	except RasterLayer.DoesNotExist:
+		return HttpResponseNotFound()
 
-    styles = Style.objects.filter(type="raster")
-    layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
-    layer_style_id = None
-    if layer_styles.count()==1:
-        layer_style = layer_styles[0]
-        layer_style_id = layer_style.id
+	# se obtienen los estilos
+	styles = Style.objects.filter(type="raster")
+	# se obtiene el estilo de la capa
+	layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
+	layer_style_id = None
+	# si se encontro un estilo
+	if layer_styles.count()==1:
+		layer_style = layer_styles[0]
+		# se recupera el id de ese estilo
+		layer_style_id = layer_style.id
 
-    if request.method == "GET":
-        params = {"rasterlayer":rasterlayer,
-                  "styles":styles,
-                  "layer_style_id":layer_style_id,
-                  "err_msg":None}
-        return render(request,"update_rasterlayer.html",params)
+	# se obtienen las categorias
+	categories = Category.objects.all();
 
-    elif request.method == "POST":
-        err_msg = updateRasterLayer(rasterlayer,request)
-        if(err_msg==None):
-            return HttpResponseRedirect("/raster")
+	if request.method == "GET":
+		params = {"rasterlayer":rasterlayer,
+				  "styles":styles,
+				  "layer_style_id":layer_style_id,
+				  "categories":categories}
+		return render(request,"update_rasterlayer.html",params)
 
-    params = {"rasterlayer":rasterlayer,
-              "styles":styles,
-              "layer_style_id":layer_style_id,
-              "err_msg":err_msg}
-    return render(request,"update_rasterlayer.html",params)  
+	elif request.method == "POST":
+		err_msg = updateRasterLayer(rasterlayer,request)
+		if(err_msg==None):
+			return HttpResponseRedirect("/raster")
+		else:
+			params = {"rasterlayer":rasterlayer,
+					  "styles":styles,
+					  "layer_style_id":layer_style_id,
+					  "categories":categories,
+					  "err_msg":err_msg}
+			return render(request,"update_rasterlayer.html",params)  
 
 
 # Styles
 
 def importStyle(request):
-  try:
-    title = request.POST["title"]
+	try:
+		title = request.POST["title"]
 
-    path = settings.STYLE_FILES_PATH;
+		path = settings.STYLE_FILES_PATH;
 
-    ts = time.time()
-    timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
-    fileName = "style_" + timestamp_str + ".sld"
+		ts = time.time()
+		timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+		fileName = "style_" + timestamp_str + ".sld"
 
-    fullName = join(path,fileName)
-    f = request.FILES['file']
+		fullName = join(path,fileName)
+		f = request.FILES['file']
 
-    sld_string = f.read();
-    sld_string = transformSLD(sld_string);
+		sld_string = f.read();
+		sld_string = transformSLD(sld_string);
 
-    f.close();
-    f = open(fullName,'w');
-    f.write(sld_string);
-    f.close();
+		f.close();
+		f = open(fullName,'w');
+		f.write(sld_string);
+		f.close();
 
-    style = Style(file_path=path,file_name=fileName,
-      title=title, type="raster");
-    style.save()
-  except Exception as e:
-    return "Error " + str(e)
-
+		style = Style(file_path=path,file_name=fileName,
+		  title=title, type="raster");
+		style.save()
+	except Exception as e:
+		return "Error " + str(e)
 
 def import_style(request):
 
-  if request.method == "GET":
-    form = ImportStyleForm()
-    return render(request,"import_style.html",{"form":form});
+	if request.method == "GET":
+		return render(request,"rasterLayers/import_style.html");
 
-  if request.method == "POST":
-    err_msg = None
-    form = ImportStyleForm(request.POST,request.FILES)
-    if form.is_valid():
-      err_msg = importStyle(request)
-      if(err_msg==None):
-        return HttpResponseRedirect("/raster")
-
-    params = {"form":form,"err_msg":err_msg}
-    return render(request,"import_style.html",params) 
+	if request.method == "POST":
+		err_msg = importStyle(request)
+		if(err_msg==None):
+			return HttpResponseRedirect("/raster")
+		else:
+			params = {"err_msg":err_msg}
+			return render(request,"rasterLayers/import_style.html",params) 
 
 def delete_style(request,style_id):
-  try:
-    style = Style.objects.get(id=style_id)
-    style.delete();
-    return HttpResponse("OK");
-  except Style.DoesNotExist:
-    return HttpResponseNotFound()  
+	try:
+		style = Style.objects.get(id=style_id)
+		style.delete();
+		return HttpResponse("OK");
+	except Style.DoesNotExist:
+		return HttpResponseNotFound()  
 
 def export_style(request,style_id):
-  try:
-    style = Style.objects.get(id=style_id)
-    file_path = style.file_path;
-    file_name = style.file_name;
-    fullName = join(file_path,file_name);
-    f = open(fullName,'r');
-    sld = f.read()
-    return HttpResponse(sld)
-  except Exception as e:
-    print e
-    return HttpResponseNotFound()
+	try:
+		style = Style.objects.get(id=style_id)
+		file_path = style.file_path;
+		file_name = style.file_name;
+		fullName = join(file_path,file_name);
+		f = open(fullName,'r');
+		sld = f.read()
+		return HttpResponse(sld)
+	except Exception as e:
+		return HttpResponseNotFound()
+
 
 
