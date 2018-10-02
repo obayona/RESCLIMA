@@ -9,21 +9,22 @@
 	<meta name="keywords" content="Capa, Shapefile, Raster, Serie de tiempo">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!--	<link rel="stylesheet" href="{% static 'main/css/bootstrap.min.css' %}" type="text/css">-->
 	<link rel="stylesheet" href="{% static 'main/css/materialize.css' %}" type="text/css">
 	<link rel="stylesheet" href="{% static 'main/css/style.css' %}" type="text/css">
 	<link rel="stylesheet" href="{% static 'main/css/style-horizontal.min.css' %}" type="text/css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="{% static 'main/css/custom.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/custom.css' %}" type="text/css">
 	{% block styles %}
 	{% endblock %}
 	
 	<!-- jQuery Library -->
 	<script src="{% static 'main/js/jquery-3.2.1.min.js' %}" type= "text/javascript"></script>
-  <!--materialize js-->
+	<!--materialize js-->
 	<script src="{% static 'main/js/materialize.min.js' %}" type= "text/javascript"></script>
 	<script src="{% static 'main/js/plugins.min.js' %}" type= "text/javascript"></script>
 	<script src="{% static 'main/js/perfect-scrollbar.min.js' %}" type="text/javascript"></script>
+	<!--sweet alert-->
+	<script src="{% static 'main/js/sweetalert.js' %}"></script>
 	{% block scripts %}
 	{% endblock %}
 
@@ -34,54 +35,52 @@
 	<header id="header" class="page-topbar">
 		<!-- start header nav-->
 		<div class="navbar-fixed">
-        <nav class="navbar-color gradient-45deg-light-blue-cyan">
-          <div class="nav-wrapper">
-						<!-- logo and name -->
-            <ul class="left">
-              <li>
-                <h1 class="logo-wrapper">
-                  <a href="/" class="brand-logo darken-1">
-                    <span class="logo-text hide-on-med-and-down">RESCLIMA DURÁN</span>
-                  </a>
-                </h1>
-              </li>
-						</ul>
-						<!-- login/profile -->
-						<ul class="right hide-on-med-and-down">
-							{% if user.is_authenticated %}
-							<li>
-                <a href="javascript:void(0);" class="waves-effect waves-block waves-light profile-button" data-activates="profile-dropdown">
-                  <span class="avatar-status avatar-online">
-                    <img src="{% static 'main/images/profile.png' %}" alt="avatar">
-                    <i></i>
-                  </span>
-                </a>
-							</li>
-							{% else %}
-							<li>
-									<a href="{% url 'login' %}">Iniciar Sesi&oacute;n |</a>
-							</li>
-							{% endif %}
-						</ul>
-						<!-- profile-dropdown -->
-						<ul id="profile-dropdown" class="dropdown-content">
-								<li>
-									<a href="{% url 'profile' %}" class="grey-text text-darken-1">
-										<i class="material-icons">face</i> Perfil - {{user.username}}</a>
-								</li>
-								<li>
-									<a href="#" class="grey-text text-darken-1">
-										<i class="material-icons">live_help</i> Ayuda</a>
-								</li>
-								<li class="divider"></li>
-								<li>
-									<a href="{% url 'logout' %}" class="grey-text text-darken-1">
-										<i class="material-icons">keyboard_tab</i> Cerrar Sesi&oacute;n</a>
-								</li>
-						</ul>
+			<nav class="navbar-color gradient-45deg-light-blue-cyan">
+				<div class="nav-wrapper">
+					<!-- logo and name -->
+					<ul class="left">
+						<li>
+							<h1 class="logo-wrapper">
+								<a href="/" class="brand-logo darken-1">
+									<span class="logo-text hide-on-med-and-down">RESCLIMA DURÁN</span>
+								</a>
+							</h1>
+						</li>
+					</ul>
+					<!-- login/profile -->
+					<ul class="right hide-on-med-and-down">
+						{% if user.is_authenticated %}
+						<li>
+							<a href="javascript:void(0);" class="waves-effect waves-block waves-light profile-button" data-activates="profile-dropdown">
+							<span class="avatar-status avatar-online">
+								<img src="{% static 'main/images/profile.png' %}" alt="avatar">
+								<i></i>
+							</span>
+							</a>
+						</li>
+						{% else %}
+						<li>
+							<a href="{% url 'login' %}">Iniciar Sesi&oacute;n |</a>
+						</li>
+						{% endif %}
+					</ul>
+					<!-- profile-dropdown -->
+					<ul id="profile-dropdown" class="dropdown-content">
+						<li>
+							<a href="{% url 'profile' %}" class="grey-text text-darken-1"><i class="material-icons">face</i> Perfil - {{user.username}}
+							</a>
+						</li>
+						<li>
+							<a href="#" class="grey-text text-darken-1"><i class="material-icons">live_help</i>Ayuda</a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a href="{% url 'logout' %}" class="grey-text text-darken-1"><i class="material-icons">keyboard_tab</i> Cerrar Sesi&oacute;n</a>
+						</li>
+					</ul>
 
-					</div>
-        </nav>
+				</div>
+			</nav>
 		</div>
 		<!-- end header nav-->
 	</header>		
@@ -95,20 +94,24 @@
 
 	<!-- START FOOTER -->
     <footer class="page-footer">
-			<div class="footer-copyright">
-			  <div class="container">
+		<div class="footer-copyright">
+			<div class="container">
 				<span>Copyright ©
-				  <script type="text/javascript">
-					document.write(new Date().getFullYear());
-				  </script> <a class="grey-text text-darken-2" href="http://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" target="_blank">PIXINVENT</a> All rights reserved.</span>
-				<span class="right hide-on-small-only"> Design and Developed by <a class="grey-text text-darken-2" href="https://www.fiec.espol.edu.ec/es/cvr-robotica/">Centro de Visi&oacute;n y Rob&oacute;tica - ESPOL</a></span>
-			  </div>
+					<script type="text/javascript">
+						document.write(new Date().getFullYear());
+					</script>
+					<a class="grey-text text-darken-2" href="http://themeforest.net/user/pixinvent/portfolio?ref=pixinvent" target="_blank">PIXINVENT</a>All rights reserved.
+				</span>
+				<span class="right hide-on-small-only"> Design and Developed by <a class="grey-text text-darken-2" href="https://www.fiec.espol.edu.ec/es/cvr-robotica/">Centro de Visi&oacute;n y Rob&oacute;tica - ESPOL</a>
+				</span>
 			</div>
-		  </footer>
-	  <!-- END FOOTER -->		
+		</div>
+	</footer>
+	<!-- END FOOTER -->		
 	{% block scripts_body %}
-        {% endblock %}
+	{% endblock %}
 
 </body>
 
 </html>
+

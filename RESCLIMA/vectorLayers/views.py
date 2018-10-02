@@ -98,6 +98,13 @@ def edit_vectorlayer(request,vectorlayer_id):
 					  "categories":categories}
 			return render(request,"update_vectorlayer.html",params)
 
+def delete_vectorLayer(request,vectorlayer_id):
+	try:
+		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
+		vectorlayer.delete();
+		return HttpResponse("OK");
+	except VectorLayer.DoesNotExist:
+		return HttpResponseNotFound()
 
 # Styles
 def importStyle(request,vectorlayer):
@@ -139,7 +146,7 @@ def import_style(request,vectorlayer_id):
 
 	if request.method == "GET":
 		params = {"vectorlayer_id":vectorlayer_id}
-		return render(request,"import_style.html",params);
+		return render(request,"vectorLayers/import_style.html",params);
 
 	if request.method == "POST":
 		err_msg = importStyle(request,vectorlayer)
@@ -147,7 +154,7 @@ def import_style(request,vectorlayer_id):
 			return HttpResponseRedirect("/vector/edit/"+vectorlayer_id)
 		else:
 			params = {"vectorlayer_id":vectorlayer_id,"err_msg":err_msg}
-			return render(request,"import_style.html",params)
+			return render(request,"vectorLayers/import_style.html",params)
 
 def delete_style(request,style_id):
 	try:
@@ -168,4 +175,5 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 

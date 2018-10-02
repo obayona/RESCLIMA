@@ -43,7 +43,7 @@
             </td>
             <td>&nbsp;</td>
             <td>
-              <a href="#">Eliminar</a>
+              <a href="#" onclick="confirmationDelete('/raster/delete/{{ raster.id }}')">Eliminar</a>
             </td>
           </tr>
         {% endfor %}
@@ -54,3 +54,30 @@
 
   </body>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+  function confirmationDelete(url){
+    swal({
+      title: "¿Seguro desea eliminar esta capa?",
+      text: "¡Cuidado!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonClass: "btn-danger",
+      confirmButtonText: "Eliminar",
+      cancelButtonText: "Cancelar",
+      closeOnConfirm: false,
+      closeOnCancel: false
+      },
+      function(isConfirm) {
+      if (isConfirm) {
+        window.location.replace(url);
+        swal("¡Borrado!", "La capa ha sido borrada correctamente", "success");
+      } else {
+        swal("¡Cancelado!", "No se ha registrado ningún cambio", "error");
+      }
+    });
+  }
+</script>
+
+{% endblock extra_js %}

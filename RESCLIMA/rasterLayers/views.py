@@ -128,6 +128,13 @@ def edit_raster(request, rasterlayer_id):
 					  "err_msg":err_msg}
 			return render(request,"update_rasterlayer.html",params)  
 
+def delete_rasterLayer(request,rasterlayer_id):
+	try:
+		rasterlayer = RaterLayer.objects.get(id=rasterlayer_id)
+		rasterlayer.delete();
+		return HttpResponse("OK");
+	except RasterLayer.DoesNotExist:
+		return HttpResponseNotFound()
 
 # Styles
 
