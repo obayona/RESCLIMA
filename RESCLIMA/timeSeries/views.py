@@ -84,4 +84,26 @@ def upload_file(request):
 
 
 def visualize(request):
-    return HttpResponse("OK")
+	if request.method == 'GET':
+		if 'variables' in request.GET:
+			variablesStr = request.GET['variables']
+			print variablesStr
+			variables = variablesStr.strip().split('|')
+			for variable in variables:
+				stationsStrStart = variable.strip().find('[')
+				stationsStrEnd = variable.strip().find(']')
+				variableId = int(variable.strip()[0:stationsStrStart])
+				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
+				stationsList = stationsStr.strip().split(',')
+				stations = []
+				for stationId in stationsList:
+					stations.append(int(stationId))
+		ini_date = ''
+		end_date = ''
+		if 'ini_date' in request.GET:
+			ini_date = request.GET['ini_date']
+		if 'end_date' in request.GET:
+			end_date = request.GET['end_date']
+		#Call to series_searcher.py method
+	return HttpResponse("OK")
+
