@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from datetime import datetime
 import pytz
 from dateutil.parser import parse
@@ -100,12 +101,18 @@ def parseHOBO(file):
 			# y la segunda columna es la fecha.
 			# Se las ignora
 			headers = headers[2:];
+			name_dict = {}
+			name_dict[0] = u"Temperatura"
+			name_dict[1] = u"Humedad relativa"
+			name_dict[2] = u"Lluvia"
+			name_dict[3] = u"Dirección del viento"
+			name_dict[4] = u"Velocidad del viento"
+			name_dict[5] = u"Velocidad de rafagas"
+
 			# se recuperan los pk de las variables
-			for alias in headers:
-				# se busca por el alias
-				# a la variable
-				alias = alias.strip(' \t\n\r');
-				results = Variable.objects.filter(alias=alias);
+			for index,header in enumerate(headers):
+				# se busca la variable por el nombre
+				results = Variable.objects.filter(name=name_dict[index]);
 				if(results.count()!=1):
 					return "Error: No existe la variable " + alias
 				variable = results[0];
@@ -198,14 +205,11 @@ def transformToUTC(dt,local_tz_str):
 	dt_in_utc = dt_with_tz.astimezone(pytz.utc)
 	return dt_in_utc;
 
-# pendiente validad boolean
 def parseMeasure(measure,datatype):
 	if(datatype=="float"):
 		return float(measure);
 	if(datatype=="string"):
 		return measure;
-	if(datatype=="boolean"):
-		return True;
 
 def saveMeasurements(station,id_provider,measurements_dict,date_time = datetime.now()):
 
@@ -224,3 +228,4 @@ def is_valid_len(f,min_length):
 		if i > min_length :
 			return True
 	return False
+

@@ -18,11 +18,11 @@ def getTsTextQuery(query_object):
 		qs = qs + 'AND ST_Intersects("timeSeries_station"."location", %s)'
 		params.append(bbox_str)
 
-	if(query_object.has_key("ini_date") and query_object.has_key("end_date")):
+	if(query_object.has_key("ini") and query_object.has_key("end")):
 		""" startDate and endDate are datetime instances
 		"""
-		startDateStr = query_object["ini_date"].strftime("%Y-%m-%d %H:%M:%S")
-		endDateStr = query_object["end_date"].strftime("%Y-%m-%d %H:%M:%S")
+		startDateStr = query_object["ini"].strftime("%Y-%m-%d %H:%M:%S")
+		endDateStr = query_object["end"].strftime("%Y-%m-%d %H:%M:%S")
 		qs = qs + 'AND "timeSeries_station"."id" in ( SELECT "timeSeries_measurements"."idStation" FROM "timeSeries_measurements" WHERE %s <= "timeSeries_measurements"."ts" AND %s >= "timeSeries_measurements"."ts" ) '
 		params.append(startDateStr)
 		params.append(endDateStr)
