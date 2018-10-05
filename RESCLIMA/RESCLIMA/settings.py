@@ -127,5 +127,4 @@ CELERY_RESULT_SERIALIZER = 'json'
 # paths for user data
 STYLE_FILES_PATH = "/home/manager/styles/"
 RASTER_FILES_PATH = "/home/manager/rasters/"
-
-
+TEMPORARY_FILES_PATH = "/tmp/"
