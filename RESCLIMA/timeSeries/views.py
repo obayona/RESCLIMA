@@ -6,6 +6,7 @@ from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
+import json
 
 @login_required(login_url='noAccess')
 def show_options(request):
@@ -105,5 +106,8 @@ def visualize(request):
 		if 'end_date' in request.GET:
 			end_date = request.GET['end_date']
 		#Call to series_searcher.py method
-	return HttpResponse("OK")
+		measurements={}
+		return render(request, 'timeSeries/series-visualization.html', {'measurements': json.dumps(measurements)})
+	else:
+		return HttpResponse("Invalid Request");
 

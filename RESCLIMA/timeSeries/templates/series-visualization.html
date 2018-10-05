@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | VISUALIZAR SERIES DE TIEMPO{% endblock %}
+
+{% block content %}
+{% endblock content %}
+
+{% block scripts_body %}
+<script type="text/javascript">
+    data_from_django = {{ measurements }};
+    console.log(measurements);
+</script>
+{% endblock %}
