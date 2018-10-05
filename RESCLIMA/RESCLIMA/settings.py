@@ -125,7 +125,7 @@ CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # paths for user data
-STYLE_FILES_PATH = "/home/manager/styles/"
-RASTER_FILES_PATH = "/home/manager/rasters/"
+STYLE_FILES_PATH = "/home/vivi/manager/styles/"
+RASTER_FILES_PATH = "/home/vivi/manager/rasters/"
 
 

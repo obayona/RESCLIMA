@@ -1,58 +1,75 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
-{% block title%}RESCLIMA | CAPAS RASTER{% endblock %}
+{% block title%} RESCLIMA | Capas Raster{% endblock %}
 
 {% block content %}
-  <body>
+<div class="container">
+    <div class="section">
     {% if rasterlayers %}
-      <b>Capas raster:</b>
-      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
-        {% for raster in rasterlayers %}
-          <tr>
-            <td>
-              <span style="font-family:monospace">{{ raster.title}}</span>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/raster/view/{{ raster.id }}">Visualizar</a>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/raster/export/{{ raster.id }}">Descargar</a>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="/raster/edit/{{ raster.id }}">Editar</a>
-            </td>
-            <td>&nbsp;</td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-    <button type="button" onClick='window.location="/raster/import";'>Importar raster</button>
+        <div id="bordered-table">
+          <h4 class="header">CAPAS RASTER</h4>
+          <div class="row">
+            <div class="col s12">
+              <table class="bordered">
+              {% for raster in rasterlayers %}
+                <tbody>
+                  <tr>
+                    <td>
+                      <span style="font-family:monospace">{{ raster.title}}</span>
+                    </td>
+                    <td>
+                      <a href="/raster/view/{{ raster.id }}">Visualizar</a>
+                    </td>
+                    <td>
+                      <a href="/raster/export/{{ raster.id }}">Descargar zip</a>
+                    </td>
+                    <td>
+                      <a href="#" onclick="confirmationDelete('/raster/delete/{{ raster.id }}')">Eliminar</a>	
+                    </td>
+                  </tr>
+                </tbody>
+              {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+    <div class="card-action">
+        <button class="waves-effect waves-light btn gradient-45deg-red-pink" onClick='window.location="/raster/import"'>Importar Raster</button>
+    </div>
     <br>
     
-    <b>Estilos</b>
+    <div id="bordered-table">
+        <h4 class="header">ESTILOS</h4>
+        <div class="row">
+          <div class="col s12">
+            <table class="bordered">
     {% if styles %}
-      <table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
-        {% for style in styles %}
-          <tr>
-            <td>
-              <span style="font-family: :monospace">{{style.title}}</span>
-            </td>
-            <td>&nbsp;</td>
-            <td>
-              <a href="#" onclick="confirmationDelete('/raster/delete/{{ raster.id }}')">Eliminar</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-    {% endif %}
-    <br>
-    <button type="button" onClick='window.location="/raster/import_style";'>Importar estilo</button>
+              {% for style in styles %}
+                <tbody>
+                  <tr>
+                    <td>
+                        <span style="font-family:monospace">{{style.title}}</span>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>
+                    <a href="#">Eliminar</a>
+                    </td>
+                  </tr>
+                </tbody>
+              {% endfor %}
+              </table>
+            </div>
+          </div>
+        </div>
+      {% endif %}
 
-  </body>
+      <div class="card-action">
+          <button class="waves-effect waves-light btn gradient-45deg-red-pink" onClick='window.location="/raster/import_style"'>Importar estilo</button>
+      </div>
+      <br>
 {% endblock content %}
 
 {% block extra_js %}

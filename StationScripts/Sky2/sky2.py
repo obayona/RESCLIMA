@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- encoding: utf-8 -*-
 import time
 import urllib2 
 import json
@@ -8,6 +9,9 @@ import psycopg2
 import logging
 from threading import Condition, Thread
 from Queue import Queue
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 # Script que descarga los datos
 # de las estaciones SKY2 y las guarda en 
@@ -34,30 +38,33 @@ def backup(measurement):
 	outFile.flush()
 	outFile.close()
 
-
-def getVariablesByAliases(dbParams,variables_aliases):
+def getVariablesByNames(dbParams,variable_names):
 	variables = []
 	conn = None
 	try:
-		conn = psycopg2.connect(host="localhost",
+		# se recuperan todas las variables de la base de datos
+		conn = psycopg2.connect(host=dbParams["host"],
+								port=dbParams["port"],
 								user=dbParams["user"],
 								password=dbParams["password"],
-								dbname=dbParams["dbname"]);
+								dbname=dbParams["dbname"])
 		cursor = conn.cursor()
 
 		query = """
-				SELECT v.id,v.alias,v.datatype
-	            FROM \"TimeSeries_variable\" as v  
-	            WHERE v.alias=%s
+				SELECT v.id,v.name,v.datatype
+	            FROM "timeSeries_variable" as v
 	            """;
-		for variable_alias in variables_aliases:
-			cursor.execute(query,(variable_alias,));
-			result = cursor.fetchone();
-			variable = {}
-			variable["id"] = result[0];
-			variable["alias"] = result[1];
-			variable["datatype"] = result[2];
-			variables.append(variable);
+		cursor.execute(query)
+		variables_db = cursor.fetchall()
+
+		for v in variables_db:
+			name = v[1].decode('utf-8')
+			if v[1] in variable_names:
+				variable = {}
+				variable["id"] = v[0];
+				variable["name"] = name;
+				variable["datatype"] = v[2];
+				variables.append(variable);
 
 	except Exception as e:
 		error_str = "Fallo la base de datos" + str(e);
@@ -72,18 +79,19 @@ def getStations(dbParams):
 	stations = []
 	conn = None
 	try:
-		conn = psycopg2.connect(host="localhost",
+		conn = psycopg2.connect(host=dbParams["host"],
+								port=dbParams["port"],
 								user=dbParams["user"],
 								password=dbParams["password"],
-								dbname=dbParams["dbname"]);
+								dbname=dbParams["dbname"])
 		cursor = conn.cursor()
 
 		query = """
 				SELECT s.id,s.token,s.frequency
-                FROM \"TimeSeries_station\" as s,   
-                \"TimeSeries_stationtype\" as st 
+                FROM "timeSeries_station" as s,   
+                "timeSeries_stationtype" as st 
                 WHERE st.brand='BloomSky' and st.model='SKY2' 
-                and \"stationType_id\"=st.id
+                and s."stationType_id"=st.id
                 """
 		
 		cursor.execute(query);
@@ -139,10 +147,11 @@ def parseMeasurements(idStation,data,variables):
 def insertMeasures(dbParams,measurements):
 	conn = None
 	try:
-		conn = psycopg2.connect(host="localhost",
+		conn = psycopg2.connect(host=dbParams["host"],
+								port=dbParams["port"],
 								user=dbParams["user"],
 								password=dbParams["password"],
-								dbname=dbParams["dbname"]);
+								dbname=dbParams["dbname"])
 		cursor = conn.cursor()
 		query = "SELECT InsertSky2Measurements(%s::integer,%s::timestamp,%s::json)"
 		idStation = measurements["idStation"]
@@ -164,7 +173,6 @@ def dataExtraction_thread(dbParams,station,variables):
 	token = station["token"]
 	frequency = station["frequency"]
 	seconds = frequency*60
-
 	while(True):
 		time.sleep(seconds)
 		data,error = getSKY2Data(token);
@@ -175,6 +183,7 @@ def dataExtraction_thread(dbParams,station,variables):
 		if(error):
 			logging.error(error)
 			continue
+
 		error = insertMeasures(dbParams,measurements) 
 		if(error):
 			logging.error(error)
@@ -197,32 +206,41 @@ if __name__ == "__main__":
 	with open(configFileName) as f:
 		dbParams = json.load(f)
 
-	# se crea el arreglo de alias
-	# de las variables
-	variables_aliases = [];
-	variables_aliases.append("Luminance");
-	variables_aliases.append("Temperature");
-	variables_aliases.append("Humidity");
-	variables_aliases.append("ImageURL");
-	variables_aliases.append("Rain");
-	variables_aliases.append("Humidity");
-	variables_aliases.append("Pressure");
-	variables_aliases.append("Voltage");
-	variables_aliases.append("Night");
-	variables_aliases.append("UVIndex");
+
+	# lista de los nombres de las variables
+	variable_names = [u"Luminancia",
+					  u"Temperatura",
+					  u"Imagen SKY2",
+					  u"Detección de lluvia",
+					  u"Presión",
+					  u"Indice UV"]
 
 
-	variables,error = getVariablesByAliases(dbParams,variables_aliases);
+	variables,error = getVariablesByNames(dbParams,variable_names);
+	# se les debe agregar el alias a cada variable
+	variables_alias = {}
+	variables_alias[u"Luminancia"]=u"Luminance"
+	variables_alias[u"Temperatura"]=u"Temperature"
+	variables_alias[u"Imagen SKY2"]=u"ImageURL"
+	variables_alias[u"Detección de lluvia"]=u"Rain"
+	variables_alias[u"Presión"]=u"Pressure"
+	variables_alias[u"Indice UV"]=u"UVIndex"
+
+
+	for variable in variables:
+		name = variable["name"]
+		alias = variables_alias[name]
+		variable["alias"]=alias
+
 	if(error):
 		logging.error(error)
 		exit(-1);
-
+	
 	stations,error = getStations(dbParams);
 
 	if(error):
 		logging.error(error)
 		exit(-1);
-
 
 	for station in stations:
 		thread_ = Thread(target=dataExtraction_thread, args=(dbParams,station,variables,));
@@ -231,3 +249,4 @@ if __name__ == "__main__":
 
 	cv.acquire()
 	cv.wait()
+
