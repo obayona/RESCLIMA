@@ -56,8 +56,9 @@ Vue.component("series_component",{
 			//redirect to the url to visualize the selected time series
 			var url = "series/view/" + this.shared.getSeriesParams();
 			console.log("Url de series a visualizar: "+ url)
-			this.$router.replace(url);
-			this.$router.go();
+			//this.$router.replace(url);
+			//this.$router.go();
+			window.open(url,'_blank');
 		},
 		
 	}
