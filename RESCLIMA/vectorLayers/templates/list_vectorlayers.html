@@ -4,33 +4,47 @@
 {% block title %} RESCLIMA DURAN | Capas Vectoriales{% endblock %}
 
 {% block content %}
+<div class="container">
+	<div class="section">
 	{% if vectorlayers %}
-		<h4>Capas vectoriales:</h4>
-		<table border="0" cellspacing="0" cellpadding="5" style="padding-left:20px">
-		{% for vectorlayer in vectorlayers %}
-			<tr>
-				<td>
-					<span style="font-family:monospace">{{ vectorlayer.title}}</span>
-				</td>
-				<td>
-					<a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
-				</td>
-				<td>
-					<a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
-				</td>
-				<td>
-					<a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
-				</td>
-				<td>
-					<a href="#" onclick="confirmationDelete('/vector/delete/{{ vectorlayer.id }}')"></a>>Eliminar</a>
-				</td>
-			</tr>
-		{% endfor %}
-		</table>
+			<div id="bordered-table">
+				<h4 class="header">CAPAS VECTORIALES</h4>
+				<div class="row">
+					<div class="col s12">
+						<table class="bordered">
+						{% for vectorlayer in vectorlayers %}
+							<tbody>
+								<tr>
+									<td>
+										<span style="font-family:monospace">{{ vectorlayer.title}}</span>
+									</td>
+									<td>
+										<a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
+									</td>
+									<td>
+										<a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
+									</td>
+									<td>
+											<a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
+									</td>
+									<td>
+										<a href="#" onclick="confirmationDelete('/vector/delete/{{ vectorlayer.id }}')">Eliminar</a>	
+									</td>
+								</tr>
+							</tbody>
+						{% endfor %}
+						</table>
+					</div>
+				</div>
+			</div>
 	{% else %}
 		<h4>No hay capas</h4>
 	{% endif %}
-	<button class="btn default" type="button" onClick='window.location="/vector/import"'>Importar Shapefile</button>
+	<div class="card-action">
+			<button class="waves-effect waves-light btn gradient-45deg-red-pink" onClick='window.location="/vector/import"'>Importar Shapefile</button>
+	</div>
+	</div>
+</div>
 	<div style="height:100px;"></div>
 {% endblock %}
 

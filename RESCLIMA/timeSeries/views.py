@@ -123,9 +123,35 @@ def upload_file(request):
 		else:
 			result["task_id"] = None
 			result["err_msg"] = "No se reconoce este tipo de estacion"
-
 		# se borra el archivo temporal
 		#os.remove(fileName)
 		# se retorna el resultado
 		return HttpResponse(json.dumps(result),content_type='application/json')
 
+
+def visualize(request):
+	if request.method == 'GET':
+		if 'variables' in request.GET:
+			variablesStr = request.GET['variables']
+			print variablesStr
+			variables = variablesStr.strip().split('|')
+			for variable in variables:
+				stationsStrStart = variable.strip().find('[')
+				stationsStrEnd = variable.strip().find(']')
+				variableId = int(variable.strip()[0:stationsStrStart])
+				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
+				stationsList = stationsStr.strip().split(',')
+				stations = []
+				for stationId in stationsList:
+					stations.append(int(stationId))
+		ini_date = ''
+		end_date = ''
+		if 'ini_date' in request.GET:
+			ini_date = request.GET['ini_date']
+		if 'end_date' in request.GET:
+			end_date = request.GET['end_date']
+		#Call to series_searcher.py method
+		measurements={}
+		return render(request, 'timeSeries/series-visualization.html', {'measurements': json.dumps(measurements)})
+	else:
+		return HttpResponse("Invalid Request");
