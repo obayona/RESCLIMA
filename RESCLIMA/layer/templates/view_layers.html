@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | VISUALIZAR CAPAS{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
+{% endblock %}
+
+{% block content %}
+<div id="layersApp" class="main">
+	<div id="wrapper">
+		<!-- Layer list -->
+		<layers_component></layers_component>
+		
+		<div class="container">
+			<div style="height:500px;"></div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts_body  %}
+<script src="{% static "main/js/vue.min.js" %}"></script>
+<script src="{% static "main/js/vue-router.min.js" %}"></script>
+<script src="{% static "main/js/OpenLayers.js" %}"></script>
+<script src="{% static "layer/js/layers_component.js" %}"></script>
+<script src="{% static "layer/js/main.js" %}"></script>
+{% endblock%}

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render
 
-# Create your views here.
+
+def view_layers(request):
+	return render(request,"view_layers.html")

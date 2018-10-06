@@ -5,7 +5,8 @@ Vue.component("layers_component",{
 				<div>
 					<a
 					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
-					v-bind:disabled="selected_count==0">
+					v-bind:disabled="selected_count==0"
+					v-on:click="visualizeLayers">
 						<i class="material-icons left">remove_red_eye</i>Visualizar</a>
 					<a
 					class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
@@ -40,13 +41,27 @@ Vue.component("layers_component",{
 	},
 	methods:{
 		selectLayer(layer){
-			console.log("check layer",layer)
 			layer.selected = !layer.selected;
 			if(layer.selected==true) 
 				this.selected_count +=1;
 			if(layer.selected==false)
 				this.selected_count -=1;
+		},
+		visualizeLayers(){
+			// open a new window to visualize the layers
+			var query_str = ""
+			for(var i=0; i<this.shared.layers.length; i++){
+				var layer = this.shared.layers[i];
+				if (layer["selected"])
+					query_str = query_str + String(layer["id"])+","
+			}
+			query_str = query_str.slice(0, -1);
+
+			var url = "layer/view/?layers="+query_str
+			url = encodeURI(url)
+			window.open(url,'_blank');
 		}
 	}
 
 })
+

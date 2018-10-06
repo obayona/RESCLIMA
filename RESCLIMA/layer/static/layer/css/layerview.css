@@ -1,0 +1,36 @@
+#layerList{
+	transition: all 0.4s;
+	-moz-transition: all 0.4s;
+	-webkit-transition: all 0.4s;
+}
+
+#layerList{
+	top:100px;
+	background: #f9f9f9;
+	background-color:blue;
+	padding:10px; 
+	width: 250px;
+	height: 400px;
+	position: fixed;
+	z-index: 100000;
+}
+
+#layerList{
+	left: 0;
+}
+
+#layerList .arrow {
+	right: 2px; /* Change to left: 2px; if you want the panel to display on the right side. */
+}
+
+#layerList .arrow {
+	font: normal 400 25px/25px 'Acme', Helvetica, Arial, sans-serif; /* Acme font is required for .arrow */
+	color: rgba(0,0,0,0.75); /* Arrow color */
+	width: 16px;
+	height: 25px;
+	display: block;
+	position: absolute;
+	top: 20px;
+	cursor: pointer;
+}
+

@@ -28,6 +28,7 @@ urlpatterns = [
 	url(r'^profile/$', profile, name="profile"),
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^search/',include("search.urls")),
+	url(r'^layer/',include("layer.urls")),
 	url(r'^vector/', include("vectorLayers.urls")),
 	url(r'^series/', include("timeSeries.urls")),
 	url(r'^raster/', include("rasterLayers.urls")),
