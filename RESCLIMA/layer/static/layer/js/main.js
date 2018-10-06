@@ -1,3 +1,13 @@
+// Router
+const router = new VueRouter({
+  mode: 'history'
+})
+
+// app principal
 var app = new Vue({
-	el:'#layersApp'
+	router,
+	el:'#layersApp',
+	data:{
+		shared:store
+	}
 })

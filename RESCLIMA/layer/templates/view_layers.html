@@ -13,8 +13,10 @@
 		<!-- Layer list -->
 		<layers_component></layers_component>
 		
-		<div class="container">
-			<div style="height:500px;"></div>
+		<div class="row">
+			<div class="col s12">
+				<map_component></map_component>
+			</div>
 		</div>
 	</div>
 </div>
@@ -24,6 +26,8 @@
 <script src="{% static "main/js/vue.min.js" %}"></script>
 <script src="{% static "main/js/vue-router.min.js" %}"></script>
 <script src="{% static "main/js/OpenLayers.js" %}"></script>
+<script src="{% static "layer/js/store.js" %}"></script>
 <script src="{% static "layer/js/layers_component.js" %}"></script>
+<script src="{% static "layer/js/map_component.js" %}"></script>
 <script src="{% static "layer/js/main.js" %}"></script>
 {% endblock%}
