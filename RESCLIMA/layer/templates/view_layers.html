@@ -5,6 +5,14 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
+<style>
+	/*cambia la posicion del control del zoom
+	de OpenLayers*/
+	div.olControlZoom{
+		right:8px;
+		left:unset;
+	}
+</style>
 {% endblock %}
 
 {% block content %}

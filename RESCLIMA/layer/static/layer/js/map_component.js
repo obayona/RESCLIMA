@@ -1,4 +1,4 @@
-var VectorLayer = function(map,id_layer){
+var VectorLayer = function(map,id_layer,index){
 	var layer = undefined;
 	var url = "/vector/geojson/" + id_layer;
 
@@ -9,7 +9,8 @@ var VectorLayer = function(map,id_layer){
 		var geojson_format = new OpenLayers.Format.GeoJSON();
 
 		layer = new OpenLayers.Layer.Vector(id_layer,{
-			projection: new OpenLayers.Projection("EPSG:900913")
+			projection: new OpenLayers.Projection("EPSG:900913"),
+			rendererOptions: {zIndexing: true}
 		});
 
 		var features = geojson_format.read(data);
@@ -21,6 +22,13 @@ var VectorLayer = function(map,id_layer){
 		layer.addFeatures(features);
 		//callback({"id_layer":id_layer,"data":layer});
 		map.addLayer(layer);
+		// se obtiene el z-index de la capa
+		var numLayers = store.layers.length;
+		var zIndex = numLayers - index;
+		layer.setZIndex(zIndex);
+		// se actualiza el estado de la capa
+		store.layers[index].state="loaded"
+		console.log(index,zIndex)
 		//enabledStyle("styles");
 	}
 
@@ -31,17 +39,24 @@ var VectorLayer = function(map,id_layer){
 	});
 }
 
-var RasterLayer = function(map,id_layer){
+var RasterLayer = function(map,id_layer,index){
 	
 	var layer = new OpenLayers.Layer.TMS(id_layer,
 					"/tms/",
 					{serviceVersion: "1.0",
 					layername: id_layer,
 					type: 'png',
-					isBaseLayer: false
+					isBaseLayer: false,
+					rendererOptions: {zIndexing: true}
 				})
 	layer.opacity = 0.7
 	map.addLayer(layer);
+	// se obtiene el z-index de la capa
+	var numLayers = store.layers.length;
+	var zIndex = numLayers - index;
+	layer.setZIndex(zIndex);
+	// se actualiza el estado de la capa
+	store.layers[index].state="loaded"
 }
 
 
@@ -54,6 +69,7 @@ Vue.component("map_component",{
 		</div>
 	`,
 	mounted(){
+		// se inicializa el mapa
 		this.map = new OpenLayers.Map({
 			div:"map_container",
 			projection:"EPSG:3857",
@@ -61,8 +77,16 @@ Vue.component("map_component",{
 			numZoomLevels:11,
 			units: 'm'
 		});
+		// control de zoom
+		var pzb = new OpenLayers.Control.PanZoom({'position': new OpenLayers.Pixel(100,0) });
+		pzb.position = new OpenLayers.Pixel(100,0);
+		this.map.addControl(pzb);
+
+		// se agrega una capa de OpenStreetMap
 		var osm = new OpenLayers.Layer.OSM("OSM");
 		this.map.addLayer(osm);
+		// se la configura para que este al fondo
+		osm.setZIndex(0);
 		this.map.zoomToMaxExtent();
 		
 		// se reacciona al evento 
@@ -82,10 +106,10 @@ Vue.component("map_component",{
 			var layer = this.shared.layers[index];
 			var self = this;
 			if (layer["type"]=="vector"){
-				VectorLayer(this.map,layer["id"]);
+				VectorLayer(this.map,layer["id"],index);
 			}
 			if(layer["type"]=="raster"){
-				RasterLayer(this.map,layer["id"]);
+				RasterLayer(this.map,layer["id"],index);
 			}
 		}
 	},
