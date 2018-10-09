@@ -1,23 +1,39 @@
-#layerList{
-	top:100px;
-	background: #f9f9f9;
-	background-color:white;
-	padding:10px; 
-	width: 250px;
-	height: 400px;
-	position: fixed;
+#layerContainer{
+	position: absolute;
 	z-index: 100000;
+	top:100px;
+	width: 400px;
 
 	transition: all 0.4s;
 	-moz-transition: all 0.4s;
 	-webkit-transition: all 0.4s;
 }
 
-#layerList .arrow {
-	color: rgba(0,0,0,0.75);
+#layerContainerOpen {
 	cursor: pointer;
-	right: 2px;
+	width: 100px;
+	left: 370px;
+	top:270px;
 	display: block;
 	position: absolute;
+	transform: rotate(90deg);
+	color:white;
 }
 
+#layerList{
+	height: 600px;
+	overflow-y: scroll;
+	background: #f9f9f9;
+	background-color:white;
+	box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 
+			0 3px 14px 2px rgba(0, 0, 0, 0.12), 
+			0 5px 5px -3px rgba(0, 0, 0, 0.3);
+}
+
+.layerItem{
+	border-color: #29b6f6;
+	border-width: 1px;
+	border-style: solid;
+	margin: 10px;
+	padding: 10px;
+}

@@ -31,6 +31,19 @@ var VectorLayer = function(map,id_layer){
 	});
 }
 
+var RasterLayer = function(map,id_layer){
+	
+	var layer = new OpenLayers.Layer.TMS(id_layer,
+					"/tms/",
+					{serviceVersion: "1.0",
+					layername: id_layer,
+					type: 'png',
+					isBaseLayer: false
+				})
+	layer.opacity = 0.7
+	map.addLayer(layer);
+}
+
 
 
 Vue.component("map_component",{
@@ -66,12 +79,13 @@ Vue.component("map_component",{
 	},
 	methods:{
 		loadLayer(index){
-			console.log("mensaje recibido")
 			var layer = this.shared.layers[index];
 			var self = this;
 			if (layer["type"]=="vector"){
-				console.log("ceando la capa")
 				VectorLayer(this.map,layer["id"]);
+			}
+			if(layer["type"]=="raster"){
+				RasterLayer(this.map,layer["id"]);
 			}
 		}
 	},
