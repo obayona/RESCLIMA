@@ -5,14 +5,6 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
-<style>
-	/*cambia la posicion del control del zoom
-	de OpenLayers*/
-	div.olControlZoom{
-		right:8px;
-		left:unset;
-	}
-</style>
 {% endblock %}
 
 {% block content %}
@@ -20,6 +12,7 @@
 	<div id="wrapper">
 		<!-- Layer list -->
 		<layers_component></layers_component>
+		<currentlayer_component></currentlayer_component>
 		
 		<div class="row">
 			<div class="col s12">
@@ -36,6 +29,7 @@
 <script src="{% static "main/js/OpenLayers.js" %}"></script>
 <script src="{% static "layer/js/store.js" %}"></script>
 <script src="{% static "layer/js/layers_component.js" %}"></script>
+<script src="{% static "layer/js/currentlayer_component.js" %}"></script>
 <script src="{% static "layer/js/map_component.js" %}"></script>
 <script src="{% static "layer/js/main.js" %}"></script>
 {% endblock%}

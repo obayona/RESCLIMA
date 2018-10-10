@@ -17,6 +17,18 @@ def layer_info(request,id_layer):
 	data_date_str = str(layer.data_date)
 	data_date_str = data_date_str.replace("-","/")
 	layer_json["data_date"]=data_date_str
-	#bbox
+	# el bbox
+	bbox = layer.bbox;
+	layer_json["bbox"] = bbox.geojson;
+
+	# estilos
+	layer_json["styles"] = []
+	styles = layer.style_set.all()
+	for st in styles:
+		style = {}
+		style["id"] = st.id
+		style["title"] = st.title
+		layer_json["styles"].append(style)
+
 	return HttpResponse(json.dumps(layer_json),content_type='application/json')
 	

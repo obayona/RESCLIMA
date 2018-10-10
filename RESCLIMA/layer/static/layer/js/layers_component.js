@@ -14,14 +14,18 @@ Vue.component("layers_component",{
 			<div id="layerList" >
 				<div v-if="shared.layers.length>0">
 					<div v-for="layer in shared.layers"
-					class="layerItem">
+					class="layerItem"
+					v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9'}:{}]">
 						<div v-if="layer.state=='uninitialized'">
 							<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
 							<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
 							<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
 						</div>
 						<div v-if="layer.state!='uninitialized'">
-							<h5 class="header">{{layer.title}}</h5>
+							<h5 class="header layerTitle"
+							 v-on:click.prevent="shared.currentLayer=layer">
+								{{layer.title}}
+							</h5>
 							<p>{{layer.abstract}}</p>
 							<h6>{{layer.data_date}}</h6>
 							<div class="layerOptions" v-if="layer.state=='loaded'">
@@ -64,8 +68,14 @@ Vue.component("layers_component",{
 			layer["abstract"]="";
 			layer["type"]="";
 			layer["data_date"]="";
+			layer["styles"]=[];
 			this.shared.layers.push(layer);
 			this.getLayerInfo(id_layer,i);
+		}
+		// se selecciona la capa actual
+		if(layer_ids.length>0){
+			var currentLayer = this.shared.layers[0];
+			this.shared.currentLayer=currentLayer;
 		}
 	},
 	data(){
@@ -85,7 +95,19 @@ Vue.component("layers_component",{
 				layer["abstract"]=data["abstract"]
 				layer["type"]=data["type"];
 				layer["data_date"]=data["data_date"];
+				layer["bbox"]=data["bbox"];
 				layer["state"]="metadata_loaded"
+				var styles = data["styles"]
+				for(var i=0; i<styles.length; i++){
+					var style = styles[i]
+					style["legend"]=[];
+					layer["styles"].push(style);
+				}
+				// se selecciona el primer estilo
+				if (layer["styles"].length>0){
+					var style = layer["styles"][0];
+					layer["currentStyle"]=style;
+				}
 				self.$root.$emit("layer_metadata",index)
 			});
 		}
