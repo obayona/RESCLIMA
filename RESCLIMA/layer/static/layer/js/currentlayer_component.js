@@ -14,10 +14,11 @@ Vue.component("currentlayer_component",{
 							<div>
 								<b>Estilos</b>
 								<div class="collection">
-									<a href="#!" 
+									<a  href="#"
 									 v-for="style in shared.currentLayer.styles"
 									 class="collection-item"
-									 v-bind:class="{active:style.selected}">
+									 v-bind:class="{active:shared.currentLayer.currentStyle.id==style.id}"
+									 v-on:click.prevent="changeStyle(style)">
 										{{style.title}}
 									</div>
 								</ul>
@@ -51,7 +52,21 @@ Vue.component("currentlayer_component",{
 		}
 	},
 	methods:{
-		
+		// metodo que cambia el estilo de una capa
+		changeStyle(style){
+			var currentLayer = this.shared.currentLayer;
+			var layers = this.shared.layers;
+			// si se selecciona el estilo que ya esta
+			// seleccionado, no se hace nada
+			if(currentLayer.currentStyle == style){
+				return;
+			}
+			// se cambia el estilo de la capa actual
+			currentLayer.currentStyle = style;
+			this.$forceUpdate();
+			// se notifica a los otros componentes
+			this.$root.$emit("update_style");
+		}
 	}
 })
 

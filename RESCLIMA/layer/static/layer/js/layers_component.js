@@ -1,5 +1,6 @@
 Vue.component("layers_component",{
 	template: `
+		<!--Contenedor corredizo, se abre cuando open es true-->
 		<div id="layerContainer"
 		v-bind:style="[open?{'left':'0px'}:{'left':'-400px'}]">
 			<div id="layerContainerOpen"
@@ -51,28 +52,39 @@ Vue.component("layers_component",{
 		</div>
 	`,
 	mounted(){
+		/* Se lee el parametro "layers" del queryString
+		del url, el cual tiene el siguiente formato:
+		layers=id_capa1|id_capa2|...|id_capaN */
 		var query_string = this.$route.query["layers"];
 		if (!query_string){
 			return;
 		}
-		var layer_ids = query_string.split("|")
+		// se obtienen los ids de las capas
+		var layer_ids = query_string.split("|");
+		// se crean objetos que representan las capas
 		for(var i=0; i<layer_ids.length; i++){
 			var id_layer = layer_ids[i];
+			// Si el string es vacio, no se hace nada
 			if(!id_layer){
 				return;
 			}
 			var layer = {};
 			layer["id"]=id_layer;
+			layer["index"]=i;
 			layer["state"]="uninitialized";
 			layer["title"]="";
 			layer["abstract"]="";
 			layer["type"]="";
 			layer["data_date"]="";
 			layer["styles"]=[];
+			// se guarda el objeto en el store
+			// compartido
 			this.shared.layers.push(layer);
-			this.getLayerInfo(id_layer,i);
+			// se piden los metadatos de la capa
+			this.getLayerInfo(layer);
 		}
-		// se selecciona la capa actual
+		// se selecciona la capa actual (currentLayer)
+		// es la primera capa
 		if(layer_ids.length>0){
 			var currentLayer = this.shared.layers[0];
 			this.shared.currentLayer=currentLayer;
@@ -85,30 +97,43 @@ Vue.component("layers_component",{
 		}
 	},
 	methods:{
-		getLayerInfo(id_layer,index){
+		/*Metodo que realiza una peticion ajax
+		para obtener los metadatos de la capa*/
+		getLayerInfo(layer){
+			var id_layer = layer["id"];
+			var index = layer["index"];
+			
 			var url = "/layer/info/"+id_layer
+			// referencia al componente
 			var self = this;
+			// peticion GET
 			var request = $.get(url);
 			request.done(function(data){
-				var layer = self.shared.layers[index]
 				layer["title"]=data["title"]
 				layer["abstract"]=data["abstract"]
 				layer["type"]=data["type"];
 				layer["data_date"]=data["data_date"];
 				layer["bbox"]=data["bbox"];
+				// se actualiza el estado de la capa
 				layer["state"]="metadata_loaded"
+				// se agregan los estilos
 				var styles = data["styles"]
 				for(var i=0; i<styles.length; i++){
 					var style = styles[i]
+					// los estilos aun no tienen legenda
+					// se agrega un array vacio
 					style["legend"]=[];
 					layer["styles"].push(style);
 				}
 				// se selecciona el primer estilo
+				// como currentStyle de la capa
 				if (layer["styles"].length>0){
 					var style = layer["styles"][0];
 					layer["currentStyle"]=style;
 				}
-				self.$root.$emit("layer_metadata",index)
+				// se notifica a los otros componentes
+				// que la capa ya tiene metadatos
+				self.$root.$emit("layer_metadata",layer);
 			});
 		}
 	}

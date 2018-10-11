@@ -1,13 +1,16 @@
-// Objeto con funciones para 
-// manipulacion de capas vectorial
-var VectorLayer = function(map,shared,index){
+/*Objeto con funciones para 
+manipulacion de capas vectorial
+Recibe: el mapa de OpenLayers 
+y la capa
+*/
+
+var VectorLayer = function(map,layer){
 
 	// Metodo para obtener los datos de una capa
 	this.loadLayer=function(){
 		// se recupera la capa
 		// compartida
-		var shared_layer = shared.layers[index];
-		var id_layer = shared_layer["id"];
+		var id_layer = layer["id"];
 		// se realiza la peticion al servidor
 		var url = "/vector/geojson/" + id_layer;
 		var request = $.get(url);
@@ -19,18 +22,19 @@ var VectorLayer = function(map,shared,index){
 
 	// Metodo que renderiza la capa
 	function renderFeatureLayer(data){ 	
-		var shared_layer = shared.layers[index];
-		var id_layer = shared_layer["id"]
+		var id_layer = layer["id"]
 
 		//se obtiene el extent de la capa
-		var extent = getExtent(shared_layer["bbox"]);
+		var extent = getExtent(layer["bbox"]);
 		// se guarda el extent
-		shared_layer["extent"] = extent;
+		layer["extent"] = extent;
 
 		// parser de geo_json
 		var geojson_format = new OpenLayers.Format.GeoJSON();
 
-		var layer = new OpenLayers.Layer.Vector(id_layer,{
+		// se crea una capa vectorial de OpenLayers
+		// con proyeccion EPSG:900913
+		var vectorlayer = new OpenLayers.Layer.Vector(id_layer,{
 			projection: new OpenLayers.Projection("EPSG:900913"),
 			rendererOptions: {zIndexing: true}
 		});
@@ -44,38 +48,30 @@ var VectorLayer = function(map,shared,index){
 			feature.geometry.transform('EPSG:4326','EPSG:900913');
 		}
 		// se agregan los features a la capa
-		layer.addFeatures(features);
+		vectorlayer.addFeatures(features);
 		// TODO - PENDIENTE CALLBACK DEL CLICK
 		//callback({"id_layer":id_layer,"data":layer});
 		
 		// se agrega la capa al mapa
-		map.addLayer(layer);
+		map.addLayer(vectorlayer);
 		// si el indice de la capa es 0
 		// se realiza un zoom a su bbox
+		var index = layer["index"];
 		if(index==0){
 			map.zoomToExtent(extent);
 		}
 
-		/*
-		Se obtiene el z-index de la capa.
-		En OpenLayers el z-index define el 
-		orden de las capas. Una capa con z-index = 0,
-		sera la capa mas baja. Se quiere que las capas
-		de shared.layers aparezcan de arriba hacia abajo,
-		por eso hay que calcular el z-index
-		*/
-		var numLayers = shared.layers.length;
-		var zIndex = numLayers - index;
-		layer.setZIndex(zIndex);
+		// se configura el zIndex de la capa
+		var zIndex = layer["zIndex"];
+		vectorlayer.setZIndex(zIndex);
 		// se actualiza el estado de la capa
-		var shared_layer = shared.layers[index];
-		shared_layer["state"]="loaded";
+		layer["state"]="loaded";
 		// se guarda una referencia a la capa
 		// de OpenLayers
-		shared_layer["openlayer_layer"]=layer;
+		layer["openlayer_layer"]=vectorlayer;
 		// se obtiene el estilo seleccionado
 		// de la capa
-		var selectedStyle = shared_layer["currentStyle"];
+		var selectedStyle = layer["currentStyle"];
 		if(selectedStyle){
 			requestStyle(selectedStyle);
 		}
@@ -108,10 +104,19 @@ var VectorLayer = function(map,shared,index){
 		})
 	}
 
+	// Metodo Publico de requestStyle
+	this.requestStyle = function(style){
+		requestStyle(style);
+	}
+
 	// Metodo que aplica el estilo a la capa
 	function applyStyle(layer_style,sld){
+		// parser de sld
 		var format = new OpenLayers.Format.SLD();
+		// se obtiene un objeto con las reglas del estilo
 		var sld = format.read(sld);
+		// se obtiene la propiedad  namedLayer del
+		// objeto sld
 		var namedLayers = sld.namedLayers;
 		var namedLayer = null;
 		for (var key in namedLayers) {
@@ -120,17 +125,16 @@ var VectorLayer = function(map,shared,index){
 				break;
 			}
 		}
-
+		// se obtiene el estilo
 		var styles = namedLayer.userStyles;
 		var style = styles[0];
-		// se obtiene la capa
-		var shared_layer = shared.layers[index];
-		var layer = shared_layer["openlayer_layer"];
-		layer.styleMap.styles["default"] = style;
+		var vectorlayer = layer["openlayer_layer"];
+		// se aplica el estilo a la capa de OpenLayers
+		vectorlayer.styleMap.styles["default"] = style;
 		// se crea la leyenda
 		createLegend(layer_style,style.rules);
 		// se redibuja la capa
-		layer.redraw();
+		vectorlayer.redraw();
 	}
 
 	// Este metodo recibe el objeto rules
@@ -140,14 +144,16 @@ var VectorLayer = function(map,shared,index){
 	function createLegend(layer_style,rules){
 		var i = 0; 
 		var length = rules.length;
-		// se obtiene la capa compartida
+		// se obtiene la leyenda
 		var legend = layer_style["legend"];
+		legend.splice(0,legend.length);
 		// se recorren las reglas
 		for (i;i<length;i++){
 			var rule = rules[i];
 			var value = rule.name;
 			var symbolizer = rule.symbolizer;
 			var color = getColor(symbolizer);
+			// se guarda el color y el label
 			legend.push({
 				"color":color,
 				"label":value,
@@ -170,21 +176,23 @@ var VectorLayer = function(map,shared,index){
 
 }
 
-// Objeto con funciones para 
-// manipulacion de capas raster
-var RasterLayer = function(map,shared,index){
+/*Objeto con funciones para 
+manipulacion de capas raster
+Recibe: el mapa de OpenLayers
+y la capa
+*/
+var RasterLayer = function(map,layer){
 	
 	// Metodo para obtener los datos de una capa
 	this.loadLayer = function(){
 		// capa compartida
-		var shared_layer = shared.layers[index];
-		var id_layer = shared_layer["id"]
+		var id_layer = layer["id"]
 		//se obtiene el extent de la capa
-		var extent = getExtent(shared_layer["bbox"]);
+		var extent = getExtent(layer["bbox"]);
 		// se guarda el extent
-		shared_layer["extent"] = extent;
-
-		var layer = new OpenLayers.Layer.TMS(id_layer,
+		layer["extent"] = extent;
+		// se crea una capa raster de OpenLayers
+		var rasterlayer = new OpenLayers.Layer.TMS(id_layer,
 					"/tms/",
 					{serviceVersion: "1.0",
 					layername: id_layer,
@@ -193,33 +201,26 @@ var RasterLayer = function(map,shared,index){
 					rendererOptions: {zIndexing: true}
 				});
 		//layer.opacity = 0.7
-		map.addLayer(layer);
+		map.addLayer(rasterlayer);
 
 		// si el index es cero
 		// se hace zoom a la capa
+		var index = layer["index"];
 		if(index==0){
 			map.zoomToExtent(extent);
 		}
-		/*
-		Se obtiene el z-index de la capa.
-		En OpenLayers el z-index define el 
-		orden de las capas. Una capa con z-index = 0,
-		sera la capa mas baja. Se quiere que las capas
-		de shared.layers aparezcan de arriba hacia abajo,
-		por eso hay que calcular el z-index
-		*/
-		var numLayers = store.layers.length;
-		var zIndex = numLayers - index;
-		layer.setZIndex(zIndex);
+		// se configura el zIndex
+		var zIndex = layer["zIndex"];
+		rasterlayer.setZIndex(zIndex);
 		// se actualiza el estado de la capa
-		store.layers[index].state="loaded"
+		layer["state"]="loaded";
 
 		// se guarda una referencia a la capa
 		// de OpenLayers
-		shared_layer["openlayer_layer"]=layer;
+		layer["openlayer_layer"]=rasterlayer;
 		// se obtiene el estilo seleccionado
 		// de la capa
-		var selectedStyle = shared_layer["currentStyle"];
+		var selectedStyle = layer["currentStyle"];
 		if(selectedStyle){
 			requestStyle(selectedStyle);
 		}
@@ -252,13 +253,18 @@ var RasterLayer = function(map,shared,index){
 		console.log("se pide el estilo ****");
 	}
 
-}
+	// Metodo Publico de requestStyle
+	this.requestStyle = function(style){
+		requestStyle(style);
+	}
 
+}
 
 
 Vue.component("map_component",{
 	template: `
 		<div id="map_component">
+			<!-- Contenedor del mapa de OpenLayers -->
 			<div id="map_container" style="width:100%;height: 700px;">
 			</div>
 		</div>
@@ -276,7 +282,7 @@ Vue.component("map_component",{
 		// se agrega una capa de OpenStreetMap
 		var osm = new OpenLayers.Layer.OSM("OSM");
 		map.addLayer(osm);
-		// se la configura para que este al fondo
+		// se la configura para que esta sea la capa base
 		osm.setZIndex(0);
 		map.zoomToMaxExtent();
 		
@@ -286,6 +292,9 @@ Vue.component("map_component",{
 		// que se dispara cuando
 		// se obtienen los metadatos de una capa
 		this.$root.$on('layer_metadata', this.loadLayer);
+		// se reacciona al evento
+		// que se dispara cuando se cambia el estilo
+		this.$root.$on("update_style",this.updateStyle);
 	},
 	data(){
 		return {
@@ -293,16 +302,51 @@ Vue.component("map_component",{
 		}
 	},
 	methods:{
-		loadLayer(index){
-			var layer = this.shared.layers[index];
+		/*Metodo que se ejecuta cuando
+		se actualizan los metadatos de la capa.
+		Dependiendo del tipo de capa (vector,raster)
+		se piden los datos y se las muestra en el mapa*/
+		loadLayer(layer){
+			// se guarda referencia al componente
 			var self = this;
+			var map = this.shared.map;
+			/*Se calcula el zIndex de la capa.
+			En OpenLayers el zIndex define la posicion
+			de la capa. zIndex=0 es la capa base y asi 
+			sucesivamente. Se quiere que la capa con index=0
+			sea la capa mas superior, y asi en adelante, asi
+			que se calcula el zIndex de la capa
+			*/
+			var numLayers = this.shared.layers.length;
+			var index = layer["index"];
+			var zIndex = numLayers - index;
+			layer["zIndex"]=zIndex;
 			if (layer["type"]=="vector"){
-				var vectorlayer = new VectorLayer(this.shared.map,this.shared,index);
+				// se crea un objeto con metodos para el manejo
+				// de capas vectoriales
+				var vectorlayer = new VectorLayer(map,layer);
 				vectorlayer.loadLayer();
 			}
 			if(layer["type"]=="raster"){
-				var rasterlayer = new RasterLayer(this.shared.map,this.shared,index);
+				// se crea un objeto con metodos para el manejo
+				// de capas raster
+				var rasterlayer = new RasterLayer(map,layer);
 				rasterlayer.loadLayer();
+			}
+		},
+		updateStyle(){
+			// se recupera la capa actual
+			var currentLayer = this.shared.currentLayer;
+			// se recupera el estilo de la capa actual
+			var currentStyle = currentLayer.currentStyle;
+			var map = this.shared.map;
+			if(currentLayer["type"]=="vector"){
+				var vectorlayer = new VectorLayer(map,currentLayer);
+				vectorlayer.requestStyle(currentStyle);
+			}
+			if(currentLayer["type"]=="raster"){
+				var rasterlayer = new RasterLayer(map,currentLayer);
+				rasterlayer.requestStyle(currentStyle);
 			}
 		}
 	},
