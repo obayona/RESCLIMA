@@ -245,12 +245,23 @@ var RasterLayer = function(map,layer){
 	// de la capa
 	function requestStyle(style){
 		var style_id = style["id"]
-		/*var url = "/vector/export_style/" + style_id;
+		var url = "/raster/style_legend/" + style_id;
 		var request = $.get(url);
-		request.done(function(sld){
-			applyStyle(style,sld)
-		})*/
-		console.log("se pide el estilo ****");
+		request.done(function(legend){
+			createLegend(style,legend);
+		})
+	}
+
+	function createLegend(layer_style,legend_json){
+		var legend = layer_style["legend"];
+		legend.splice(0,legend.length);
+
+		for (i=0;i<legend_json.length;i++){
+			var row = legend_json[i];
+			// se guarda el color y el label
+			legend.push(row);
+		}
+
 	}
 
 	// Metodo Publico de requestStyle

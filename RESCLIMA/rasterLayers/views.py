@@ -62,19 +62,10 @@ def view_raster(request,rasterlayer_id):
 	return render(request,"view_raster.html",obj)
 
 
-def raster_json_info(request,rasterlayer_id):
-	rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
-	bbox = rasterlayer.bbox.geojson
-	# se comprueba si tiene estilo
-	layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
-	legend = [];
-	if layer_styles.count()==1:
-		style = layer_styles[0]
-		legend = getColorMap(style);
-	info = {}
-	info["bbox"]=bbox
-	info["legend"]=legend
-	return HttpResponse(json.dumps(info),content_type='application/json')
+def style_legend(request,style_id):
+	style = Style.objects.get(id=style_id)
+	legend = getColorMap(style);
+	return HttpResponse(json.dumps(legend),content_type='application/json')
 
 def updateRasterLayer(rasterlayer,request):
 	try:
