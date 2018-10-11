@@ -32,7 +32,12 @@ Vue.component("layers_component",{
 							<div class="layerOptions" v-if="layer.state=='loaded'">
 								<p class="range-field">
 									<label>Transparencia</label>
-									<input type="range" min="0" max="100" value="0"/>
+									<input type="range" 
+									min="0" 
+									max="100" 
+									value="0"
+									v-model="layer.opacity"
+									v-on:input="changeOpacity(layer)"/>
 								</p>
 								<div>
 									<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
@@ -76,6 +81,7 @@ Vue.component("layers_component",{
 			layer["abstract"]="";
 			layer["type"]="";
 			layer["data_date"]="";
+			layer["opacity"]=0;
 			layer["styles"]=[];
 			// se guarda el objeto en el store
 			// compartido
@@ -135,6 +141,15 @@ Vue.component("layers_component",{
 				// que la capa ya tiene metadatos
 				self.$root.$emit("layer_metadata",layer);
 			});
+		},
+		/*
+		Metodo para actualizar la transparencia
+		de una capa
+		*/
+		changeOpacity(layer){
+			var opacity = layer["opacity"];
+			var openlayer_layer = layer["openlayer_layer"];
+			openlayer_layer.setOpacity(1-opacity/100);
 		}
 	}
 })

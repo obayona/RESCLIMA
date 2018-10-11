@@ -53,7 +53,7 @@ Vue.component("layers_component",{
 			for(var i=0; i<this.shared.layers.length; i++){
 				var layer = this.shared.layers[i];
 				if (layer["selected"])
-					query_str = query_str + String(layer["id"])+","
+					query_str = query_str + String(layer["id"])+"|"
 			}
 			query_str = query_str.slice(0, -1);
 
