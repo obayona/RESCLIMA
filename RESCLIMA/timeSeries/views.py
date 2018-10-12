@@ -112,7 +112,7 @@ def visualize(request):
 		return render(request,"series-visualization.html")
 
 def get_measurements(request):
-	if request.method == 'POST':
+	if request.method == 'POST' and request.is_ajax:
 		data = request.raw_post_data
 		variableId = data['variableId']
 		starionsList = data['starionsList']
@@ -123,6 +123,17 @@ def get_measurements(request):
 			qs = 'select readings::json->%s, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
 			params.append(variableId)
 			params.append(stationId)
-			#if len(startDate) > 0:
-				#qs = qs + ' and '
-	return qs, params
+			params.append(variableId)
+			if len(startDate) > 0:
+				qs = qs + ' and ts >= %s'
+				params.append(startDate)
+			if len(endDate) > 0:
+				qs = qs + ' and ts <= %s'
+				params.append(endDate)
+			qs = qs + ';'
+
+	with connection.cursor() as cursor:
+		cursor.execute(qs, params)
+		rows = cursor.fetchall()
+		for row in rows:
+			print row
