@@ -152,6 +152,6 @@ def visualize(request):
 			end_date = request.GET['end_date']
 		#Call to series_searcher.py method
 		measurements={}
-		return render(request, 'timeSeries/series-visualization.html', {'measurements': json.dumps(measurements)})
+		return render(request, 'series-visualization.html', {'measurements': json.dumps(measurements)})
 	else:
 		return HttpResponse("Invalid Request");

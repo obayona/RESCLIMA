@@ -58,6 +58,7 @@ Vue.component("series_component",{
 			console.log("Url de series a visualizar: "+ url)
 			//this.$router.replace(url);
 			//this.$router.go();
+			url = encodeURI(url)
 			window.open(url,'_blank');
 		},
 		
