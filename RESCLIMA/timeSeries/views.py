@@ -7,6 +7,7 @@ from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from django.db import connection
+import json
 
 @login_required(login_url='noAccess')
 def show_options(request):
@@ -108,16 +109,18 @@ def visualize(request):
 #		if 'end_date' in request.GET:
 #			end_date = request.GET['end_date']
 		#Call to series_searcher.py method
+
 #	return HttpResponse("OK")
 		return render(request,"series-visualization.html")
 
 def get_measurements(request):
 	responseData = {'measurements': {}, 'variable_id': ''}
 	if request.method == 'POST' and request.is_ajax:
-		data = request.raw_post_data
+		data = request.POST["info"]
+		data = json.loads(data)
 		variableId = data['variable_id']
 		starionsList = data['stations_list']
-		startDate = data['start_date']
+		startDate = data['ini_date']
 		endDate = data['end_date']
 		params = []
 		responseData['variable_id'] = variableId
@@ -133,8 +136,11 @@ def get_measurements(request):
 				qs = qs + ' and ts <= %s'
 				params.append(endDate)
 			qs = qs + ' order by ts;'
+		print("====================")
+		print(params)
+		print(qs)
 		with connection.cursor() as cursor:
-			cursor.execute(qs, params)
+			cursor.execute(qs, ['6', '1','6', '2018-10-09', '2018-10-12'])
 			rows = cursor.fetchall()
 			for row in rows:
 				idStation = row[0]
@@ -145,4 +151,5 @@ def get_measurements(request):
 				if date not in responseData['measurements'][idStation]:
 					responseData['measurements'][idStation][date] = []
 				responseData['measurements'][idStation][date].append(measurement)
+
 	return JsonResponse({"series": responseData})
