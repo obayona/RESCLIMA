@@ -120,5 +120,9 @@ def get_measurements(request):
 		endDate = data['variableId']
 		params = []
 		for stationId in starionsList:
-			qs = 'select readings::json->'1', ts from "timeSeries_measurement" where "idStation_id"=1 and readings like '%"1":%''
+			qs = 'select readings::json->%s, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
+			params.append(variableId)
+			params.append(stationId)
+			#if len(startDate) > 0:
+				#qs = qs + ' and '
 	return qs, params
