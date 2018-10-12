@@ -120,7 +120,7 @@ def get_measurements(request):
 		endDate = data['variableId']
 		params = []
 		for stationId in starionsList:
-			qs = 'select readings::json->%s, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
+			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
 			params.append(variableId)
 			params.append(stationId)
 			params.append(variableId)
@@ -130,7 +130,7 @@ def get_measurements(request):
 			if len(endDate) > 0:
 				qs = qs + ' and ts <= %s'
 				params.append(endDate)
-			qs = qs + ';'
+			qs = qs + ' order by ts;'
 
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
