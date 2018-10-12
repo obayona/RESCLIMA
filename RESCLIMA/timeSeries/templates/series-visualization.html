@@ -23,7 +23,39 @@
    var urlParams = new URLSearchParams(window.location.search);
    console.log(urlParams.get("variables"));
    //parse data
-   
+var variables_info = urlParams.split("|");
+var params = {}
+var imax = variables_info.length
+for(var i=0 ; i<imax ; i++){
+	//get the variable id
+	var current = variables_info[i];
+	var variable_id = current.charAt(0);
+	//get variables of stations
+	var estaciones_str = current.slice(2,current.length-1);
+	var estaciones = estaciones_str.split(",");
+	params[variable_id] = estaciones;
+}
+
+for(var key in params){
+	//make an ajax request per variable
+	$.ajax({ url : "http://127.0.0.1:8000/series/", 
+		type:"get", 
+		// handle a successful response 
+		success : function(json) { 
+			console.log(json);
+			//here goes plotly
+      variableTimeSerie();
+			},
+     //else
+		error : function(data) {
+		 console.log("oh no :("); 
+		 	} 
+	 });	
+}
+
+//Plotly.newPlot('div2', data, layout2);
+  
+ function variableTimeSerie(){
     
   var trace1 = {
   x: [1, 2, 3, 4], 
@@ -49,8 +81,7 @@ var layout2 = {
 };
 
 Plotly.newPlot('div1', data, layout1);
-
-//Plotly.newPlot('div2', data, layout2);
+   }
     
 </script>
 {% endblock %}
