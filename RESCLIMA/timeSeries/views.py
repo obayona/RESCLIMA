@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from parsers.csv_parsers_module import *
 from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
@@ -51,13 +50,13 @@ def addSensor(data):
 
 	return None
 
-def new_sensor(request):
+def import_station(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
 		options = {'stationTypes':station_types}
 		return render(request, 'new_station.html',options)
 	elif request.method == "POST":
-		err_msg = addSensor(request.POST);
+		err_msg = addStation(request.POST);
 		return HttpResponse(err_msg);
 
 
