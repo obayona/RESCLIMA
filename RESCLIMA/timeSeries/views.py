@@ -114,13 +114,13 @@ def visualize(request):
 def get_measurements(request):
 	if request.method == 'POST' and request.is_ajax:
 		data = request.raw_post_data
-		variableId = data['variableId']
-		starionsList = data['starionsList']
-		startDate = data['variableId']
-		endDate = data['variableId']
+		variableId = data['variable_id']
+		starionsList = data['starions_list']
+		startDate = data['start_date']
+		endDate = data['end_date']
 		params = []
 		for stationId in starionsList:
-			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
+			qs = 'select "timeSeries_measurement"."idStation_id" as id_station, readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
 			params.append(variableId)
 			params.append(stationId)
 			params.append(variableId)
@@ -131,9 +131,17 @@ def get_measurements(request):
 				qs = qs + ' and ts <= %s'
 				params.append(endDate)
 			qs = qs + ' order by ts;'
-
+	responseData = {'measurements': {}, 'variable_id': variableId}
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		for row in rows:
-			print row
+			idStation = row[0]
+			measurement = row[1]
+			date = row[2]
+			if idStation not in responseData['measurements']:
+				responseData['measurements'][idStation] = {}
+			if date not in responseData['measurements'][idStation]:
+				responseData['measurements'][idStation][date] = []
+			responseData['measurements'][idStation][date].append(measurement)
+	return JsonResponse({"series": responseData})
