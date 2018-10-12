@@ -3,6 +3,15 @@
 
 {% block title %} RESCLIMA DURAN | Capas Vectoriales{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+{% endblock %}
+
+{% block scripts %}
+<!--sweet alert-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
 	<div class="section">
@@ -19,16 +28,28 @@
 										<span style="font-family:monospace">{{ vectorlayer.title}}</span>
 									</td>
 									<td>
-										<a href="/vector/view/{{ vectorlayer.id }}">Visualizar</a>
+										<a href="/vector/view/{{ vectorlayer.id }}">
+											<i  class="material-icons left">visibility</i>
+												Visualizar
+										</a>
 									</td>
 									<td>
-										<a href="/vector/export/{{ vectorlayer.id }}">Descargar zip</a>
+										<a href="/vector/export/{{ vectorlayer.id }}">
+											<i  class="material-icons left">file_download</i>
+												Descargar zip
+										</a>
 									</td>
 									<td>
-											<a href="/vector/edit/{{ vectorlayer.id }}">Editar</a>
+											<a href="/vector/edit/{{ vectorlayer.id }}">
+												<i  class="material-icons left">edit</i>
+													Editar
+											</a>
 									</td>
 									<td>
-										<a href="#" onclick="confirmationDelete('/vector/delete/{{ vectorlayer.id }}')">Eliminar</a>	
+											<a href="#" onclick="confirmationDelete('/vector/delete/{{ vectorlayer.id }}')">
+												<i  class="material-icons left">delete_forever</i>
+													Eliminar
+											</a>
 									</td>
 								</tr>
 							</tbody>
@@ -73,5 +94,4 @@
     });
   }
 </script>
-
 {% endblock extra_js %}

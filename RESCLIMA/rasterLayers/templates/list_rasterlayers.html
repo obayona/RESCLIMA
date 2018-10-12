@@ -3,6 +3,15 @@
 
 {% block title%} RESCLIMA | Capas Raster{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+{% endblock %}
+
+{% block scripts %}
+<!--sweet alert-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="section">
@@ -19,13 +28,28 @@
                       <span style="font-family:monospace">{{ raster.title}}</span>
                     </td>
                     <td>
-                      <a href="/raster/view/{{ raster.id }}">Visualizar</a>
+                      <a href="/raster/view/{{ raster.id }}">
+                        <i  class="material-icons left">visibility</i>
+                          Visualizar
+                      </a>
                     </td>
                     <td>
-                      <a href="/raster/export/{{ raster.id }}">Descargar zip</a>
+                      <a href="/raster/export/{{ raster.id }}">
+                        <i  class="material-icons left">file_download</i>
+                          Descargar zip
+                      </a>
                     </td>
                     <td>
-                      <a href="#" onclick="confirmationDelete('/raster/delete/{{ raster.id }}')">Eliminar</a>	
+                      <a href="/raster/edit/{{ raster.id }}">
+                        <i  class="material-icons left">edit</i>  
+                          Editar
+                      </a>
+                    </td>
+                    <td>
+                      <a href="#" onclick="confirmationDelete('/raster/delete/{{ raster.id }}')">
+                        <i  class="material-icons left">delete_forever</i>
+                          Eliminar
+                      </a>	
                     </td>
                   </tr>
                 </tbody>
@@ -55,7 +79,10 @@
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                    <a href="#">Eliminar</a>
+                    <a href="#" onclick="confirmationDelete('/raster/delete_style/{{ style.id }}')">
+                      <i  class="material-icons left">delete_forever</i>
+                        Eliminar
+                    </a>
                     </td>
                   </tr>
                 </tbody>

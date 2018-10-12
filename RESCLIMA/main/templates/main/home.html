@@ -5,8 +5,12 @@
 
 
 {% block content %}
-	<div>
+	<!-- START MAIN -->
+<div id="main">
+	<!-- START WRAPPER -->
+	<div class="wrapper">
 		<div id="searchForm" class="container">
+			<div class="section">
 			<div class="row">
 				<div class="col s3">
 					<div>
@@ -54,6 +58,7 @@
                                         <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>
 				</div>
 			</div>
+			</div>
 			<!-- Lista de resultados -->
 			<div class="row">
 				<keep-alive>
@@ -62,7 +67,7 @@
 			</div>
 		</div>
 	</div>
-    
+</div>
 
 {% endblock %}
 

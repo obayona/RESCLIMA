@@ -72,10 +72,21 @@ Vue.component("layers_component",{
 									v-on:input="changeOpacity(layer)"/>
 								</p>
 								<!-- Links para descargar y remover la capa-->
+								<table class="bordered">
+									<tbody>
+										<td>
+											<a style="color:green" href="#"><i class="material-icons left">file_download</i>Descargar</a>
+										</td>
+										<td>
+											<a style="color:red" href="#"><i class="material-icons left">delete</i>Eliminar</a>
+										</td>
+									<tbody>
+								</table>
+								<!--
 								<div>
 									<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
 									<a style="padding:10px;color:red" href="#"><i class="material-icons">delete</i>Eliminar</a>
-								</div>
+								</div> -->
 							</div>
 							<!-- Si la capa no tiene estado loaded-->
 							<!-- no se muestran las opciones de la capa,-->
