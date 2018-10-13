@@ -7,6 +7,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 import json
+from django.http import JsonResponse
 
 @login_required(login_url='noAccess')
 def show_options(request):
@@ -119,16 +120,16 @@ def get_measurements(request):
 		if len(data) > 0:
 			data = json.loads(data)
 			variableId = data.get('variable_id', '')
-			starionId = data.get('station_id', 0)
+			stationId = data.get('station_id', 0)
 			startDate = data.get('ini_date', '')
 			endDate = data.get('end_date', '')
+			print(variableId)
 			params = []
 			responseData['variable_id'] = variableId
-			responseData['station_id'] = starionId
-			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%d and readings like "%%%s:%"'
+			responseData['station_id'] = stationId
+			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
 			params.append(variableId)
 			params.append(int(stationId))
-			params.append(variableId)
 			if len(startDate) > 0:
 				qs = qs + ' and ts >= %s'
 				params.append(startDate)
@@ -136,11 +137,7 @@ def get_measurements(request):
 				qs = qs + ' and ts <= %s'
 				params.append(endDate)
 			qs = qs + ' order by ts;'
-			print("====================")
-			print(params)
-			print(qs)
 			with connection.cursor() as cursor:
-	#			cursor.execute(qs, ['6', '1','6', '2018-10-09', '2018-10-12'])
 				cursor.execute(qs, params)
 				rows = cursor.fetchall()
 				for row in rows:

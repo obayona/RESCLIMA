@@ -22,8 +22,16 @@
    //get data from url
    var urlParams = new URLSearchParams(window.location.search);
    var ini_date = urlParams.get("ini_date"); 
-   var end_date = urlParams.get("end_date")
+   var end_date = urlParams.get("end_date");
+   //make sure we assign date params a value
+   if(ini_date==null){
+   		ini_date = "";
+   }
+   if(end_date ==null){
+   		end_date = "";
+   }
    var variableParams = urlParams.get("variables");
+   //how to manage if in url theres no variables?
 
    //parse data
 	var variables_info = variableParams.split("|");
@@ -36,66 +44,79 @@
 		//get variables of stations
 		var estaciones_str = current.slice(2,current.length-1);
 		var estaciones = estaciones_str.split(",");
-		params["variable_id"] = variable_id;
-		params["stations_list"] = estaciones;
+		params[variable_id] = estaciones;
 	}
-	params["ini_date"] = ini_date;
-	params["end_date"] = end_date;
 
 	//get the data from the server
 	for(var key in params){
 		//make an ajax request per variable
-		
-		$.ajax({ url : "http://127.0.0.1:8000/series/measurements/", 
-			type:"POST",
-			data: { "info": JSON.stringify(params) },
-			
-			success : function(json) { 
-				var div = "<div id=\"div"+json["variable_id"]+"\"></div>";
-				$( "body" ).append(div);
-				console.log(json["measures"]);
-
-				//here goes plotly
-				var div_id = "div"+json["variable_id"];
-				//plotTimeSerie(json["measures"],div_id);
-	      		variableTimeSerie();
+		var len = params[key].length;
+		var stations = params[key];
+		//here we will store the lists of the values of the stations for a single variable id(which is key)
+		var traces_x = [];
+		var traces_y = [];
+		//now make the request per each station
+		for(var i=0;i<len;i++){
+			$.ajax({ url : "http://127.0.0.1:8000/series/measurements/", 
+				type:"POST",
+				data: { "info": JSON.stringify({"variable_id":key,"station_id":stations[i], "ini_date":ini_date, "end_date":end_date}) },
+				
+				success : function(json) { 
+					//console.log(json);
+					//console.log(key);
+					//console.log(json["series"]["dates"]);
+					//console.log("============");
+					traces_x.push(json["series"]["dates"]);
+					traces_y.push(json["series"]["measurements"]);
+					
 				},
-	    
-			error : function(data) {
-			 console.log("oh no :("); 
-			 	} ,
-			dataType: "json" 
-		 });	
-	
+		    
+				error : function(data) {
+				 console.log("oh no :("); 
+				 	} ,
+				dataType: "json" 
+			 });
+
+		}
+
+		var div = "<div id=\"div"+key+"\"></div>";
+		$( "body" ).append(div);
+		//here goes plotly
+		var div_id = "div"+key;
+		console.log(traces_x);
+		console.log("=======");
+		plotTimeSerie(traces_x,traces_y,div_id);
 	};
 	
 
 //Plotly.newPlot('div2', data, layout2);
-	function plotTimeSerie(stations_dict, div_id){
-		to_plot = []
-		for(var key in stations_dict){
-			values = []
-			dates = []
-			for(var key_date in stations_dict[key]){
-				for(var i=0; i<stations_dict[key][key_date].length; i++){
-					values.push(stations_dict[key][key_date][i]);
-					dates.push(key_date);
-				}
+	function plotTimeSerie(x_values_list, y_values_list, div_id){
+		var data = []
+		var len = x_values_list.length;
+		if(len!=y_values_list.length){
+			console.log("lists of measurements and dates of different length");
+			return;
+		}
+		for(var i=0;i<len;i++){
 
-			}
-			
-			//generate a trace per each station
-			var trace = {dates,values,type:'scatter'};
-			to_plot.push(trace);
-		} 
-		//draw
+			var trace1 = {
+	 			x: x_values_list[i], 
+	  			y: y_values_list[i], 
+	  			type: 'scatter'
+			};
+			data.push(trace1);
+		}
+
 		var layout1 = {
-	  yaxis: {rangemode: 'tozero',
-	          showline: true,
-	          zeroline: true}
-	};
-
-		Plotly.newPlot(div_id, to_plot, layout1);
+			xaxis: {
+    			title: 'tiempo',
+    			
+  			},
+	  		yaxis: {
+	       
+	     	}
+		};
+		Plotly.newPlot(div_id, data, layout1);
 	}
   
  function variableTimeSerie(){
