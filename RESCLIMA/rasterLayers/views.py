@@ -140,8 +140,8 @@ def edit_raster(request, rasterlayer_id):
 def delete_rasterLayer(request,rasterlayer_id):
 	try:
 		rasterlayer = RaterLayer.objects.get(id=rasterlayer_id)
-		rasterlayer.delete();
-		return HttpResponse("OK");
+		rasterlayer.delete()
+		return redirect('raster_list')
 	except RasterLayer.DoesNotExist:
 		return HttpResponseNotFound()
 
@@ -192,8 +192,8 @@ def import_style(request):
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		style.delete();
-		return HttpResponse("OK");
+		style.delete()
+		return redirect('raster_list')
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()  
 

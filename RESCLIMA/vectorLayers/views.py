@@ -14,6 +14,7 @@ import json
 import utils
 from os.path import join
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect
 
 @login_required(login_url='noAccess')
 def list_vectorlayers(request):
@@ -107,8 +108,8 @@ def edit_vectorlayer(request,vectorlayer_id):
 def delete_vectorLayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
-		vectorlayer.delete();
-		return HttpResponse("OK");
+		vectorlayer.delete()
+		return redirect('vector_list')
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
 
