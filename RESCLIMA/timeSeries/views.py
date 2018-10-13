@@ -115,36 +115,37 @@ def visualize(request):
 def get_measurements(request):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
 	if request.method == 'POST' and request.is_ajax:
-		data = request.POST["info"]
-		data = json.loads(data)
-		variableId = data['variable_id']
-		starionId = data['station_id']
-		startDate = data['ini_date']
-		endDate = data['end_date']
-		params = []
-		responseData['variable_id'] = variableId
-		responseData['station_id'] = starionId
-		qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%d and readings like "%%%s:%"'
-		params.append(variableId)
-		params.append(int(stationId))
-		params.append(variableId)
-		if len(startDate) > 0:
-			qs = qs + ' and ts >= %s'
-			params.append(startDate)
-		if len(endDate) > 0:
-			qs = qs + ' and ts <= %s'
-			params.append(endDate)
-		qs = qs + ' order by ts;'
-		print("====================")
-		print(params)
-		print(qs)
-		with connection.cursor() as cursor:
-#			cursor.execute(qs, ['6', '1','6', '2018-10-09', '2018-10-12'])
-			cursor.execute(qs, params)
-			rows = cursor.fetchall()
-			for row in rows:
-				measurement = row[0]
-				date = row[1]
-				responseData['measurements'].append(measurement)
-				responseData['dates'].append(date)
+		data = request.POST.get("info", {})
+		if len(data) > 0:
+			data = json.loads(data)
+			variableId = data.get('variable_id', '')
+			starionId = data.get('station_id', 0)
+			startDate = data.get('ini_date', '')
+			endDate = data.get('end_date', '')
+			params = []
+			responseData['variable_id'] = variableId
+			responseData['station_id'] = starionId
+			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%d and readings like "%%%s:%"'
+			params.append(variableId)
+			params.append(int(stationId))
+			params.append(variableId)
+			if len(startDate) > 0:
+				qs = qs + ' and ts >= %s'
+				params.append(startDate)
+			if len(endDate) > 0:
+				qs = qs + ' and ts <= %s'
+				params.append(endDate)
+			qs = qs + ' order by ts;'
+			print("====================")
+			print(params)
+			print(qs)
+			with connection.cursor() as cursor:
+	#			cursor.execute(qs, ['6', '1','6', '2018-10-09', '2018-10-12'])
+				cursor.execute(qs, params)
+				rows = cursor.fetchall()
+				for row in rows:
+					measurement = row[0]
+					date = row[1]
+					responseData['measurements'].append(measurement)
+					responseData['dates'].append(date)
 	return JsonResponse({"series": responseData})
