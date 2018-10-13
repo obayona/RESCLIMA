@@ -5,21 +5,16 @@ from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from tasks import parseHOBOFile
-from RESCLIMA import settings
-import os
-import time
-import datetime
+from django.db import connection
 import json
-import shutil
+from django.http import JsonResponse
 
-# es la pagina principal de la app
 @login_required(login_url='noAccess')
 def show_options(request):
 	return render(request,"home_series.html")
 
-# funcion para agregar una estacion
-def addStation(data):
+
+def addSensor(data):
 	try:
 		stationType_id = int(data["stationType"]);
 		serialNum = data["serialNum"];
@@ -56,7 +51,6 @@ def addStation(data):
 
 	return None
 
-# view para agregar una estacion
 @login_required(login_url='noAccess')
 def import_station(request):
 	if request.method == "GET":
@@ -103,57 +97,91 @@ def upload_file(request):
 		params = {"stationTypes":station_types}
 		return render(request, 'import_file.html', params)
 	elif request.method == "POST":
-		stationType_id = request.POST['stationType']
-		stationType = StationType.objects.get(id=stationType_id)
-		stationType_str = str(stationType)
+		err_msg = None;
+		stationType_id = request.POST['stationType'];
+		stationType = StationType.objects.get(id=stationType_id);
+		stationType_str = str(stationType);
 		file_ptr = request.FILES['file']
-
-		# guarda el archivo
-		fileName = saveFile(file_ptr)
-		params = {}
-		params["fileName"]=fileName
-		print params, "los parametros ***"
-		result = {}
-		# dependiendo  del  tipo  de estacion  se 
-		# procede con el adptador correspondiente
 		if stationType_str == "HOBO-MX2300":
-			print "se ejecuta la tarea en celery timeserie"
-			task = parseHOBOFile.delay(params)
-			result["task_id"] = task.id
-			print "el id del task ", task.id
-			result["err_msg"] = None
+			err_msg = parseHOBO(file_ptr);
+		elif stationType_str == "":
+			err_msg = parseDataLogger(file_ptr);
 		else:
-			result["task_id"] = None
-			result["err_msg"] = "No se reconoce este tipo de estacion"
-		# se borra el archivo temporal
-		#os.remove(fileName)
-		# se retorna el resultado
-		return HttpResponse(json.dumps(result),content_type='application/json')
+			err_msg = "Error: no se reconoce ese tipo de estacion";
+
+		if(err_msg=="Success"):
+			return HttpResponse("OK")
+		else:
+			return HttpResponse(err_msg);
 
 
 def visualize(request):
 	if request.method == 'GET':
-		if 'variables' in request.GET:
-			variablesStr = request.GET['variables']
-			print variablesStr
-			variables = variablesStr.strip().split('|')
-			for variable in variables:
-				stationsStrStart = variable.strip().find('[')
-				stationsStrEnd = variable.strip().find(']')
-				variableId = int(variable.strip()[0:stationsStrStart])
-				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
-				stationsList = stationsStr.strip().split(',')
-				stations = []
-				for stationId in stationsList:
-					stations.append(int(stationId))
-		ini_date = ''
-		end_date = ''
-		if 'ini_date' in request.GET:
-			ini_date = request.GET['ini_date']
-		if 'end_date' in request.GET:
-			end_date = request.GET['end_date']
+#		data = {}
+#		if 'variables' in request.GET:
+#			variablesStr = request.GET['variables']
+#			print variablesStr
+#			variables = variablesStr.strip().split('|')
+#			for variable in variables:
+#				stationsStrStart = variable.strip().find('[')
+#				stationsStrEnd = variable.strip().find(']')
+#				variableId = int(variable.strip()[0:stationsStrStart])
+#				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
+#				stationsList = stationsStr.strip().split(',')
+#				stations = []
+#				for stationId in stationsList:
+#					stations.append(int(stationId))
+#				data[variable] = stations
+#		ini_date = ''
+#		end_date = ''
+#		if 'ini_date' in request.GET:
+#			ini_date = request.GET['ini_date']
+#		if 'end_date' in request.GET:
+#			end_date = request.GET['end_date']
 		#Call to series_searcher.py method
-		measurements={}
-		return render(request, 'series-visualization.html', {'measurements': json.dumps(measurements)})
-	else:
-		return HttpResponse("Invalid Request");
+
+#	return HttpResponse("OK")
+		return render(request,"series-visualization.html")
+
+def get_measurements(request):
+	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
+	if request.method == 'POST' and request.is_ajax:
+		data = request.POST.get("info", {})
+		if len(data) > 0:
+			data = json.loads(data)
+			variableId = data.get('variable_id', '')
+			stationId = data.get('station_id', 0)
+			startDate = data.get('ini_date', '')
+			endDate = data.get('end_date', '')
+			params = []
+			responseData['variable_id'] = variableId
+			responseData['station_id'] = stationId
+			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
+			params.append(variableId)
+			params.append(int(stationId))
+			if len(startDate) > 0:
+				qs = qs + ' and ts >= %s'
+				params.append(startDate)
+			if len(endDate) > 0:
+				qs = qs + ' and ts <= %s'
+				params.append(endDate)
+			qs = qs + ' order by ts;'
+			with connection.cursor() as cursor:
+				cursor.execute(qs, params)
+				rows = cursor.fetchall()
+				for row in rows:
+					measurement = row[0]
+					date = row[1]
+					responseData['measurements'].append(measurement)
+					responseData['dates'].append(date)
+			qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_name"]=row[0]
+			qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_symbol"]=row[0]
+	return JsonResponse({"series": responseData})
