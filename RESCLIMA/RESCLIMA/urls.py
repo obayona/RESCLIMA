@@ -16,12 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from main.views import *
+from django.contrib.auth.views import logout
 
 urlpatterns = [
     #URLS DE INCIO/CIERRE/PERMISOS
 	url(r'^$', home, name="home"),
 	url(r'^login/$', login, name="login"),
-	url(r'^logout/$', logout, name="logout"),
+	url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
 	url(r'^noAccess/$', noAccess, name="noAccess"),
 	url(r'^get-task-info/',get_task_info,name="taskInfo"),
 

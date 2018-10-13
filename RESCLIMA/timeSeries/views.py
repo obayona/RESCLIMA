@@ -51,6 +51,7 @@ def addSensor(data):
 
 	return None
 
+@login_required(login_url='noAccess')
 def import_station(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
@@ -61,6 +62,35 @@ def import_station(request):
 		return HttpResponse(err_msg);
 
 
+# funcion auxiliar para guardar un archivo
+def saveFile(ftemp):
+
+	temp_dir = settings.TEMPORARY_FILES_PATH;
+	# se obtiene un timestamp
+	ts = time.time()
+	timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+	# se genera un nuevo nombre para el archivo
+	fileName = "timeseries-"+timestamp_str + ".csv"
+	fullName = os.path.join(temp_dir,fileName)
+	# si el objeto tiene el atributo temporary_file_path
+	# ya esta en el disco duro
+	if (hasattr(ftemp,'temporary_file_path')):
+		ftemp_path = ftemp.temporary_file_path()
+		# mueve el archivo
+		shutil.move(ftemp_path,fullName)
+	else:
+		# el archivo esta en memoria y se debe 
+		# escribir en el disco
+		f = open(fullName,'w')
+		for chunk in ftemp.chunks():
+			f.write(chunk)
+		f.close()
+
+	return fullName
+
+
+# view que permite subir un archivo csv
+@login_required(login_url='noAccess')
 def upload_file(request):
 	if request.method == "GET":
 		station_types = StationType.objects.filter(automatic=False)
@@ -123,7 +153,6 @@ def get_measurements(request):
 			stationId = data.get('station_id', 0)
 			startDate = data.get('ini_date', '')
 			endDate = data.get('end_date', '')
-			print(variableId)
 			params = []
 			responseData['variable_id'] = variableId
 			responseData['station_id'] = stationId
@@ -145,4 +174,14 @@ def get_measurements(request):
 					date = row[1]
 					responseData['measurements'].append(measurement)
 					responseData['dates'].append(date)
+			qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_name"]=row[0]
+			qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})

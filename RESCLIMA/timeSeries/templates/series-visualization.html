@@ -46,6 +46,7 @@
 		var estaciones = estaciones_str.split(",");
 		params[variable_id] = estaciones;
 	}
+	var ids_list = [];
 
 	//get the data from the server
 	for(var key in params){
@@ -62,12 +63,21 @@
 				data: { "info": JSON.stringify({"variable_id":key,"station_id":stations[i], "ini_date":ini_date, "end_date":end_date}) },
 				
 				success : function(json) { 
-					//console.log(json);
-					//console.log(key);
-					//console.log(json["series"]["dates"]);
-					//console.log("============");
-					traces_x.push(json["series"]["dates"]);
-					traces_y.push(json["series"]["measurements"]);
+					var var_id = json["series"]["variable_id"];
+					if(ids_list.includes(var_id)){
+						
+
+						Plotly.addTraces("div"+var_id, [{x: json["series"]["dates"],y: json["series"]["measurements"]}]);
+					}
+					else{
+						var div = "<div id=\"div"+var_id+"\"></div>";
+						$( "body" ).append(div);
+						ids_list.push(var_id);
+						console.log(json["series"]["variable_name"]);
+						var divid = "div"+var_id;
+						var symbol = json["series"]["variable_symbol"];
+						plotSingleTrace(json["series"]["dates"], json["series"]["measurements"], divid, json["series"]["variable_name"], symbol);
+					}
 					
 				},
 		    
@@ -79,20 +89,16 @@
 
 		}
 
-		var div = "<div id=\"div"+key+"\"></div>";
-		$( "body" ).append(div);
-		//here goes plotly
-		var div_id = "div"+key;
-		console.log(traces_x);
-		console.log("=======");
-		plotTimeSerie(traces_x,traces_y,div_id);
+
 	};
 	
 
-//Plotly.newPlot('div2', data, layout2);
 	function plotTimeSerie(x_values_list, y_values_list, div_id){
 		var data = []
+		
+		x_values_list = [[1,2,3,4]];
 		var len = x_values_list.length;
+		y_values_list = [[2,1,5,5]];
 		if(len!=y_values_list.length){
 			console.log("lists of measurements and dates of different length");
 			return;
@@ -116,6 +122,28 @@
 	       
 	     	}
 		};
+		Plotly.newPlot(div_id, data, layout1);
+	}
+
+	function plotSingleTrace(x_values, y_values,div_id, y_title, symbol){
+		var data = [];
+		var trace = {
+	 			x: x_values, 
+	  			y: y_values, 
+	  			type: 'path'
+			};
+		var layout1 = {
+			title:y_title+" vs tiempo",
+			xaxis: {
+    			title: 's',
+    			
+  			},
+	  		yaxis: {
+	       		title: symbol,
+	     	},
+	     	showlegend: true
+		};
+		data.push(trace);
 		Plotly.newPlot(div_id, data, layout1);
 	}
   

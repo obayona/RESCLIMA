@@ -90,8 +90,8 @@ DATABASES = {
         'NAME': 'resclima',
         'USER':'postgres',
         'PASSWORD':'postgres',
-        'HOST': '192.168.3.246',
-        'PORT':5433
+        'HOST': 'Localhost',
+        #'PORT':5433
     }
 }
 
@@ -125,6 +125,6 @@ CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # paths for user data
-STYLE_FILES_PATH = "/home/manager/styles/"
-RASTER_FILES_PATH = "/home/manager/rasters/"
+STYLE_FILES_PATH = "/home/vivi/manager/styles/"
+RASTER_FILES_PATH = "/home/vivi/manager/rasters/"
 TEMPORARY_FILES_PATH = "/tmp/"

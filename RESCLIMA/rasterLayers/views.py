@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from os.path import join
 from forms import ImportRasterForm
 from forms import ImportStyleForm
@@ -17,13 +17,16 @@ from search.models import Category
 from style.utils import transformSLD
 from style.utils import getColorMap
 import json
+from django.contrib.auth.decorators import login_required
 
+@login_required(login_url='noAccess')
 def list_rasterlayers(request):
 	rasterlayers = RasterLayer.objects.all().order_by("upload_date");
 	styles = Style.objects.filter(type="raster");
 	obj = {'rasterlayers':rasterlayers,'styles':styles}
 	return render(request,"list_rasterlayers.html",obj)
 
+@login_required(login_url='noAccess')
 def import_raster(request):
 	if request.method == "GET":
 		categories = Category.objects.all();
@@ -40,7 +43,7 @@ def import_raster(request):
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
-
+#posiblemente se use en multicapa
 def view_raster(request,rasterlayer_id):
 	try:
 		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
@@ -61,12 +64,12 @@ def view_raster(request,rasterlayer_id):
 
 	return render(request,"view_raster.html",obj)
 
-
 def style_legend(request,style_id):
 	style = Style.objects.get(id=style_id)
 	legend = getColorMap(style);
 	return HttpResponse(json.dumps(legend),content_type='application/json')
 
+@login_required(login_url='noAccess')
 def updateRasterLayer(rasterlayer,request):
 	try:
 		title = request.POST["title"]
@@ -93,7 +96,7 @@ def updateRasterLayer(rasterlayer,request):
 	except Exception as e:
 		return "Error " + str(e)
 
-
+@login_required(login_url='noAccess')
 def edit_raster(request, rasterlayer_id):
 	try:
 		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
@@ -133,16 +136,17 @@ def edit_raster(request, rasterlayer_id):
 					  "err_msg":err_msg}
 			return render(request,"update_rasterlayer.html",params)  
 
+@login_required(login_url='noAccess')
 def delete_rasterLayer(request,rasterlayer_id):
 	try:
-		rasterlayer = RaterLayer.objects.get(id=rasterlayer_id)
-		rasterlayer.delete();
-		return HttpResponse("OK");
+		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
+		rasterlayer.delete()
+		return redirect('raster_list')
 	except RasterLayer.DoesNotExist:
 		return HttpResponseNotFound()
 
 # Styles
-
+#posiblemente se use en multicapa
 def importStyle(request):
 	try:
 		title = request.POST["title"]
@@ -170,6 +174,7 @@ def importStyle(request):
 	except Exception as e:
 		return "Error " + str(e)
 
+@login_required(login_url='noAccess')
 def import_style(request):
 
 	if request.method == "GET":
@@ -183,11 +188,12 @@ def import_style(request):
 			params = {"err_msg":err_msg}
 			return render(request,"rasterLayers/import_style.html",params) 
 
+@login_required(login_url='noAccess')
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		style.delete();
-		return HttpResponse("OK");
+		style.delete()
+		return redirect('raster_list')
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()  
 
