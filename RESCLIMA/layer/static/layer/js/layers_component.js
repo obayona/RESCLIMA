@@ -1,4 +1,3 @@
-
 Vue.component("layers_component",{
 	template: `
 		<!--Contenedor corredizo, se abre cuando open es True-->
@@ -72,21 +71,10 @@ Vue.component("layers_component",{
 									v-on:input="changeOpacity(layer)"/>
 								</p>
 								<!-- Links para descargar y remover la capa-->
-								<table class="bordered">
-									<tbody>
-										<td>
-											<a style="color:green" href="#"><i class="material-icons left">file_download</i>Descargar</a>
-										</td>
-										<td>
-											<a style="color:red" href="#"><i class="material-icons left">delete</i>Eliminar</a>
-										</td>
-									<tbody>
-								</table>
-								<!--
 								<div>
 									<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
 									<a style="padding:10px;color:red" href="#"><i class="material-icons">delete</i>Eliminar</a>
-								</div> -->
+								</div>
 							</div>
 							<!-- Si la capa no tiene estado loaded-->
 							<!-- no se muestran las opciones de la capa,-->
@@ -106,6 +94,14 @@ Vue.component("layers_component",{
 		</div>
 	`,
 	mounted(){
+		/*Se posiciona correctamente el elemento*/
+		var elements = document.getElementsByClassName("navbar-fixed");
+		var navbar = elements[0];
+		var height = navbar.getBoundingClientRect()["height"];
+		height = Math.ceil(height);
+		console.log(height,String(height) + "px");
+		layerContainer.style.top = String(height) + "px";
+
 		/* Se lee el parametro "layers" del queryString
 		del url, el cual tiene el siguiente formato:
 		layers=id_capa1|id_capa2|...|id_capaN */
