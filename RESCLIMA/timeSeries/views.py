@@ -6,6 +6,8 @@ from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from django.db import connection
+import json
+from django.http import JsonResponse
 
 @login_required(login_url='noAccess')
 def show_options(request):
@@ -107,24 +109,27 @@ def visualize(request):
 #		if 'end_date' in request.GET:
 #			end_date = request.GET['end_date']
 		#Call to series_searcher.py method
+
 #	return HttpResponse("OK")
 		return render(request,"series-visualization.html")
 
 def get_measurements(request):
-	responseData = {'measurements': {}, 'variable_id': ''}
+	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
 	if request.method == 'POST' and request.is_ajax:
-		data = request.raw_post_data
-		variableId = data['variable_id']
-		starionsList = data['stations_list']
-		startDate = data['start_date']
-		endDate = data['end_date']
-		params = []
-		responseData['variable_id'] = variableId
-		for stationId in starionsList:
-			qs = 'select "timeSeries_measurement"."idStation_id" as id_station, readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like "%%%s:%"'
+		data = request.POST.get("info", {})
+		if len(data) > 0:
+			data = json.loads(data)
+			variableId = data.get('variable_id', '')
+			stationId = data.get('station_id', 0)
+			startDate = data.get('ini_date', '')
+			endDate = data.get('end_date', '')
+			print(variableId)
+			params = []
+			responseData['variable_id'] = variableId
+			responseData['station_id'] = stationId
+			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
 			params.append(variableId)
-			params.append(stationId)
-			params.append(variableId)
+			params.append(int(stationId))
 			if len(startDate) > 0:
 				qs = qs + ' and ts >= %s'
 				params.append(startDate)
@@ -132,16 +137,12 @@ def get_measurements(request):
 				qs = qs + ' and ts <= %s'
 				params.append(endDate)
 			qs = qs + ' order by ts;'
-		with connection.cursor() as cursor:
-			cursor.execute(qs, params)
-			rows = cursor.fetchall()
-			for row in rows:
-				idStation = row[0]
-				measurement = row[1]
-				date = row[2]
-				if idStation not in responseData['measurements']:
-					responseData['measurements'][idStation] = {}
-				if date not in responseData['measurements'][idStation]:
-					responseData['measurements'][idStation][date] = []
-				responseData['measurements'][idStation][date].append(measurement)
+			with connection.cursor() as cursor:
+				cursor.execute(qs, params)
+				rows = cursor.fetchall()
+				for row in rows:
+					measurement = row[0]
+					date = row[1]
+					responseData['measurements'].append(measurement)
+					responseData['dates'].append(date)
 	return JsonResponse({"series": responseData})
