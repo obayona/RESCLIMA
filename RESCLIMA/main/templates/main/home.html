@@ -35,18 +35,21 @@
 					</div>
 					<div>
 						<label>¿C&oacute;mo?</label>
+						<div>
 						<button
 							class="btn-default"
 							v-bind:class="{cyan: shared.search_option === 'layers'}"
 							v-on:click.prevent="shared.search_option='layers'">
-							<i class="material-icons left">layers</i>Capas
+							<i class="material-icons">layers</i><br>Capas
 						</button>
 						<button
+							style="margin-left:10px"
 							class="btn-default"
 							v-bind:class="{cyan: shared.search_option === 'series'}"
 							v-on:click.prevent="shared.search_option='series'">
-							<i class="material-icons left">timeline</i>Series de tiempo
+							<i class="material-icons">timeline</i><br>Series de tiempo
 						</button>
+						</div>
 					</div>
 					<div style="padding:60px;">
 						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
@@ -60,10 +63,12 @@
 			</div>
 			</div>
 			<!-- Lista de resultados -->
+			<div class="container">
 			<div class="row">
 				<keep-alive>
 					<component v-bind:is='shared.search_option+"_component"'></component>
 				</keep-alive>
+			</div>
 			</div>
 		</div>
 	</div>

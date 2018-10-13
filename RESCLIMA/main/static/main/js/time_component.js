@@ -1,23 +1,28 @@
 Vue.component("time_component",{
 	template: `
-		<div>
-			<h4>Seleccione un rango de fechas</h4>
-			<div style="width:150px;">
-				<label for="Inicio">Inicio</label>
-				<input
-				type="date"
-				v-bind:value="shared.ini_date"
-				v-on:input="updateIniDate($event.target.value)"
-				v-bind:max="shared.end_date"/>
+		<div class="container">
+			<div>
+				<h4 style="text-align: center">Seleccione un rango de fechas</h4>
 			</div>
-			<div style="width:150px;">
-				<label for="Fin">Fin</label>
-				<input
-				type="date"
-				v-bind:value="shared.end_date"
-				v-on:input="updateEndDate($event.target.value)"
-				v-bind:min="shared.ini_date"/>
-			</div>
+			<br>
+			<div style="text-align:center">
+				<div style="width:150px;display: inline-block;margin-left: 60px">
+					<label for="Inicio">Inicio</label>
+					<input
+					type="date"
+					v-bind:value="shared.ini_date"
+					v-on:input="updateIniDate($event.target.value)"
+					v-bind:max="shared.end_date"/>
+				</div>
+				<div style="width:150px;display: inline-block;margin-left: 100px">
+					<label for="Fin">Fin</label>
+					<input
+					type="date"
+					v-bind:value="shared.end_date"
+					v-on:input="updateEndDate($event.target.value)"
+					v-bind:min="shared.ini_date"/>
+				</div>
+			<div>
 		</div>
 	`,
 	mounted(){

@@ -1,11 +1,15 @@
 var category_component = Vue.component("categories_component",{
 	template: `
-		<div>
-			<h5>Seleccione categorias para mejorar la b&uacute;squeda</h5>
-			<div style="width:500px">
+		<div class="container">
+			<div>
+				<h4 style="text-align: center">Seleccione categor&iacute;as para mejorar la b&uacute;squeda</h4>
+			</div>
+			<br>
+			<div class="container" style="text-align:center">
 				<div
 				v-for="category in shared.categories"
 				class="chip z-depth-3"
+				style="align-items: center; margin: 10px;"
 				v-bind:class="{cyan: category.selected}"
 				v-on:click.prevent="selectCategory(category)">
 				{{ category.name }}
