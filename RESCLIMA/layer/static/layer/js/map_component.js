@@ -200,7 +200,6 @@ var RasterLayer = function(map,layer){
 					isBaseLayer: false,
 					rendererOptions: {zIndexing: true}
 				});
-		//layer.opacity = 0.7
 		map.addLayer(rasterlayer);
 
 		// si el index es cero
@@ -277,6 +276,10 @@ Vue.component("map_component",{
 		<div id="map_component">
 			<!-- Contenedor del mapa de OpenLayers -->
 			<div id="map_container" style="width:100%;height: 700px;">
+				<div id="customZoom">
+					<a href="#customZoomIn" id="customZoomIn">+</a>
+					<a href="#customZoomOut" id="customZoomOut">-</a>
+				</div>
 			</div>
 		</div>
 	`,
@@ -287,8 +290,25 @@ Vue.component("map_component",{
 			projection:"EPSG:3857",
 			displayProjection: new OpenLayers.Projection("EPSG:4326"),
 			numZoomLevels:11,
-			units: 'm'
+			units: 'm',
+			controls:[]
 		});
+
+		/*Controles del mapa*/
+		var controls = [
+			new OpenLayers.Control.Navigation({
+				dragPanOptions: {
+				enableKinetic: true
+				}
+			}),
+			new OpenLayers.Control.Attribution(),
+			new OpenLayers.Control.Zoom({
+				zoomInId: "customZoomIn",
+				zoomOutId: "customZoomOut"
+			})
+		]
+		map.addControls(controls);
+
 
 		// se agrega una capa de OpenStreetMap
 		var osm = new OpenLayers.Layer.OSM("OSM");
