@@ -13,14 +13,15 @@ import time
 import json
 import utils
 from os.path import join
+from django.contrib.auth.decorators import login_required
 
-
+@login_required(login_url='noAccess')
 def list_vectorlayers(request):
 	vectorlayers = VectorLayer.objects.all().order_by("upload_date");
 	return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
 
-
+@login_required(login_url='noAccess')
 def import_shapefile(request):
 	if request.method == "GET":
 		categories = Category.objects.all();
@@ -35,6 +36,7 @@ def import_shapefile(request):
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
+@login_required(login_url='noAccess')
 def export_shapefile(request, vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -42,6 +44,7 @@ def export_shapefile(request, vectorlayer_id):
 		return HttpResponseNotFound()
 	return exporter.export_data(vectorlayer)
 
+@login_required(login_url='noAccess')
 def export_geojson(request, vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -50,6 +53,7 @@ def export_geojson(request, vectorlayer_id):
 	geojson = exporter.export_geojson(vectorlayer)
 	return JsonResponse(geojson)
 
+#posiblemente se use en multicapa
 def view_vectorlayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -57,6 +61,7 @@ def view_vectorlayer(request,vectorlayer_id):
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()  
 
+@login_required(login_url='noAccess')
 def updateVectorLayer(vectorlayer,request):
 	try:
 		title = request.POST["title"]
@@ -75,7 +80,7 @@ def updateVectorLayer(vectorlayer,request):
 	except Exception as e:
 		return "Error " + str(e)
 
-
+@login_required(login_url='noAccess')
 def edit_vectorlayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -98,6 +103,7 @@ def edit_vectorlayer(request,vectorlayer_id):
 					  "categories":categories}
 			return render(request,"update_vectorlayer.html",params)
 
+@login_required(login_url='noAccess')
 def delete_vectorLayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -107,6 +113,8 @@ def delete_vectorLayer(request,vectorlayer_id):
 		return HttpResponseNotFound()
 
 # Styles
+
+#posiblemente se use en multicapa
 def importStyle(request,vectorlayer):
 	try:
 		title = request.POST["title"]
@@ -137,7 +145,7 @@ def importStyle(request,vectorlayer):
 	except Exception as e:
 		return "Error " + str(e)
 
-
+@login_required(login_url='noAccess')
 def import_style(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -156,6 +164,7 @@ def import_style(request,vectorlayer_id):
 			params = {"vectorlayer_id":vectorlayer_id,"err_msg":err_msg}
 			return render(request,"vectorLayers/import_style.html",params)
 
+@login_required(login_url='noAccess')
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
@@ -164,6 +173,7 @@ def delete_style(request,style_id):
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()
 
+@login_required(login_url='noAccess')
 def export_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)

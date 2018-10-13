@@ -57,6 +57,7 @@ def addStation(data):
 	return None
 
 # view para agregar una estacion
+@login_required(login_url='noAccess')
 def import_station(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
@@ -95,6 +96,7 @@ def saveFile(ftemp):
 
 
 # view que permite subir un archivo csv
+@login_required(login_url='noAccess')
 def upload_file(request):
 	if request.method == "GET":
 		station_types = StationType.objects.filter(automatic=False)
