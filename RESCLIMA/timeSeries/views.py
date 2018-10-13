@@ -123,7 +123,6 @@ def get_measurements(request):
 			stationId = data.get('station_id', 0)
 			startDate = data.get('ini_date', '')
 			endDate = data.get('end_date', '')
-			print(variableId)
 			params = []
 			responseData['variable_id'] = variableId
 			responseData['station_id'] = stationId
@@ -145,4 +144,14 @@ def get_measurements(request):
 					date = row[1]
 					responseData['measurements'].append(measurement)
 					responseData['dates'].append(date)
+			qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_name"]=row[0]
+			qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
+			cursor = connection.cursor()
+			cursor.execute(qs)
+			row = cursor.fetchone()
+			responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})
