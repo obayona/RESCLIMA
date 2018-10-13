@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from os.path import join
 from forms import ImportRasterForm
 from forms import ImportStyleForm
@@ -139,7 +139,7 @@ def edit_raster(request, rasterlayer_id):
 @login_required(login_url='noAccess')
 def delete_rasterLayer(request,rasterlayer_id):
 	try:
-		rasterlayer = RaterLayer.objects.get(id=rasterlayer_id)
+		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
 		rasterlayer.delete()
 		return redirect('raster_list')
 	except RasterLayer.DoesNotExist:
