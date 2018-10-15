@@ -6,7 +6,7 @@ const router = new VueRouter({
 // app principal
 var app = new Vue({
 	router,
-	el:'#layersApp',
+	el:'#seriesApp',
 	data:{
 		shared:store
 	}

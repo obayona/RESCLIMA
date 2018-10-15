@@ -7,8 +7,12 @@
 <link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
 {% endblock %}
 
+{% block scripts %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
 {% block content %}
-<div id="layersApp" class="main">
+<div id="seriesApp" class="main">
 	<div id="wrapper">
 		<!-- Layer list -->
 		<series_component></series_component>
@@ -19,7 +23,7 @@
 {% block scripts_body  %}
 <script src="{% static "main/js/vue.min.js" %}"></script>
 <script src="{% static "main/js/vue-router.min.js" %}"></script>
-<script src="{% static "layer/js/store.js" %}"></script>
+<script src="{% static "timeSeries/js/store.js" %}"></script>
 <script src="{% static "timeSeries/js/series_component.js" %}"></script>
-<script src="{% static "layer/js/main.js" %}"></script>
+<script src="{% static "timeSeries/js/main.js" %}"></script>
 {% endblock%}

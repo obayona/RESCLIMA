@@ -75,6 +75,8 @@ Vue.component("series_component",{
 			serie["y_values"] =[];
 			serie["stations_ids"] = estaciones;
 			serie["state"]="uninitialized";
+			serie["ini_date"] = ini_date;
+			serie["end_date"] = end_date;
 
 			// se guarda el objeto en el store
 			// compartido
@@ -96,11 +98,13 @@ Vue.component("series_component",{
 		para obtener los datos de una sola estacion de una variable*/
 		getStationSerie(serie){
 			var id_variable = serie["variable_id"];
+			var ini_date = serie["ini_date"];
+			var end_date = serie["end_date"]
 			// referencia al componente
 			var self = this;
 			for(var i=0;i<serie["stations_ids"].length;i++){
 				var current = serie["stations_ids"][i];
-				var url = "/series/measurements/"+id_variable+"/"+current+"/";
+				var url = "/series/measurements/"+id_variable+"/"+current+"/"+ini_date+"/"+end_date+"/";
 				// peticion GET
 				var request = $.get(url);
 				request.done(function(data){
@@ -113,27 +117,7 @@ Vue.component("series_component",{
 			}
 			
 		},	
-		function plotSingleTrace(x_values, y_values,div_id, y_title, symbol){
-			var data = [];
-			var trace = {
-		 			x: x_values, 
-		  			y: y_values, 
-		  			type: 'path'
-				};
-			var layout1 = {
-				title:y_title+" vs tiempo",
-				xaxis: {
-	    			title: 's',
-	    			
-	  			},
-		  		yaxis: {
-		       		title: symbol,
-		     	},
-		     	showlegend: true
-			};
-			data.push(trace);
-			Plotly.newPlot(div_id, data, layout1);
-		},
+		
 		
 	}
 })

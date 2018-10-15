@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from tasks import parseHOBOFile
 from RESCLIMA import settings
+from django.db import connection
 import os
 import time
 import datetime
@@ -178,47 +179,51 @@ def visualize(request):
 #	return HttpResponse("OK")
 		return render(request,"view_series.html")
 
-def get_measurements(request):
+def get_measurements(request,variable_id, station_id, startdate, enddate):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
-	if request.method == 'POST' and request.is_ajax:
-		data = request.POST.get("info", {})
-		if len(data) > 0:
-			data = json.loads(data)
-			variableId = data.get('variable_id', '')
-			stationId = data.get('station_id', 0)
-			startDate = data.get('ini_date', '')
-			endDate = data.get('end_date', '')
-			params = []
-			responseData['variable_id'] = variableId
-			responseData['station_id'] = stationId
-			qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
-			params.append(variableId)
-			params.append(int(stationId))
-			if len(startDate) > 0:
-				qs = qs + ' and ts >= %s'
-				params.append(startDate)
-			if len(endDate) > 0:
-				qs = qs + ' and ts <= %s'
-				params.append(endDate)
-			qs = qs + ' order by ts;'
-			with connection.cursor() as cursor:
-				cursor.execute(qs, params)
-				rows = cursor.fetchall()
-				for row in rows:
-					measurement = row[0]
-					date = row[1]
-					responseData['measurements'].append(measurement)
-					responseData['dates'].append(date)
-			qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
-			cursor = connection.cursor()
-			cursor.execute(qs)
-			row = cursor.fetchone()
-			responseData["variable_name"]=row[0]
-			qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
-			cursor = connection.cursor()
-			cursor.execute(qs)
-			row = cursor.fetchone()
-			responseData["variable_symbol"]=row[0]
+	if request.method == 'GET':
+		#data = request.GET.get("info", {})
+		#if len(data) > 0:
+			#data = json.loads(data)
+			#variableId = data.get('variable_id', '')
+			#stationId = data.get('station_id', 0)
+			#startDate = data.get('ini_date', '')
+			#endDate = data.get('end_date', '')
+		variableId = variable_id
+		stationId = station_id
+		startDate = startdate
+		endDate = enddate
+		params = []
+		responseData['variable_id'] = variableId
+		responseData['station_id'] = stationId
+		qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
+		params.append(variableId)
+		params.append(int(stationId))
+		if len(startDate) > 0:
+			qs = qs + ' and ts >= %s'
+			params.append(startDate)
+		if len(endDate) > 0:
+			qs = qs + ' and ts <= %s'
+			params.append(endDate)
+		qs = qs + ' order by ts;'
+		with connection.cursor() as cursor:
+			cursor.execute(qs, params)
+			rows = cursor.fetchall()
+			for row in rows:
+				measurement = row[0]
+				date = row[1]
+				responseData['measurements'].append(measurement)
+				responseData['dates'].append(date)
+		qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
+		cursor = connection.cursor()
+		cursor.execute(qs)
+		row = cursor.fetchone()
+		responseData["variable_name"]=row[0]
+		qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
+		cursor = connection.cursor()
+		cursor.execute(qs)
+		row = cursor.fetchone()
+		responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})
 
 
