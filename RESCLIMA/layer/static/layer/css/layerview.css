@@ -1,6 +1,6 @@
 #layerContainer{
 	position: absolute;
-	z-index: 100000;
+	z-index: 800;
 	width: 400px;
 
 	transition: all 0.4s;
@@ -48,7 +48,7 @@
 #currentlayer_component{
 	position: absolute;
 	background: white;
-	z-index: 100000;
+	z-index: 800;
 	top:200px;
 	width: 270px;
 	right: 0px;
@@ -126,3 +126,4 @@ del zoom de openlayers*/
 	padding: 10px;
 	position: relative;
 }
+
