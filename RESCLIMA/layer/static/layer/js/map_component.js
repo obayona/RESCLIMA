@@ -1,3 +1,29 @@
+function searchFeature(vectorlayer,lon,lat){
+	var features = vectorlayer.features;
+	for(var i=0;i<features.length;i++){
+		var feature = features[i];
+		var bounds = feature.geometry.bounds;
+		var left = bounds["left"];
+		var right = bounds["right"];
+		var bottom = bounds["bottom"];
+		var top = bounds["top"];
+		var ofset = store.map.getResolution()*5;
+		if(left==right){
+			left -= ofset;
+			right += ofset;
+		}
+		if(bottom==top){
+			bottom -= ofset;
+			top += ofset;
+		}
+		if(lon >= left & lon<= right
+			& lat >= bottom & lat <= top){
+			return feature;
+		}
+	}
+	return null
+}
+
 /*Objeto con funciones para 
 manipulacion de capas vectorial
 Recibe: el mapa de OpenLayers 
@@ -288,12 +314,8 @@ Vue.component("map_component",{
 		var self = this;
 		/*Objeto con listeners del click*/
 		var layerListeners = {
-			featureclick: function(e) {
-				console.log("click en ",e);
-				//self.showAttributes(e.feature);
-			},
-			nofeatureclick:function(e){
-				console.log("no features",e);
+			click: function(e) {
+				self.clickHandler(e);
 			}
 		}
 
@@ -394,6 +416,55 @@ Vue.component("map_component",{
 				rasterlayer.requestStyle(currentStyle);
 			}
 		},
+		clickHandler(e){
+			var map = this.shared.map;
+			// se obtiene la coordenada del click
+			var lonlat = map.getLonLatFromPixel(e.xy);
+			var lon = lonlat.lon;
+			var lat = lonlat.lat;
+			var layers = store.layers;
+			/* se busca si en las capas vectoriales, 
+			se punto esta dentro de su extent*/
+			var features = []
+			console.log(store.layers);
+			for(var i=0;i<layers.length;i++){
+				console.log(i);
+				var layer = layers[i];
+				console.log(layer)
+				if(layer["type"]!="vector"){
+					continue;
+				}
+				var extent = layer["extent"]
+				// si a la capa aun no se le ha calculado
+				// el extent, no se hace nada
+				if (extent.length<4){
+					continue;
+				}
+				console.log(extent)
+				// si el punto esta dentro de la capa
+				if(lon >= extent[0] & lon<= extent[2]
+					& lat >= extent[1] & lat <= extent[3]){
+					console.log("click en esta capa",layer)
+					var vectorlayer = layer["openlayer_layer"];
+					var feature = searchFeature(vectorlayer,lon,lat);
+					if(feature){
+						features.push({"feature":feature,"zIndex":layer["zIndex"]});
+					}
+				}
+			}
+			if(features.length==0){
+				return;
+			}
+			features.sort(function(a,b){
+				za = a["zIndex"];
+				zb = b["zIndex"];
+				return za - zb;
+			});
+			console.log(features);
+			var selected = features[0];
+			this.showAttributes(selected["feature"]);
+
+		},
 		createAttributeTable(attributes){
 			var content = document.createElement("div");
 			var table = document.createElement("table");
@@ -445,4 +516,5 @@ Vue.component("map_component",{
 		}
 	},
 })
+
 
