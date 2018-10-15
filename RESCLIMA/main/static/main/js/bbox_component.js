@@ -3,8 +3,10 @@
 Vue.component("bbox_component",{
 	template: `
 		<div>
-			<h4>Seleccione una regi&oacute;n</h4>
-			<div id="container"></div>
+			<div>
+				<h4 style="text-align: center">Seleccione una regi&oacute;n</h4>
+			</div>
+			<div id="container" style="text-align:center"></div>
 		</div>
 	`,
 	mounted(){

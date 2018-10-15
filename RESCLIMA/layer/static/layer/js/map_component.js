@@ -32,6 +32,7 @@ var VectorLayer = function(map,layer){
 		// parser de geo_json
 		var geojson_format = new OpenLayers.Format.GeoJSON();
 
+
 		// se crea una capa vectorial de OpenLayers
 		// con proyeccion EPSG:900913
 		var vectorlayer = new OpenLayers.Layer.Vector(id_layer,{
@@ -49,8 +50,8 @@ var VectorLayer = function(map,layer){
 		}
 		// se agregan los features a la capa
 		vectorlayer.addFeatures(features);
-		// TODO - PENDIENTE CALLBACK DEL CLICK
-		//callback({"id_layer":id_layer,"data":layer});
+
+		
 		
 		// se agrega la capa al mapa
 		map.addLayer(vectorlayer);
@@ -275,7 +276,7 @@ Vue.component("map_component",{
 	template: `
 		<div id="map_component">
 			<!-- Contenedor del mapa de OpenLayers -->
-			<div id="map_container" style="width:100%;height: 700px;">
+			<div id="map_container" style="width:100%;height: 600px;">
 				<div id="customZoom">
 					<a href="#customZoomIn" id="customZoomIn">+</a>
 					<a href="#customZoomOut" id="customZoomOut">-</a>
@@ -284,6 +285,18 @@ Vue.component("map_component",{
 		</div>
 	`,
 	mounted(){
+		var self = this;
+		/*Objeto con listeners del click*/
+		var layerListeners = {
+			featureclick: function(e) {
+				console.log("click en ",e);
+				//self.showAttributes(e.feature);
+			},
+			nofeatureclick:function(e){
+				console.log("no features",e);
+			}
+		}
+
 		// se inicializa el mapa
 		var map = new OpenLayers.Map({
 			div:"map_container",
@@ -291,7 +304,8 @@ Vue.component("map_component",{
 			displayProjection: new OpenLayers.Projection("EPSG:4326"),
 			numZoomLevels:11,
 			units: 'm',
-			controls:[]
+			controls:[],
+			eventListeners:layerListeners
 		});
 
 		/*Controles del mapa*/
@@ -379,6 +393,55 @@ Vue.component("map_component",{
 				var rasterlayer = new RasterLayer(map,currentLayer);
 				rasterlayer.requestStyle(currentStyle);
 			}
+		},
+		createAttributeTable(attributes){
+			var content = document.createElement("div");
+			var table = document.createElement("table");
+			var thead = document.createElement("thead");
+			var tr = document.createElement("tr");
+			var th_1 = document.createElement("th");
+			th_1.innerHTML = "Atributo";
+			var th_2 = document.createElement("th");
+			th_2.innerHTML = "Valor";
+			tr.appendChild(th_1);
+			tr.appendChild(th_2);
+			thead.appendChild(tr);
+			table.appendChild(thead);
+
+			var tbody = document.createElement("tbody");
+			for (var attr in attributes) {
+				if (attributes.hasOwnProperty(attr)){
+					var value = attributes[attr];
+
+					var tr = document.createElement("tr");
+					var td_1 = document.createElement("td");
+					var td_2 = document.createElement("td");
+
+					td_1.innerHTML = "" + attr;
+					td_2.innerHTML = "" + value;
+
+					tr.appendChild(td_1);
+					tr.appendChild(td_2);
+					tbody.appendChild(tr);
+				}
+			}
+			table.appendChild(tbody);
+			content.appendChild(table);
+			return content.innerHTML;
+		},
+		showAttributes(feature){
+			var id = feature.id;
+			var attributes = feature.attributes;
+			var bounds = feature.geometry.bounds;
+			var lon = (bounds["right"] + bounds["left"])/2;
+			var lat = (bounds["bottom"] + bounds["top"])/2;
+			var content = this.createAttributeTable(attributes);
+			console.log(content);
+			popup = new OpenLayers.Popup(id,
+				new OpenLayers.LonLat(lon,lat),
+				new OpenLayers.Size(300,200),
+				content,true);
+			this.shared.map.addPopup(popup);
 		}
 	},
 })

@@ -6,22 +6,47 @@ from dateutil.parser import parse
 from timeSeries.models import Variable,Station,Measurement
 from timeSeries.utils import *
 import os
+import commands
 from celery import shared_task, current_task
 
-# parseHobo(file)
-# Recibe un objeto de tipo UploadedFile
-# (clase de django). Obtiene los datos del archivo csv
-# y los guarda en la base de datos.
-# El archivo csv, contiene las mediciones a lo largo
-# del tiempo de varias variables que fueron medidas con una
-# estacion meteorologica de tipo HOBO-MX2300.
-# Del archivo se puede recuperar: la estacion meteorologica,
-# las variables y las mediciones con su datetime
+'''
+Funcion que recupera  el  encoding de un
+archivo. Si no lo encuentra retorna None
+'''
+def getFileEncoding(fileName):
+	command = "file -i " + fileName
+	result = commands.getstatusoutput(command)
+	if(result[0]!=0):
+		return None
+
+	text = result[1]
+	index = text.find("charset=")
+	if index==-1:
+		return None
+
+	index = index + 8
+	encoding = text[index:]
+	encoding = encoding.strip()
+	if(encoding==''):
+		return False
+
+	return encoding
+
+
+'''
+parseHobo(file)
+Task de celery que lee un archivo
+que proviene de las estaciones 
+meteorologicas de tipo HOBO-MX2300
+y se encarga de guardar los datos 
+en la base de datos.
+--TODO--- PROBAR CON OTROS ARCHIVOS
+Y PREGUNTAR EL TIMEZONE DEL ARCHIVO
+'''
 @shared_task
 def parseHOBOFile(hoboParams):
 	# se obtiene el nombre del archivo
 	fileName = hoboParams["fileName"]
-	print "empieza el task hobo"
 	'''
 	Diccionario con el resultado de la operacion.
 	Este  diccionario  estara dentro de un objeto 
@@ -51,14 +76,12 @@ def parseHOBOFile(hoboParams):
 	2da linea: contiene el header del csv
 	3ra linea: datos
 	'''
-	print "voy a contar las lineas"
 	num_lines = count_file_lines(f)
 	if (num_lines<3):
 		result["error"]="Error: archivo sin datos";
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
-	print "numero de lineas",num_lines
 	# formato de la fecha
 	datetime_format = "%m/%d/%y %I:%M:%S %p";
 	# time zone de las fechas de los datos (ej.: UTC,GMT+2,GMT-4,etc)
@@ -77,14 +100,27 @@ def parseHOBOFile(hoboParams):
 
 
 	percent_cont = 0
+	encoding = getFileEncoding(fileName)
+
+	# si no se pudo determinar el encoding
+	# del archivo, se prueba con utf-8
+	if(encoding==None):
+		encoding = 'utf-8'
+
 	# se itera el archivo
 	for i,line in enumerate(f,1):
-		#line = line.encode('utf-8')
+		try:
+			line = line.decode(encoding)
+		except Exception as e:
+			# se borra el archivo
+			os.remove(fileName)
+			result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+			current_task.update_state(state='FAILURE',meta=result)
+			return result
+
 		# si se lee la primera linea del archivo
 		# se recupera el numero serial de la estacion
-		print i
 		if(i==1):
-			print "linea 1"
 			# la primera linea contiene "string1: string2"
 			# string2 es el  numero serial  de la estacion
 			parts = line.split(":")
@@ -127,7 +163,6 @@ def parseHOBOFile(hoboParams):
 		# si se lee la segunda linea
 		# se tienen los headers
 		if(i==2):
-			print "linea 2"
 			headers = line.split("\t");
 			if len(headers)!=8:
 				# se borra el archivo
@@ -194,7 +229,6 @@ def parseHOBOFile(hoboParams):
 
 			continue;
 
-		print "linea",i
 		# si la linea es mayor que la 2
 		# se obtienen las mediciones
 		measures = line.split("\t")
@@ -251,4 +285,5 @@ def parseHOBOFile(hoboParams):
 	# se completa la tarea
 	result["percent"]=100		
 	return result
+
 

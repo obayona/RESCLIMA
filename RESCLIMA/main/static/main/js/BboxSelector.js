@@ -12,6 +12,7 @@ var BboxSelector = function(container,callback){
 	menu_container.style.backgroundColor = "#CEDBDA";
 	menu_container.style.width = "500px";
 	menu_container.style.zIndex = "1";
+	menu_container.style.display = "inline-block";
 	var instruction = document.createElement("div");
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
@@ -28,6 +29,7 @@ var BboxSelector = function(container,callback){
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
+	map_container.style.display = "inline-block";
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";

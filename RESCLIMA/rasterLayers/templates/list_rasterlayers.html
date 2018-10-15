@@ -15,9 +15,9 @@
 {% block content %}
 <div class="container">
     <div class="section">
+      <h4 class="header">CAPAS RASTER</h4>
     {% if rasterlayers %}
         <div id="bordered-table">
-          <h4 class="header">CAPAS RASTER</h4>
           <div class="row">
             <div class="col s12">
               <table class="bordered">
@@ -58,6 +58,11 @@
             </div>
           </div>
         </div>
+      {% else %}
+        <div class="wrapper">
+          </div class="container">
+            <p>No hay capas para mostrar</p>
+          </div>
       {% endif %}
 
     <div class="card-action">
@@ -91,6 +96,11 @@
             </div>
           </div>
         </div>
+      {% else %}
+        <div class="wrapper">
+          </div class="container">
+            <p>No hay estilos para mostrar</p>
+          </div>
       {% endif %}
 
       <div class="card-action">
@@ -99,11 +109,11 @@
       <br>
 {% endblock content %}
 
-{% block extra_js %}
+{% block scripts_body %}
 <script>
   function confirmationDelete(url){
     swal({
-      title: "¿Seguro desea eliminar esta capa?",
+      title: "¿Seguro desea eliminar este elemento?",
       text: "¡Cuidado!",
       type: "warning",
       showCancelButton: true,
@@ -116,7 +126,7 @@
       function(isConfirm) {
       if (isConfirm) {
         window.location.replace(url);
-        swal("¡Borrado!", "La capa ha sido borrada correctamente", "success");
+        swal("¡Borrado!", "El elemento sido borrado correctamente", "success");
       } else {
         swal("¡Cancelado!", "No se ha registrado ningún cambio", "error");
       }
@@ -124,4 +134,4 @@
   }
 </script>
 
-{% endblock extra_js %}
+{% endblock %}

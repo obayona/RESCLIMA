@@ -5,16 +5,31 @@ from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from django.db import connection
+from tasks import parseHOBOFile
+from RESCLIMA import settings
+import os
+import time
+import datetime
 import json
-from django.http import JsonResponse
+import shutil
 
+'''
+Vista  que  retorna una  Pagina home 
+de las series de tiempo, se muestran 
+las opciones disponibles
+'''
 @login_required(login_url='noAccess')
-def show_options(request):
+def home(request):
 	return render(request,"home_series.html")
 
-
-def addSensor(data):
+'''
+Funcion usada para ingresar una estacion.
+Recibe un  diccionario con  los atributos
+de  la  estacion.  Retorna None si no hay
+errores,   caso   contrario   retorna  un
+mensaje de error.
+'''
+def addStation(data):
 	try:
 		stationType_id = int(data["stationType"]);
 		serialNum = data["serialNum"];
@@ -48,42 +63,92 @@ def addSensor(data):
 		station.save();
 	except Exception as e:
 		return "Error " + str(e)
-
 	return None
 
+'''
+Vista que retorna una  Pagina que  permite
+ingresar una nueva estacion. Se implementa
+el metodo GET y POST.  Con GET  se retorna
+la pagina y con POST se guarda la estacion
+ingresada.
+'''
+@login_required(login_url='noAccess')
 def import_station(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
 		options = {'stationTypes':station_types}
-		return render(request, 'new_station.html',options)
+		return render(request, 'import_station.html',options)
 	elif request.method == "POST":
 		err_msg = addStation(request.POST);
 		return HttpResponse(err_msg);
 
+'''
+Funcion auxiliar para guardar un archivo
+Recibe un objeto UploadedFile de  django
+y  guarda  el  archivo  en un directorio 
+temporal. Retorna la ruta del archivo.
+'''
+def saveFile(ftemp):
+	# directorio temporal del sistema
+	temp_dir = settings.TEMPORARY_FILES_PATH;
+	# se obtiene un timestamp
+	t = time.time()
+	ts = datetime.datetime.fromtimestamp(t)
+	timestamp_str = ts.strftime('%Y-%m-%d-%H-%M-%S')
+	# se genera un nuevo nombre para el archivo
+	fileName = "timeseries-"+timestamp_str + ".csv"
+	fullName = os.path.join(temp_dir,fileName)
+	# si el objeto ftemp tiene el atributo 
+	# temporary_file_path ya esta en el disco duro
+	if (hasattr(ftemp,'temporary_file_path')):
+		ftemp_path = ftemp.temporary_file_path()
+		# mueve el archivo
+		shutil.move(ftemp_path,fullName)
+	else:
+		# el archivo esta en memoria y se debe 
+		# escribir en el disco
+		f = open(fullName,'w')
+		for chunk in ftemp.chunks():
+			f.write(chunk)
+		f.close()
 
-def upload_file(request):
+	return fullName
+
+'''
+Vista que permite subir un archivo csv con
+las  series de  tiempo de una  estacion no
+automatica. Se implementa  el metodo GET y
+POST. Con GET se  retorna la pagina, y con
+POST se guardan los datos del archivo.
+'''
+@login_required(login_url='noAccess')
+def import_file(request):
 	if request.method == "GET":
 		station_types = StationType.objects.filter(automatic=False)
 		params = {"stationTypes":station_types}
 		return render(request, 'import_file.html', params)
 	elif request.method == "POST":
-		err_msg = None;
-		stationType_id = request.POST['stationType'];
-		stationType = StationType.objects.get(id=stationType_id);
-		stationType_str = str(stationType);
+		stationType_id = request.POST['stationType']
+		stationType = StationType.objects.get(id=stationType_id)
+		stationType_str = str(stationType)
 		file_ptr = request.FILES['file']
+		result = {}
+		# dependiendo  del  tipo  de estacion  se 
+		# procede con el adptador correspondiente
 		if stationType_str == "HOBO-MX2300":
-			err_msg = parseHOBO(file_ptr);
-		elif stationType_str == "":
-			err_msg = parseDataLogger(file_ptr);
+			# guarda el archivo
+			fileName = saveFile(file_ptr)
+			params = {}
+			params["fileName"]=fileName
+			print "se ejecuta la tarea en celery timeserie"
+			task = parseHOBOFile.delay(params)
+			result["task_id"] = task.id
+			print "el id del task ", task.id
+			result["err_msg"] = None
 		else:
-			err_msg = "Error: no se reconoce ese tipo de estacion";
-
-		if(err_msg=="Success"):
-			return HttpResponse("OK")
-		else:
-			return HttpResponse(err_msg);
-
+			result["task_id"] = None
+			result["err_msg"] = "No se reconoce este tipo de estacion"
+		return HttpResponse(json.dumps(result),content_type='application/json')
 
 def visualize(request):
 	if request.method == 'GET':
@@ -111,7 +176,7 @@ def visualize(request):
 		#Call to series_searcher.py method
 
 #	return HttpResponse("OK")
-		return render(request,"series-visualization.html")
+		return render(request,"view_series.html")
 
 def get_measurements(request):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
@@ -155,3 +220,5 @@ def get_measurements(request):
 			row = cursor.fetchone()
 			responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})
+
+
