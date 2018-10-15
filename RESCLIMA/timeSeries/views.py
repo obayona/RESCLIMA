@@ -5,9 +5,13 @@ from django.contrib import messages
 from models import StationType, Station
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from django.db import connection
+from tasks import parseHOBOFile
+from RESCLIMA import settings
+import os
+import time
+import datetime
 import json
-from django.http import JsonResponse
+import shutil
 
 '''
 Vista  que  retorna una  Pagina home 
@@ -124,22 +128,26 @@ def import_file(request):
 		params = {"stationTypes":station_types}
 		return render(request, 'import_file.html', params)
 	elif request.method == "POST":
-		err_msg = None;
-		stationType_id = request.POST['stationType'];
-		stationType = StationType.objects.get(id=stationType_id);
-		stationType_str = str(stationType);
+		stationType_id = request.POST['stationType']
+		stationType = StationType.objects.get(id=stationType_id)
+		stationType_str = str(stationType)
 		file_ptr = request.FILES['file']
+		result = {}
+		# dependiendo  del  tipo  de estacion  se 
+		# procede con el adptador correspondiente
 		if stationType_str == "HOBO-MX2300":
-			err_msg = parseHOBO(file_ptr);
-		elif stationType_str == "":
-			err_msg = parseDataLogger(file_ptr);
+			# guarda el archivo
+			fileName = saveFile(file_ptr)
+			params = {}
+			params["fileName"]=fileName
+			print "se ejecuta la tarea en celery timeserie"
+			task = parseHOBOFile.delay(params)
+			result["task_id"] = task.id
+			print "el id del task ", task.id
+			result["err_msg"] = None
 		else:
-			err_msg = "Error: no se reconoce ese tipo de estacion";
-
-		if(err_msg=="Success"):
-			return HttpResponse("OK")
-		else:
-			return HttpResponse(err_msg);
+			result["task_id"] = None
+			result["err_msg"] = "No se reconoce este tipo de estacion"
 
 def visualize(request):
 	if request.method == 'GET':
