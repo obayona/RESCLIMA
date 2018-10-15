@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | VISUALIZAR SERIES{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'series/css/seriesview.css' %}" type="text/css">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div id="layersApp" class="main">
+	<div id="wrapper">
+		<!-- Layer list -->
+		<series_component></series_component>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts_body  %}
+<script src="{% static "main/js/vue.min.js" %}"></script>
+<script src="{% static "main/js/vue-router.min.js" %}"></script>
+<script src="{% static "main/js/OpenLayers.js" %}"></script>
+<script src="{% static "layer/js/store.js" %}"></script>
+<script src="{% static "layer/js/layers_component.js" %}"></script>
+<script src="{% static "layer/js/currentlayer_component.js" %}"></script>
+<script src="{% static "layer/js/map_component.js" %}"></script>
+<script src="{% static "layer/js/main.js" %}"></script>
+{% endblock%}
