@@ -90,8 +90,8 @@ DATABASES = {
         'NAME': 'resclima',
         'USER':'postgres',
         'PASSWORD':'postgres',
-        'HOST': 'Localhost',
-        #'PORT':5433
+        'HOST': '192.168.3.246',
+        'PORT':5433
     }
 }
 

@@ -9,12 +9,23 @@ from django.db import connection
 import json
 from django.http import JsonResponse
 
+'''
+Vista  que  retorna una  Pagina home 
+de las series de tiempo, se muestran 
+las opciones disponibles
+'''
 @login_required(login_url='noAccess')
-def show_options(request):
+def home(request):
 	return render(request,"home_series.html")
 
-
-def addSensor(data):
+'''
+Funcion usada para ingresar una estacion.
+Recibe un  diccionario con  los atributos
+de  la  estacion.  Retorna None si no hay
+errores,   caso   contrario   retorna  un
+mensaje de error.
+'''
+def addStation(data):
 	try:
 		stationType_id = int(data["stationType"]);
 		serialNum = data["serialNum"];
@@ -48,32 +59,43 @@ def addSensor(data):
 		station.save();
 	except Exception as e:
 		return "Error " + str(e)
-
 	return None
 
+'''
+Vista que retorna una  Pagina que  permite
+ingresar una nueva estacion. Se implementa
+el metodo GET y POST.  Con GET  se retorna
+la pagina y con POST se guarda la estacion
+ingresada.
+'''
 @login_required(login_url='noAccess')
 def import_station(request):
 	if request.method == "GET":
 		station_types = StationType.objects.all()
 		options = {'stationTypes':station_types}
-		return render(request, 'new_station.html',options)
+		return render(request, 'import_station.html',options)
 	elif request.method == "POST":
 		err_msg = addStation(request.POST);
 		return HttpResponse(err_msg);
 
-
-# funcion auxiliar para guardar un archivo
+'''
+Funcion auxiliar para guardar un archivo
+Recibe un objeto UploadedFile de  django
+y  guarda  el  archivo  en un directorio 
+temporal. Retorna la ruta del archivo.
+'''
 def saveFile(ftemp):
-
+	# directorio temporal del sistema
 	temp_dir = settings.TEMPORARY_FILES_PATH;
 	# se obtiene un timestamp
-	ts = time.time()
-	timestamp_str = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d-%H-%M-%S')
+	t = time.time()
+	ts = datetime.datetime.fromtimestamp(t)
+	timestamp_str = ts.strftime('%Y-%m-%d-%H-%M-%S')
 	# se genera un nuevo nombre para el archivo
 	fileName = "timeseries-"+timestamp_str + ".csv"
 	fullName = os.path.join(temp_dir,fileName)
-	# si el objeto tiene el atributo temporary_file_path
-	# ya esta en el disco duro
+	# si el objeto ftemp tiene el atributo 
+	# temporary_file_path ya esta en el disco duro
 	if (hasattr(ftemp,'temporary_file_path')):
 		ftemp_path = ftemp.temporary_file_path()
 		# mueve el archivo
@@ -88,10 +110,15 @@ def saveFile(ftemp):
 
 	return fullName
 
-
-# view que permite subir un archivo csv
+'''
+Vista que permite subir un archivo csv con
+las  series de  tiempo de una  estacion no
+automatica. Se implementa  el metodo GET y
+POST. Con GET se  retorna la pagina, y con
+POST se guardan los datos del archivo.
+'''
 @login_required(login_url='noAccess')
-def upload_file(request):
+def import_file(request):
 	if request.method == "GET":
 		station_types = StationType.objects.filter(automatic=False)
 		params = {"stationTypes":station_types}
@@ -113,7 +140,6 @@ def upload_file(request):
 			return HttpResponse("OK")
 		else:
 			return HttpResponse(err_msg);
-
 
 def visualize(request):
 	if request.method == 'GET':
@@ -141,7 +167,7 @@ def visualize(request):
 		#Call to series_searcher.py method
 
 #	return HttpResponse("OK")
-		return render(request,"series-visualization.html")
+		return render(request,"view_series.html")
 
 def get_measurements(request):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
@@ -185,3 +211,4 @@ def get_measurements(request):
 			row = cursor.fetchone()
 			responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})
+

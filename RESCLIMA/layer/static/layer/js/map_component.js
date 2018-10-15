@@ -290,7 +290,10 @@ Vue.component("map_component",{
 		var layerListeners = {
 			featureclick: function(e) {
 				console.log("click en ",e);
-				self.showAttributes(e.feature);
+				//self.showAttributes(e.feature);
+			},
+			nofeatureclick:function(e){
+				console.log("no features",e);
 			}
 		}
 
