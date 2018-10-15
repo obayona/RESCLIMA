@@ -148,6 +148,7 @@ def import_file(request):
 		else:
 			result["task_id"] = None
 			result["err_msg"] = "No se reconoce este tipo de estacion"
+		return HttpResponse(json.dumps(result),content_type='application/json')
 
 def visualize(request):
 	if request.method == 'GET':
@@ -219,4 +220,5 @@ def get_measurements(request):
 			row = cursor.fetchone()
 			responseData["variable_symbol"]=row[0]
 	return JsonResponse({"series": responseData})
+
 

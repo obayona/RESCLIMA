@@ -46,12 +46,12 @@ def get_task_info(request):
 	task_id = request.GET.get('task_id', None)
 	if task_id is not None:
 		task = AsyncResult(task_id)
-		print "Lo que recupero  ",task.state
+		print "Lo que recupero  ",task_id
 		if task.result:
 			if "error" in task.result:
 				if task.result["error"]:
 					print "voy a imprimir un error"
-					print "el mensaje de error",task.result["error"].encode('utf-8')
+					#print "el mensaje de error",task.result["error"].encode('utf-8')
 		data = {}
 		data["state"] = task.state
 		if (task.result):
@@ -64,5 +64,6 @@ def get_task_info(request):
 		data["state"]="FAILURE"
 		data["result"]={"error":"Error, el task se perdió"}
 		return HttpResponse(json.dumps(data), content_type='application/json')
+
 
 
