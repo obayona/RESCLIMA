@@ -1,3 +1,10 @@
+/*
+Funcion que recibe un objeto OpenLayers.Layer.Vector
+y una  posicion  (lon,lat).  Buscara  dentro de  los 
+features de la capa y retornara el feature  que con-
+tenga la posicion. Si no encuentra un feature retor-
+na null.
+*/
 function searchFeature(vectorlayer,lon,lat){
 	var features = vectorlayer.features;
 	for(var i=0;i<features.length;i++){
@@ -24,12 +31,80 @@ function searchFeature(vectorlayer,lon,lat){
 	return null
 }
 
-/*Objeto con funciones para 
-manipulacion de capas vectorial
+/*
+Funcion que crea una tabla HTML que muestra los
+atributos de un feature. Retorna la tabla  como
+un string HTNL
+*/
+function createAttributeTable(attributes){
+	// contenedor
+	var content = document.createElement("div");
+	var table = document.createElement("table");
+	table.className = "bordered";
+	// cabezera de la tabla: | Atributo | Valor |
+	var thead = document.createElement("thead");
+	var tr = document.createElement("tr");
+	var th_1 = document.createElement("th");
+	th_1.innerHTML = "Atributo";
+	var th_2 = document.createElement("th");
+	th_2.innerHTML = "Valor";
+
+	tr.appendChild(th_1);
+	tr.appendChild(th_2);
+	thead.appendChild(tr);
+	table.appendChild(thead);
+
+	// cuerpo de la tabla
+	var tbody = document.createElement("tbody");
+	// por cada atributo se crea una fila de la
+	// tabla
+	for (var attr in attributes) {
+		if (attributes.hasOwnProperty(attr)){
+			var value = attributes[attr];
+
+			var tr = document.createElement("tr");
+			var td_1 = document.createElement("td");
+			var td_2 = document.createElement("td");
+
+			td_1.innerHTML = String(attr);
+			td_2.innerHTML = String(value);
+
+			tr.appendChild(td_1);
+			tr.appendChild(td_2);
+			tbody.appendChild(tr);
+		}
+	}
+	table.appendChild(tbody);
+	content.appendChild(table);
+	// se retorna la tabla como un string
+	return content.innerHTML;
+}
+
+/* 
+Metodo que obtiene el extent de una capa.
+Recibe un json con el bbox de la capa. El extent
+es un array con los limites de la capa
+[minX,minY,maxX,maxY]
+*/
+function getExtent(bbox_json){
+	var geojson_format = new OpenLayers.Format.GeoJSON();
+	var polygon = geojson_format.read(bbox_json)[0];
+	polygon.geometry.transform('EPSG:4326','EPSG:900913');
+	var coords = polygon.geometry.components[0]
+	coords = coords.components
+	var minX,minY,maxX,maxY
+	minX = coords[0]["x"]
+	minY = coords[0]["y"]
+	maxX = coords[2]["x"]
+	maxY = coords[2]["y"]
+	return [minX,minY,maxX,maxY]
+}
+
+/*Objeto  con  funciones  para 
+manipulacion de capas vectoriales
 Recibe: el mapa de OpenLayers 
 y la capa
 */
-
 var VectorLayer = function(map,layer){
 
 	// Metodo para obtener los datos de una capa
@@ -103,21 +178,6 @@ var VectorLayer = function(map,layer){
 			requestStyle(selectedStyle);
 		}
 
-	}
-
-	// Metodo que obtiene el extent de la capa
-	function getExtent(bbox_json){
-		var geojson_format = new OpenLayers.Format.GeoJSON();
-		var polygon = geojson_format.read(bbox_json)[0];
-		polygon.geometry.transform('EPSG:4326','EPSG:900913');
-		var coords = polygon.geometry.components[0]
-		coords = coords.components
-		var minX,minY,maxX,maxY
-		minX = coords[0]["x"]
-		minY = coords[0]["y"]
-		maxX = coords[2]["x"]
-		maxY = coords[2]["y"]
-		return [minX,minY,maxX,maxY]
 	}
 
 	// Metodo para obtener el archivo SLD
@@ -252,21 +312,6 @@ var RasterLayer = function(map,layer){
 		}
 	}
 
-	// Metodo que obtiene el extent de la capa
-	function getExtent(bbox_json){
-		var geojson_format = new OpenLayers.Format.GeoJSON();
-		var polygon = geojson_format.read(bbox_json)[0];
-		polygon.geometry.transform('EPSG:4326','EPSG:900913');
-		var coords = polygon.geometry.components[0]
-		coords = coords.components
-		var minX,minY,maxX,maxY
-		minX = coords[0]["x"]
-		minY = coords[0]["y"]
-		maxX = coords[2]["x"]
-		maxY = coords[2]["y"]
-		return [minX,minY,maxX,maxY]
-	}
-
 	// Metodo que carga informacion del estilo 
 	// de la capa
 	function requestStyle(style){
@@ -303,6 +348,7 @@ Vue.component("map_component",{
 		<div id="map_component">
 			<!-- Contenedor del mapa de OpenLayers -->
 			<div id="map_container" style="width:100%;height: 600px;">
+				<!-- Controlador del zoom del mapa personalizado-->
 				<div id="customZoom">
 					<a href="#customZoomIn" id="customZoomIn">+</a>
 					<a href="#customZoomOut" id="customZoomOut">-</a>
@@ -311,10 +357,11 @@ Vue.component("map_component",{
 		</div>
 	`,
 	mounted(){
+		//referencia al componente
 		var self = this;
-		/*Objeto con listeners del click*/
+		/*Objeto con listeners del click del mapa*/
 		var layerListeners = {
-			click: function(e) {
+			click: function(e){
 				self.clickHandler(e);
 			}
 		}
@@ -330,11 +377,11 @@ Vue.component("map_component",{
 			eventListeners:layerListeners
 		});
 
-		/*Controles del mapa*/
+		//Controles del mapa
 		var controls = [
 			new OpenLayers.Control.Navigation({
 				dragPanOptions: {
-				enableKinetic: true
+					enableKinetic: true
 				}
 			}),
 			new OpenLayers.Control.Attribution(),
@@ -344,7 +391,6 @@ Vue.component("map_component",{
 			})
 		]
 		map.addControls(controls);
-
 
 		// se agrega una capa de OpenStreetMap
 		var osm = new OpenLayers.Layer.OSM("OSM");
@@ -401,6 +447,9 @@ Vue.component("map_component",{
 				rasterlayer.loadLayer();
 			}
 		},
+		/*Metodo que se ejecuta cuando el usuario selecciona
+		un estilo de la capa. Se aplicara ese estilo a la capa
+		actual*/
 		updateStyle(){
 			// se recupera la capa actual
 			var currentLayer = this.shared.currentLayer;
@@ -416,6 +465,9 @@ Vue.component("map_component",{
 				rasterlayer.requestStyle(currentStyle);
 			}
 		},
+		/*Metodo que se ejecuta cuando el usuario da click
+		en el mapa. Se obtendra el feature seleccionado y
+		se mostrara una tabla con sus atributos*/
 		clickHandler(e){
 			var map = this.shared.map;
 			// se obtiene la coordenada del click
@@ -424,94 +476,68 @@ Vue.component("map_component",{
 			var lat = lonlat.lat;
 			var layers = store.layers;
 			/* se busca si en las capas vectoriales, 
-			se punto esta dentro de su extent*/
+			el punto esta dentro de su extent*/
 			var features = []
-			console.log(store.layers);
 			for(var i=0;i<layers.length;i++){
-				console.log(i);
 				var layer = layers[i];
-				console.log(layer)
+				// solo se usan las capas vectoriales
 				if(layer["type"]!="vector"){
 					continue;
 				}
 				var extent = layer["extent"]
 				// si a la capa aun no se le ha calculado
 				// el extent, no se hace nada
-				if (extent.length<4){
+				if(!extent){
 					continue;
 				}
-				console.log(extent)
+				if(extent.length<4){
+					continue;
+				}
 				// si el punto esta dentro de la capa
-				if(lon >= extent[0] & lon<= extent[2]
-					& lat >= extent[1] & lat <= extent[3]){
-					console.log("click en esta capa",layer)
+				if(lon >= extent[0] & lon <= extent[2]
+				   & lat >= extent[1] & lat <= extent[3]){
+					// se recupera la capa de OpenLayers
 					var vectorlayer = layer["openlayer_layer"];
+					// se busca un feature que contenga el punto
 					var feature = searchFeature(vectorlayer,lon,lat);
 					if(feature){
+						// se guarda el feature, junto con el zIndex de la capa
 						features.push({"feature":feature,"zIndex":layer["zIndex"]});
 					}
 				}
 			}
+			// si no se encontraron features no se hace nada
 			if(features.length==0){
 				return;
 			}
+			// se ordenan los features de acuerdo a su zIndex
+			// de forma descendiente
 			features.sort(function(a,b){
 				za = a["zIndex"];
 				zb = b["zIndex"];
 				return za - zb;
 			});
-			console.log(features);
+			// se obtiene el feature con zIndex mas alto
+			// se le dara prioridad a ese feature
 			var selected = features[0];
-			this.showAttributes(selected["feature"]);
+			// muestra una tabla con los atributos del feature
+			this.showAttributes(selected["feature"],lon,lat);
 
 		},
-		createAttributeTable(attributes){
-			var content = document.createElement("div");
-			var table = document.createElement("table");
-			var thead = document.createElement("thead");
-			var tr = document.createElement("tr");
-			var th_1 = document.createElement("th");
-			th_1.innerHTML = "Atributo";
-			var th_2 = document.createElement("th");
-			th_2.innerHTML = "Valor";
-			tr.appendChild(th_1);
-			tr.appendChild(th_2);
-			thead.appendChild(tr);
-			table.appendChild(thead);
-
-			var tbody = document.createElement("tbody");
-			for (var attr in attributes) {
-				if (attributes.hasOwnProperty(attr)){
-					var value = attributes[attr];
-
-					var tr = document.createElement("tr");
-					var td_1 = document.createElement("td");
-					var td_2 = document.createElement("td");
-
-					td_1.innerHTML = "" + attr;
-					td_2.innerHTML = "" + value;
-
-					tr.appendChild(td_1);
-					tr.appendChild(td_2);
-					tbody.appendChild(tr);
-				}
-			}
-			table.appendChild(tbody);
-			content.appendChild(table);
-			return content.innerHTML;
-		},
-		showAttributes(feature){
+		/*Crea un popup con la tabla de atributos de un feature.
+		Y lo coloca en (lon,lat)
+		*/
+		showAttributes(feature,lon,lat){
 			var id = feature.id;
 			var attributes = feature.attributes;
-			var bounds = feature.geometry.bounds;
-			var lon = (bounds["right"] + bounds["left"])/2;
-			var lat = (bounds["bottom"] + bounds["top"])/2;
-			var content = this.createAttributeTable(attributes);
-			console.log(content);
+			// se crea la tabla HTML
+			var content = createAttributeTable(attributes);
+			// se crea el popup
 			popup = new OpenLayers.Popup(id,
 				new OpenLayers.LonLat(lon,lat),
 				new OpenLayers.Size(300,200),
 				content,true);
+			// se muestra el popup
 			this.shared.map.addPopup(popup);
 		}
 	},

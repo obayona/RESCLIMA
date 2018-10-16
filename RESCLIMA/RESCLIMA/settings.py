@@ -88,11 +88,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-
-        'USER':'obayona',
-        'PASSWORD':'EloyEcuador93',
-        'HOST': 'localhost',
-        'PORT':5432
+        'USER':'postgres',
+        'PASSWORD':'postgres',
+        'HOST': '192.168.3.246',
+        'PORT':5433
     }
 }
 
@@ -115,8 +114,12 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+#STATIC_ROOT = os.path.join(BASE_DIR,'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+STATICFILES_DIRS = ( 
+      os.path.join(BASE_DIR,'static'),  
+)
 
 # Celery configuration
 CELERY_BROKER_URL = 'amqp://resclima:resclima@localhost:5672/resclima'
@@ -129,3 +132,4 @@ CELERY_RESULT_SERIALIZER = 'json'
 STYLE_FILES_PATH = "/home/vivi/manager/styles/"
 RASTER_FILES_PATH = "/home/vivi/manager/rasters/"
 TEMPORARY_FILES_PATH = "/tmp/"
+

@@ -39,8 +39,8 @@ Vue.component("series_component",{
 		del url, el cual tiene el siguiente formato:
 		variables=id_var1[stacion1,stacion2]|id_var2[stacion1]|...|id_varN */
 		var query_string = this.$route.query["variables"];
-		var ini_date = this.$route.query("ini_date"); 
-   		var end_date = this.$route.query("end_date");
+		var ini_date = this.$route.query["ini_date"]; 
+   		var end_date = this.$route.query["end_date"];
    		//make sure we assign date params a value
    		if(ini_date==null){
    			ini_date = "";
