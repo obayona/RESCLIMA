@@ -39,6 +39,7 @@ Vue.component("series_component",{
 		del url, el cual tiene el siguiente formato:
 		variables=id_var1[stacion1,stacion2]|id_var2[stacion1]|...|id_varN */
 		var query_string = this.$route.query["variables"];
+
 		var ini_date = this.$route.query["ini_date"]; 
    		var end_date = this.$route.query["end_date"];
    		//make sure we assign date params a value
@@ -84,7 +85,7 @@ Vue.component("series_component",{
 			//graficar
 			var divid = "div"+serie["variable_id"];
 			this.getStationSerie(serie);
-			this.plotSingleTrace(serie["x_values"], serie["y_values"], divid, serie["variable_name"], serie["symbol"]);
+			//this.plotSingleTrace(serie["x_values"], serie["y_values"], divid, serie["variable_name"], serie["symbol"]);
 		}
 
 	},
@@ -110,6 +111,8 @@ Vue.component("series_component",{
 				request.done(function(data){
 					serie["x_values"].push(data["series"]["dates"]);
 					serie["y_values"].push(data["series"]["measurements"]);
+					serie["variable_name"] = data["series"]["variable_name"];
+					serie["symbol"] = data["series"]["variable_symbol"];
 					// se actualiza el estado de la serie
 					serie["state"]="metadata_loaded";
 		

@@ -224,6 +224,7 @@ def get_measurements(request,variable_id, station_id, startdate, enddate):
 		cursor.execute(qs)
 		row = cursor.fetchone()
 		responseData["variable_symbol"]=row[0]
+		print(row)
 	return JsonResponse({"series": responseData})
 
 
