@@ -116,8 +116,8 @@ var VectorLayer = function(map,layer){
 		var url = "/vector/geojson/" + id_layer;
 		var request = $.get(url);
 		// TODO - implementar callbacks de error
-		request.done(function(data){
-			renderFeatureLayer(data);
+		request.done(function(response){
+			renderFeatureLayer(response);
 		});
 	}
 
