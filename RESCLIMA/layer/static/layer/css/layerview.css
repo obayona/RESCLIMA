@@ -19,9 +19,7 @@
 	color:white;
 }
 
-#layerList{
-	height: 600px;
-	overflow-y: scroll;
+#layerWrapper{
 	background: #f9f9f9;
 	background-color:white;
 	box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 
@@ -29,11 +27,30 @@
 			0 5px 5px -3px rgba(0, 0, 0, 0.3);
 }
 
+.positionMenu{
+	text-align: center;
+	margin-left: 10px;
+	margin-right: 10px;
+	border-bottom: 1px solid rgba(160, 160, 160, 0.2);
+}
+
+.positionBtn{
+	display: inline-block;
+	cursor: pointer;
+}
+
+#layerList{
+	height: 600px;
+	overflow-y: scroll;
+}
+
 .layerItem{
 	border-color: #29b6f6;
 	border-width: 1px;
 	border-style: solid;
-	margin: 10px;
+	margin-bottom: 18px;
+	margin-left:10px;
+	margin-right: 10px;
 	padding: 10px;
 }
 
@@ -57,10 +74,8 @@
 			0 5px 5px -3px rgba(0, 0, 0, 0.3);
 }
 
-.btnZoom{
-	position:absolute;
+.layerBtn{
 	cursor:pointer;
-	right:10px;
 }
 
 /*clase para el control

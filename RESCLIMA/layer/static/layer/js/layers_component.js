@@ -16,78 +16,100 @@ Vue.component("layers_component",{
 				<i v-if="open" class="material-icons">keyboard_arrow_down</i>
 				<i v-else class="material-icons">keyboard_arrow_up</i>
 			</div>
-
-			<!-- Contenedor con la lista de capas -->
-			<div id="layerList" >
-				<!-- Si hay capas en shared.layers se muestra la lista-->
-				<div v-if="shared.layers.length>0">
-					<!-- Contenedor de la capa -->
-					<!-- se intera sobre el array shared.layers -->
-					<!-- Si la capa es igual a currentLayer, se pinta-->
-					<div v-for="layer in shared.layers"
-					class="layerItem"
-					v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9'}:{}]">
-						<!-- Si la capa tiene estado uninitialized-->
-						<!-- Se muestran animaciones-->
-						<div v-if="layer.state=='uninitialized'">
-							<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
-							<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
-							<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
-						</div>
-						<!-- Si la capa tiene estado distinto a uninitialized-->
-						<!-- Se muestran los metadatos de la capa -->
-						<div v-if="layer.state!='uninitialized'">
-							<!-- Opcion zoom a la capa-->
-							<div style="height:100%;position: relative;">
-								<span title="Zoom a la capa"
-								class="btnZoom" v-on:click.prevent="zoomToLayer(layer)">
-									<i class="material-icons left">zoom_in</i>
-								</span>
+			<!-- Wrapper-->
+			<div id="layerWrapper">
+				<!-- Menu con opciones de las capas-->
+				<div class="positionMenu">
+					<div class="positionBtn"
+					 v-on:click.prevent="moveLayer(-1)">
+						<i class="material-icons">keyboard_arrow_up</i>
+					</div>
+					<div class="positionBtn"
+					 v-on:click.prevent="moveLayer(1)">
+						<i class="material-icons">keyboard_arrow_down</i>
+					</div>
+				</div>
+				<!-- Contenedor con la lista de capas -->
+				<div id="layerList" >
+					<!-- Si hay capas en shared.layers se muestra la lista-->
+					<div v-if="shared.layers.length>0">
+						<!-- Contenedor de la capa -->
+						<!-- se intera sobre el array shared.layers -->
+						<!-- Si la capa es igual a currentLayer, se pinta-->
+						<div v-for="layer in shared.layers"
+						class="layerItem"
+						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9'}:{}]">
+							<!-- Si la capa tiene estado uninitialized-->
+							<!-- Se muestran animaciones-->
+							<div v-if="layer.state=='uninitialized'">
+								<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
+								<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
+								<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
 							</div>
-
-							<!-- El titulo de la capa-->
-							<!-- Si se da click es esta capa, se convierte en-->
-							<!-- currentLayer -->
-							<h5 class="header layerTitle"
-							 v-on:click.prevent="shared.currentLayer=layer">
-								{{layer.title}}
-							</h5>
-							<!-- El resumen de la capa -->
-							<p>{{layer.abstract}}</p>
-							<!-- La fecha de la capa-->
-							<h6>{{layer.data_date}}</h6>
-
-							<!-- Contenedor con opciones de la capa -->
-							<!-- Solo se muestra si el estado de la capa es loaded-->
-							<div class="layerOptions" v-if="layer.state=='loaded'">
-								<!-- Slider para controlar la transparencia-->
-								<p class="range-field">
-									<label>Transparencia</label>
-									<input type="range" 
-									min="0" 
-									max="100" 
-									value="0"
-									v-model="layer.opacity"
-									v-on:input="changeOpacity(layer)"/>
-								</p>
-								<!-- Links para descargar y remover la capa-->
-								<div>
-									<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
-									<a style="padding:10px;color:red" href="#"><i class="material-icons">delete</i>Eliminar</a>
+							<!-- Si la capa tiene estado distinto a uninitialized-->
+							<!-- Se muestran los metadatos de la capa -->
+							<div v-if="layer.state!='uninitialized'">
+								<!-- Opcion zoom a la capa-->
+								<div style="height:100%;position: relative;">
+									<div style="position:absolute;right:10px;">
+										<span title="Zoom a la capa"
+										  class="layerBtn"
+										  v-on:click.prevent="zoomToLayer(layer)">
+											<i class="material-icons">zoom_in</i>
+										</span>
+										<span title="Filtros"
+										 class="layerBtn" 
+										 v-if="layer.type=='vector'"
+										 v-on:click.prevent="zoomToLayer(layer)">
+											<i class="material-icons">filter_list</i>
+										</span>
+									</div>
 								</div>
-							</div>
-							<!-- Si la capa no tiene estado loaded-->
-							<!-- no se muestran las opciones de la capa,-->
-							<!-- se muestra una animacion-->
-							<div v-else>
-								<div class="animated-background" style="height:80px">Cargando...</div>
+
+								<!-- El titulo de la capa-->
+								<!-- Si se da click es esta capa, se convierte en-->
+								<!-- currentLayer -->
+								<h5 class="header layerTitle"
+								 v-on:click.prevent="shared.currentLayer=layer">
+									{{layer.title}}
+								</h5>
+								<!-- El resumen de la capa -->
+								<p>{{layer.abstract}}</p>
+								<!-- La fecha de la capa-->
+								<h6>{{layer.data_date}}</h6>
+
+								<!-- Contenedor con opciones de la capa -->
+								<!-- Solo se muestra si el estado de la capa es loaded-->
+								<div class="layerOptions" v-if="layer.state=='loaded'">
+									<!-- Slider para controlar la transparencia-->
+									<p class="range-field">
+										<label>Transparencia</label>
+										<input type="range" 
+										min="0" 
+										max="100" 
+										value="0"
+										v-model="layer.opacity"
+										v-on:input="changeOpacity(layer)"/>
+									</p>
+									<!-- Links para descargar y remover la capa-->
+									<div>
+										<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
+										<a style="padding:10px;color:red" href="#"><i class="material-icons">delete</i>Eliminar</a>
+									</div>
+								</div>
+								<!-- Si la capa no tiene estado loaded-->
+								<!-- no se muestran las opciones de la capa,-->
+								<!-- se muestra una animacion-->
+								<div v-else>
+									<div class="animated-background" style="height:80px">Cargando...</div>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-				<!-- Si no hay capas en shared.layers se muestra un mensaje-->
-				<div v-else>
-					<p>No hay capas</p>
+					<!-- Si no hay capas en shared.layers se muestra un mensaje-->
+					<div v-else>
+						<p>No hay capas</p>
+					</div>
 				</div>
 			</div>
 
@@ -144,7 +166,8 @@ Vue.component("layers_component",{
 	data(){
 		return {
 			shared:store,
-			open:true
+			open:true,
+			dragSrc:null,
 		}
 	},
 	methods:{
@@ -205,7 +228,31 @@ Vue.component("layers_component",{
 				var map = this.shared.map;
 				map.zoomToExtent(extent);
 			}
+		},
+		moveLayer(direction){
+			var layers = this.shared.layers;
+			var currentLayer = this.shared.currentLayer;
+			var ini = currentLayer["index"];
+			var end = ini + direction;
+			var limit = layers.length - 1;
+			if(end<0 || end > limit ){
+				return;
+			}
+			layers.splice(ini,1);
+			layers.splice(end,0,currentLayer);
+			// actualizar los index
+			currentLayer["index"]=end;
+			currentLayer["openlayer_layer"]
+			var changedLayer = layers[ini];
+			changedLayer["index"]=ini;
+			// actualizar los zIndex
+			var zIndex1 = currentLayer["openlayer_layer"].getZIndex()
+			var zIndex2 = changedLayer["openlayer_layer"].getZIndex()
+			currentLayer["openlayer_layer"].setZIndex(zIndex2);
+			changedLayer["openlayer_layer"].setZIndex(zIndex1);
+
 		}
 	}
 })
+
 
