@@ -28,6 +28,7 @@ def import_vector_layer(vectorlayer_params):
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	# string de categorias
 	categories_string = vectorlayer_params["categories_string"]
+	owner = vectorlayer_params["owner"]
 
 	'''
 	Diccionario con el resultado de la operacion.
@@ -75,6 +76,7 @@ def import_vector_layer(vectorlayer_params):
 							  abstract=abstract,
 							  data_date=data_date,
 							  categories_string=categories_string,
+							  owner=owner,
 							  type="vector")
 	vectorlayer.save()
 

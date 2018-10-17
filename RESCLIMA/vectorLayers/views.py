@@ -18,7 +18,9 @@ from django.shortcuts import redirect
 
 @login_required(login_url='noAccess')
 def list_vectorlayers(request):
-	vectorlayers = VectorLayer.objects.all().order_by("upload_date");
+	researcher = request.user.researcher
+	researcher = researcher.id
+	vectorlayers = VectorLayer.objects.filter(owner=researcher).order_by("upload_date");
 	return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
 

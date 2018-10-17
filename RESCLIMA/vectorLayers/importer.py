@@ -131,6 +131,7 @@ def import_data(request):
 	vectorlayer_params["abstract"] = abstract
 	vectorlayer_params["date_str"] = date_str
 	vectorlayer_params["categories_string"] = categories_string
+	vectorlayer_param["owner"] = request.user.researcher.id
 
 	task = import_vector_layer.delay(vectorlayer_params)
 	# se retorna que no hay error y el id del task
