@@ -22,6 +22,7 @@ def import_raster_layer(rasterlayer_params):
 	# fecha como objeto datetime
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	categories_string = rasterlayer_params["categories_string"]
+	owner = vectorlayer_params["owner"]
 
 	'''
 	Diccionario con el resultado de la operacion.

@@ -21,7 +21,9 @@ from django.contrib.auth.decorators import login_required
 
 @login_required(login_url='noAccess')
 def list_rasterlayers(request):
-	rasterlayers = RasterLayer.objects.all().order_by("upload_date");
+	researcher = request.user.researcher
+	researcher = researcher.id
+	rasterlayers = RasterLayer.objects.filter(owner=researcher).order_by("upload_date");
 	styles = Style.objects.filter(type="raster");
 	obj = {'rasterlayers':rasterlayers,'styles':styles}
 	return render(request,"list_rasterlayers.html",obj)
