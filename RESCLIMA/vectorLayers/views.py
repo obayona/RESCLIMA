@@ -15,12 +15,21 @@ import utils
 from os.path import join
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required(login_url='noAccess')
 def list_vectorlayers(request):
 	researcher = request.user.researcher
 	researcher = researcher.id
-	vectorlayers = VectorLayer.objects.filter(owner=researcher).order_by("upload_date");
+	layers = VectorLayer.objects.filter(owner=researcher).order_by("upload_date")
+	page = request.GET.get('page', 1)
+	paginator = Paginator(layers, 2)
+	try:
+		vectorlayers = paginator.page(page)
+	except PageNotAnInteger:
+		vectorlayers = paginator.page(1)
+	except EmptyPage:
+		vectorlayers = paginator.page(paginator.num_pages)
 	return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
 
 
