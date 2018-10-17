@@ -88,11 +88,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-
-        'USER':'obayona',
-        'PASSWORD':'EloyEcuador93',
-        'HOST': 'localhost',
-        'PORT':5432
+        'USER':'postgres',
+        'PASSWORD':'postgres',
+        'HOST': '192.168.3.246',
+        'PORT':5433
     }
 }
 
@@ -129,3 +128,4 @@ CELERY_RESULT_SERIALIZER = 'json'
 STYLE_FILES_PATH = "/home/vivi/manager/styles/"
 RASTER_FILES_PATH = "/home/vivi/manager/rasters/"
 TEMPORARY_FILES_PATH = "/tmp/"
+

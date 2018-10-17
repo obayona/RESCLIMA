@@ -17,6 +17,7 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from main.views import *
 from django.contrib.auth.views import logout
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     #URLS DE INCIO/CIERRE/PERMISOS
@@ -36,3 +37,4 @@ urlpatterns = [
 	url(r'^tms/', include("tms.urls")),
 ]
 
+urlpatterns += staticfiles_urlpatterns()

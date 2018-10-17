@@ -37,7 +37,7 @@ def import_shapefile(request):
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
-@login_required(login_url='noAccess')
+
 def export_shapefile(request, vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -45,7 +45,7 @@ def export_shapefile(request, vectorlayer_id):
 		return HttpResponseNotFound()
 	return exporter.export_data(vectorlayer)
 
-@login_required(login_url='noAccess')
+
 def export_geojson(request, vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
@@ -174,7 +174,7 @@ def delete_style(request,style_id):
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()
 
-@login_required(login_url='noAccess')
+
 def export_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
