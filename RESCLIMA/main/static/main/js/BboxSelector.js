@@ -1,6 +1,7 @@
 var BboxSelector = function(container,callback){
 
 	var container = document.getElementById(container)
+	console.log("****",container);
 	var vectors; // capa vectorial
 	var box;
 	var transform;

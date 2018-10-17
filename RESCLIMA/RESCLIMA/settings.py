@@ -128,3 +128,4 @@ CELERY_RESULT_SERIALIZER = 'json'
 STYLE_FILES_PATH = "/home/vivi/manager/styles/"
 RASTER_FILES_PATH = "/home/vivi/manager/rasters/"
 TEMPORARY_FILES_PATH = "/tmp/"
+

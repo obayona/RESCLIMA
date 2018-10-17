@@ -2,10 +2,12 @@
 Vue.component("series_component",{
 	template: `
 		<div v-if="shared.series.length>0">
+		
+
 			<!-- Contenedor de la serie -->
 			<!-- se itera sobre el array shared.series -->
 			<div v-for="serie in shared.series"
-			class="card">
+			class="card" >
 				<!-- Si la capa tiene estado uninitialized-->
 				<!-- Se muestran animaciones-->
 				<div v-if="serie.state=='uninitialized'">
@@ -13,13 +15,14 @@ Vue.component("series_component",{
 					<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
 					<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
 				</div>
+				<div id='div1'></div>
 				<!-- Si la serie tiene estado distinto a uninitialized-->
 				<!-- Se muestran los metadatos de la serie -->
 				<div v-if="serie.state!='uninitialized'">
 					<h5>{{serie.variable_name}} vs tiempo</h5>
+					
 							<!-- Contenedor con opciones de la capa -->
 							<!-- Solo se muestra si el estado de la capa es loaded-->
-							
 							<!-- Si la serie no tiene estado loaded-->
 							<!-- no se muestran las opciones de la serie,-->
 							<!-- se muestra una animacion-->
@@ -39,7 +42,6 @@ Vue.component("series_component",{
 		del url, el cual tiene el siguiente formato:
 		variables=id_var1[stacion1,stacion2]|id_var2[stacion1]|...|id_varN */
 		var query_string = this.$route.query["variables"];
-		console.log("QUERY STRING : "+query_string)
 		var ini_date = this.$route.query["ini_date"]; 
    		var end_date = this.$route.query["end_date"];
    		//make sure we assign date params a value
@@ -85,7 +87,7 @@ Vue.component("series_component",{
 			//graficar
 			var divid = "div"+serie["variable_id"];
 			this.getStationSerie(serie);
-			//this.plotSingleTrace(serie["x_values"], serie["y_values"], divid, serie["variable_name"], serie["symbol"]);
+			this.plotSingleTrace(serie["x_values"], serie["y_values"], divid, serie["variable_name"], serie["symbol"]);
 		}
 
 	},
@@ -109,6 +111,7 @@ Vue.component("series_component",{
 				// peticion GET
 				var request = $.get(url);
 				request.done(function(data){
+					console.log("AJAXXXX");
 					serie["x_values"].push(data["series"]["dates"]);
 					serie["y_values"].push(data["series"]["measurements"]);
 					serie["variable_name"] = data["series"]["variable_name"];
@@ -120,6 +123,32 @@ Vue.component("series_component",{
 			}
 			
 		},	
+		plotSingleTrace(x_values, y_values,div_id, y_title, symbol){
+		console.log("FUNCION");
+		var data = [];
+		var trace = {
+	 			x: x_values, 
+	  			y: y_values, 
+	  			type: 'path'
+			};
+		var layout1 = {
+			title:y_title+" vs tiempo",
+			xaxis: {
+    			title: 's',
+    			
+  			},
+	  		yaxis: {
+	       		title: symbol,
+	     	},
+	     	showlegend: true
+		};
+		data.push(trace);
+		Plotly.newPlot(div_id, data, layout1);
+	},
+  	t(serie){
+		var divid = "div"+serie.variable_id;      
+        return divid;
+      }
 		
 		
 	}
