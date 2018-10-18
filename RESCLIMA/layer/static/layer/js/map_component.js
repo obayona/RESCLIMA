@@ -345,9 +345,9 @@ var RasterLayer = function(map,layer){
 
 Vue.component("map_component",{
 	template: `
-		<div id="map_component">
+		<div id="map_component" style="height:700px;">
 			<!-- Contenedor del mapa de OpenLayers -->
-			<div id="map_container" style="width:100%;height: 600px;">
+			<div id="map_container" style="width:100%;height:100%;">
 				<!-- Controlador del zoom del mapa personalizado-->
 				<div id="customZoom">
 					<a href="#customZoomIn" id="customZoomIn">+</a>
