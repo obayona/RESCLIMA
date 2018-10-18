@@ -36,6 +36,8 @@ def import_data(request):
 	abstract = request.POST["abstract"]
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
+	# el id del researcher
+	owner = request.user.researcher.id
 
 	'''
 	Se verifica que esten unicamente los archivos
@@ -131,7 +133,7 @@ def import_data(request):
 	vectorlayer_params["abstract"] = abstract
 	vectorlayer_params["date_str"] = date_str
 	vectorlayer_params["categories_string"] = categories_string
-	vectorlayer_params["owner"] = request.user.researcher.id
+	vectorlayer_params["owner"] = owner
 
 	task = import_vector_layer.delay(vectorlayer_params)
 	# se retorna que no hay error y el id del task

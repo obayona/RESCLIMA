@@ -8,6 +8,7 @@ from celery import shared_task, current_task
 from django.db import transaction
 from osgeo import ogr
 from .models import VectorLayer, Attribute, Feature, AttributeValue
+from main.models import Researcher
 from osgeo import osr
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos import Polygon
@@ -28,7 +29,8 @@ def import_vector_layer(vectorlayer_params):
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	# string de categorias
 	categories_string = vectorlayer_params["categories_string"]
-	owner = vectorlayer_params["owner"]
+	owner_id = vectorlayer_params["owner"];
+	owner = Researcher.objects.get(id=owner_id);
 
 	'''
 	Diccionario con el resultado de la operacion.

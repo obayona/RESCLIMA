@@ -60,7 +60,7 @@ Vue.component("layers_component",{
 										<span title="Filtros"
 										 class="layerBtn" 
 										 v-if="layer.type=='vector'"
-										 v-on:click.prevent="zoomToLayer(layer)">
+										 v-on:click.prevent="openFilters(layer)">
 											<i class="material-icons">filter_list</i>
 										</span>
 									</div>
@@ -112,7 +112,6 @@ Vue.component("layers_component",{
 					</div>
 				</div>
 			</div>
-
 		</div>
 	`,
 	mounted(){
@@ -150,6 +149,7 @@ Vue.component("layers_component",{
 			layer["data_date"]="";
 			layer["opacity"]=0;
 			layer["styles"]=[];
+			layer["filters"]=[];
 			// se guarda el objeto en el store
 			// compartido
 			this.shared.layers.push(layer);
@@ -167,7 +167,6 @@ Vue.component("layers_component",{
 		return {
 			shared:store,
 			open:true,
-			dragSrc:null,
 		}
 	},
 	methods:{
@@ -251,6 +250,9 @@ Vue.component("layers_component",{
 			currentLayer["openlayer_layer"].setZIndex(zIndex2);
 			changedLayer["openlayer_layer"].setZIndex(zIndex1);
 
+		},
+		openFilters(layer){
+			this.$root.$emit("openFilters",layer);
 		}
 	}
 })
