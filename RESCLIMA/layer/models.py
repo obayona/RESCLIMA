@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 from search.models import FilterSearchTable
+from main.models import Researcher
 
 # Create your models here.
 class Layer(FilterSearchTable):
@@ -10,4 +11,4 @@ class Layer(FilterSearchTable):
 	upload_date = models.DateTimeField(auto_now_add=True)
 	srs_wkt = models.TextField(max_length= 500)
 	bbox = models.PolygonField(srid=4326,null=True)
-	#owner
+	owner = models.ForeignKey(Researcher)

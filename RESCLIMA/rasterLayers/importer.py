@@ -92,6 +92,7 @@ def import_data(request):
 	rasterlayer_params["abstract"] = abstract
 	rasterlayer_params["date_str"] = date_str
 	rasterlayer_params["categories_string"] = categories_string
+	rasterlayer_params["owner"] = request.user.researcher.id
 
 	task = import_raster_layer.delay(rasterlayer_params)
 
