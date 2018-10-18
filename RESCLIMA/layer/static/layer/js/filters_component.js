@@ -29,7 +29,8 @@ function renderSelect(id,options){
 	return container;
 }
 
-function renderFilter(filter){
+
+function renderFilter(filter,layer){
 	var container = document.createElement("div");
 	container.className = "row";
 
@@ -46,6 +47,21 @@ function renderFilter(filter){
 	value.innerText = filter["value"];
 
 	var btn = renderBtn('remove');
+	btn.addEventListener('click',function(e){
+		var filters = layer["filters"];
+		var index = 0;
+		for(var i=0; i<filters.length;i++){
+			var f = filters[i];
+			if(f==filter){
+				index = i;
+				break;
+			}
+		}
+		filters.splice(index,1);
+		applyFilters(layer);
+		var container = document.getElementById("filtersContainer");
+		render(layer,container);
+	});
 
 	container.appendChild(attr);
 	container.appendChild(oper);
@@ -77,10 +93,62 @@ function renderBtn(type){
 }
 
 function applyFilters(layer){
+	var vectorlayer = layer["openlayer_layer"];
+	var filters = layer["filters"];
+	var features = vectorlayer.features;
+	
+	for(var i=0; i< features.length;i++){
+		var feature = features[i];
+		var attributes = feature.attributes;
+		feature.style = null;
 
+		for(var j=0; j< filters.length;j++){
+			var filter = filters[j];
+			var result = evalFilter(attributes,filter);
+			// si no pasa el filtro se oculta el feature
+			if(result == false){
+				feature.style = {'visibility':'none'};
+			}
+		}
+	}
+	vectorlayer.redraw();
+}
+
+function applyFilter(layer,filter){
+	var vectorlayer = layer["openlayer_layer"];
+	var features = vectorlayer.features;
+	for(var i=0; i< features.length;i++){
+		var feature = features[i];
+		var attributes = feature.attributes;
+		var result = evalFilter(attributes,filter);
+		if(result){
+			feature.style = {'visibility':'none'};
+		}else{
+			feature.style = null;
+		}
+	}
+	vectorlayer.redraw();
+}
+
+function evalFilter(attributes,filter){
+	var attr = filter["attribute"];
+	var operation = filter["operation"];
+	var value = filter["value"];
+
+	if(operation=="Igual a"){
+		return attributes[attr]==value	
+	}
+	if(operation=="Mayor que"){
+		return attributes[attr]>value	
+	}
+	if(operation=="Menor que"){
+		return attributes[attr]<value	
+	}
+	return false;
 }
 
 function render(layer,container){
+	container.innerHTML = "";
 	var filters = layer["filters"];
 	// renderiza los filtros
 	var filterList = document.createElement('div');
@@ -88,7 +156,7 @@ function render(layer,container){
 
 	for(var i=0;i<filters.length; i++){
 		var filter = filters[i];
-		var result = renderFilter(filter);
+		var result = renderFilter(filter,layer);
 		filterList.appendChild(result);
 	}
 	container.appendChild(filterList);
@@ -104,7 +172,7 @@ function render(layer,container){
 	var newFilterMenu = document.createElement("div");
 	newFilterMenu.className = "row";
 	// select con los atributos
-	var attrs = renderSelect("selectedAtribute",attributes);
+	var attrs = renderSelect("selectedAttribute",attributes);
 	newFilterMenu.appendChild(attrs);
 	// se crea un select con las operaciones
 	var operations = [
@@ -125,51 +193,51 @@ function render(layer,container){
 	newFilterMenu.appendChild(addBtn);
 	container.appendChild(newFilterMenu);
 
-	var aceptBtn = renderBtn('done');
-	container.appendChild(aceptBtn);
 
 	// se agrega eventos
 	addBtn.addEventListener('click',function(event){
 		// se agrega un nuevo filtro
-		var select = document.getElementById("selectedAtribute");
-		var attribute = select.options[select.selectedIndex].value;
-		var select = document.getElementById("selectedOperation");
-		var operation = select.options[select.selectedIndex].value;
-		var value = document.getElementById("filterValue").value;
-		console.log(attribute,operation,value);
+		var attrs = document.getElementById("selectedAttribute");
+		var attribute = attrs.options[attrs.selectedIndex].value;
+		
+		if(attribute=="null"){
+			return;
+		}
+
+		var opers = document.getElementById("selectedOperation");
+		var operation = opers.options[opers.selectedIndex].value;
+
+		if(operation=="null"){
+			return;
+		}
+		
+		var input = document.getElementById("filterValue");
+		var value = input.value;
+		if(value==""){
+			return;
+		}
+		if(isNaN(value)==false){
+			value = parseFloat(value);
+		}
+
+		// se crea y agrega un nuevo filtro a la capa
 		var filter = {};
 		filter["attribute"]=attribute;
 		filter["operation"]=operation;
 		filter["value"]=value;
 		layer.filters.push(filter);
+
 		var filterList = document.getElementById("filterList");
-		var result = renderFilter(filter);
+		var result = renderFilter(filter,layer);
 		filterList.appendChild(result);
+
+		// se enceran los controles
+		attrs.selectedIndex = 0;
+		opers.selectedIndex = 0;
+		input.value = '';
+
+		applyFilter(layer,filter);
 	});
-
-	// agrega eventos
-	aceptBtn.addEventListener('click',function(event){
-		var vectorlayer = layer["openlayer_layer"];
-		var filter = layer["filters"][0];
-		var features = vectorlayer.features;
-		var attr = filter["attribute"];
-		var value = filter["value"];
-		for(var i=0; i< features.length;i++){
-			var feature = features[i];
-			var attributes = feature.attributes;
-			if(attributes[attr]==value){
-				console.log("este NO se elimina****",attributes[attr]);
-				feature.style = null;
-			}else{
-				console.log("este se elimina",attributes[attr]);
-				feature.style = {'visibility':'none'};
-			}
-		}
-
-		vectorlayer.redraw();
-	});
-
-	
 }
 
 Vue.component("filters_component",{
@@ -181,7 +249,7 @@ Vue.component("filters_component",{
 					
 				</div>
 				<div class="modal-footer">
-					<a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
+					<a href="javascript:;" class="modal-action modal-close waves-effect waves-green btn-flat">Cerrar</a>
 				</div>
 			</div>
 		</div>
@@ -192,7 +260,6 @@ Vue.component("filters_component",{
 		// se reacciona al evento
 		this.$root.$on('openFilters', function(layer){
 			var container = document.getElementById("filtersContainer");
-			container.innerHTML = ""
 			render(layer,container);
 			$('.modal').modal('open');
 		});
