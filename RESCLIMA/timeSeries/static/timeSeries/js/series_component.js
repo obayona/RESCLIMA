@@ -1,41 +1,45 @@
 
 Vue.component("series_component",{
 	template: `
-		<div v-if="shared.series.length>0">
-		
+		<div>
+			<div v-if="shared.series.length>0">
+			
 
-			<!-- Contenedor de la serie -->
-			<!-- se itera sobre el array shared.series -->
-			<div v-for="serie in shared.series"
-			class="card" >
-				<!-- Si la capa tiene estado uninitialized-->
-				<!-- Se muestran animaciones-->
-				<div v-if="serie.state=='uninitialized'">
-					<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
-					<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
-					<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
-				</div>
-				<div id='div1'></div>
-				<!-- Si la serie tiene estado distinto a uninitialized-->
-				<!-- Se muestran los metadatos de la serie -->
-				<div v-if="serie.state!='uninitialized'">
-					<h5>{{serie.variable_name}} vs tiempo</h5>
-					
-							<!-- Contenedor con opciones de la capa -->
-							<!-- Solo se muestra si el estado de la capa es loaded-->
-							<!-- Si la serie no tiene estado loaded-->
-							<!-- no se muestran las opciones de la serie,-->
-							<!-- se muestra una animacion-->
-							<div v-else>
-								<div class="animated-background" style="height:80px">Cargando...</div>
-							</div>
-						</div>
+				<!-- Contenedor de la serie -->
+				<!-- se itera sobre el array shared.series -->
+				<div v-for="serie in shared.series"
+				class="card" >
+					<!-- Si la capa tiene estado uninitialized-->
+					<!-- Se muestran animaciones-->
+					<div v-if="serie.state=='uninitialized'">
+						<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
+						<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
+						<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
 					</div>
+					
+					<!-- Si la serie tiene estado distinto a uninitialized-->
+					<!-- Se muestran los metadatos de la serie -->
+					<div v-if="serie.state!='uninitialized'">
+						<h5>{{serie.variable_name}} vs tiempo</h5>
+						<div v-bind:data-plot-id="serie.variable_id" ></div>
+								<!-- Contenedor con opciones de la capa -->
+								<!-- Solo se muestra si el estado de la capa es loaded-->
+								<!-- Si la serie no tiene estado loaded-->
+								<!-- no se muestran las opciones de la serie,-->
+								<!-- se muestra una animacion-->
+					</div>
+					<div v-else>
+						<div class="animated-background" style="height:80px">Cargando...</div>
+					</div>
+
 				</div>
-				<!-- Si no hay capas en shared.series se muestra un mensaje-->
-				<div v-else>
-					<p>No hay información de las series</p>
-				</div>
+			</div>
+			<!-- Si no hay capas en shared.series se muestra un mensaje-->
+			<div v-else>
+				<p>No hay información de las series</p>
+			</div>
+		
+		</div>
 	`,
 	mounted(){
 		/* Se lee el parametro "variables" del queryString
