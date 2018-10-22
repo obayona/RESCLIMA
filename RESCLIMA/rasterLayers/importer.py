@@ -37,6 +37,7 @@ def import_data(request):
 	abstract = request.POST["abstract"]
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
+	owner = request.user.researcher.id
 
 	if (len(list_files)!=1):
 		result["error"]="Se debe subir un solo archivo"
@@ -92,7 +93,7 @@ def import_data(request):
 	rasterlayer_params["abstract"] = abstract
 	rasterlayer_params["date_str"] = date_str
 	rasterlayer_params["categories_string"] = categories_string
-	rasterlayer_params["owner"] = request.user.researcher.id
+	rasterlayer_params["owner"] = owner
 
 	task = import_raster_layer.delay(rasterlayer_params)
 
