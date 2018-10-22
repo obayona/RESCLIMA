@@ -18,13 +18,14 @@ from style.utils import transformSLD
 from style.utils import getColorMap
 import json
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required(login_url='noAccess')
 def list_rasterlayers(request):
 	researcher = request.user.researcher
 	researcher = researcher.id
 	rasterlayers = RasterLayer.objects.filter(owner=researcher).order_by("upload_date")
-	styles = Style.objects.filter(type="raster")
+	styles = Style.objects.filter(type="raster", owner=researcher)
 	obj = {'rasterlayers':rasterlayers,'styles':styles}
 	return render(request,"list_rasterlayers.html",obj)
 
@@ -100,13 +101,15 @@ def updateRasterLayer(rasterlayer,request):
 
 @login_required(login_url='noAccess')
 def edit_raster(request, rasterlayer_id):
+	researcher = request.user.researcher
+	researcher = researcher.id
 	try:
 		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
 	except RasterLayer.DoesNotExist:
 		return HttpResponseNotFound()
 
 	# se obtienen los estilos
-	styles = Style.objects.filter(type="raster")
+	styles = Style.objects.filter(type="raster", owner=researcher)
 	# se obtiene el estilo de la capa
 	layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
 	layer_style_id = None
