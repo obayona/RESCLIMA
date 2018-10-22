@@ -27,19 +27,21 @@ def search_layer(request):
 	print "el query de busqueda ******",query_dict
 	qs,params = layer_searcher.create_query(query_dict)
 	layers = []
+	full_count = 0;
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		for row in rows:
 			layer = {}
-			layer["id"] = row[0];
-			layer["title"] = row[1];
-			layer["abstract"] = row[2];
-			layer["type"] = row[3];
-			layer["selected"] = False;
+			layer["id"] = row[0]
+			layer["title"] = row[1]
+			layer["abstract"] = row[2]
+			layer["type"] = row[3]
+			layer["selected"] = False
+			full_count = row[5]
 			layers.append(layer)
 	print layers
-	return JsonResponse({"results":layers})
+	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):
 	#PONER COMO DESCRIPCION NUMERO DE ESTACIONES
@@ -115,4 +117,5 @@ def Paginate(request, queryset, pages):
 		}
  
 	return context
+
 

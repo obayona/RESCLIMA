@@ -13,9 +13,6 @@ def create_str_polygon_postgis(polygon_dict):
 		return polygon_str
 
 
-def appendQueryPart(query,query_part, separator):
-	return query + separator + query_part
-
 # Genera un query dinamico dependiendo
 # de las opciones de query_object
 def create_query(query_object):
@@ -25,9 +22,11 @@ def create_query(query_object):
 	bbox = query_object.get("bbox", None)
 	ini_date = query_object.get("ini_date",None)
 	end_date = query_object.get("end_date",None)
+	limit = query_object.get("limit",None)
+	offset = query_object.get("offset",None)
 
 	# sql statements
-	select_stm = 'SELECT l.id, l.title, l.abstract, l.type, l.bbox';
+	select_stm = 'SELECT l.id, l.title, l.abstract, l.type, l.bbox, count(*) OVER() AS full_count';
 
 	from_stm = 'FROM "layer_layer" AS l';
 	where_stm = 'WHERE';
@@ -56,16 +55,22 @@ def create_query(query_object):
 		params.append(end_date);
 
 	sql_query = select_stm;
-	sql_query = appendQueryPart(sql_query,from_stm," ");
-	sql_query = appendQueryPart(sql_query,where_stm," ");
+	sql_query = sql_query + " " + from_stm
+	sql_query = sql_query + " " + where_stm
 
 	for i,f in enumerate(where_filters):
 		if (i==0):
-			sql_query = appendQueryPart(sql_query,f," ");
+			sql_query = sql_query + " " + f
 		else:
-			sql_query = appendQueryPart(sql_query,f," and ");
+			sql_query = sql_query + " and " + f
+
+	sql_query= sql_query + " ORDER BY data_date"
+
+	if(limit!=None and offset!=None):
+		sql_query = sql_query + " LIMIT %s OFFSET %s"
+		params.append(limit)
+		params.append(offset)
 
 	print sql_query, params
 	return sql_query, params
-
 

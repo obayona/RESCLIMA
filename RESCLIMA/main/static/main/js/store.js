@@ -16,8 +16,6 @@ var store = {
 	search_option:'layers',
 	layers:[],
 	series:[],
-	layers_state:'initial',
-	series_state:'initial',
 	// retorna el modelo como un diccionario, 
 	// cuyas claves seran los parametros de un query string 
 	// de un URL y cuyos valores seran los valores del query string 
@@ -81,8 +79,7 @@ var store = {
 			return null
 		}
 		queryDict["option"]=this.search_option
-		console.log("esto estoy mandando", queryDict)
-		return JSON.stringify(queryDict)
+		return queryDict
 	},
 	getSeriesParams:function(){
 		//get the selected series objects inside shared, and form the url to visualize the series
