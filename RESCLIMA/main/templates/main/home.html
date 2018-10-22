@@ -52,23 +52,23 @@
 						</div>
 					</div>
 					<div style="padding:60px;">
-						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="buscar"><i class="material-icons left">search</i>Buscar</a>
+						<a class="btn waves-effect waves-light gradient-45deg-light-blue-cyan"  v-on:click="search"><i class="material-icons left">search</i>Buscar</a>
 					</div>
 				</div>
 				<div style="align-items: center; justify-content: center" class="col s8">
-                                        <categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
-                                        <bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
-                                        <time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>
+						<categories_component v-bind:style="[currentComponent=='categories_component'? {'display':''}:{'display':'none'}]"></categories_component>
+						<bbox_component v-bind:style="[currentComponent=='bbox_component'? {'display':''}:{'display':'none'}]"></bbox_component>
+						<time_component v-bind:style="[currentComponent=='time_component'? {'display':''}:{'display':'none'}]"></time_component>
 				</div>
 			</div>
 			</div>
 			<!-- Lista de resultados -->
 			<div class="container">
-			<div class="row">
-				<keep-alive>
-					<component v-bind:is='shared.search_option+"_component"'></component>
-				</keep-alive>
-			</div>
+				<div class="row">
+					<keep-alive>
+						<component v-bind:is='shared.search_option+"_component"'></component>
+					</keep-alive>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -90,3 +90,4 @@
 	<script src="{% static "main/js/series_component.js" %}"></script>
 	<script src="{% static "main/js/main.js" %}"></script>
 {% endblock%}
+
