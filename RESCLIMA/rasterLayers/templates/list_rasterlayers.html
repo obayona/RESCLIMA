@@ -55,6 +55,29 @@
                 </tbody>
               {% endfor %}
               </table>
+              <!--PAGINACION-->
+              {% if rasterlayers.has_other_pages %}
+              <ul class="pagination">
+                {% if rasterlayers.has_previous %}
+                <li><a href="?page={{ rasterlayers.previous_page_number }}">&laquo;</a></li>
+                {% else %}
+                <li class="disabled"><span>&laquo;</span></li>
+                {% endif %}
+                {% for i in rasterlayers.paginator.page_range %}
+                {% if rasterlayers.number == i %}
+                  <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                {% else %}
+                  <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if rasterlayers.has_next %}
+                <li><a href="?page={{ rasterlayers.next_page_number }}">&raquo;</a></li>
+                {% else %}
+                <li class="disabled"><span>&raquo;</span></li>
+                {% endif %}
+              </ul>
+              {% endif %}
+              <!--END PAGINACION-->
             </div>
           </div>
         </div>
