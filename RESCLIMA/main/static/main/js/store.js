@@ -16,6 +16,7 @@ var store = {
 	search_option:'layers',
 	layers:[],
 	series:[],
+	state:'initial',
 
 	// retorna el modelo como un diccionario, 
 	// cuyas claves seran los parametros de un query string 
@@ -112,5 +113,6 @@ var store = {
 	}
 	
 }
+
 
 

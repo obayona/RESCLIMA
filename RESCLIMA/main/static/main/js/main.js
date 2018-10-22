@@ -15,13 +15,12 @@ var app = new Vue({
 	methods:{
 		// cuando se da click en el boton buscar
 		// se ejecuta este metodo
-		// buscar(), realiza una peticion post para
+		// search(), realiza una peticion post para
 		// buscar los resultados (capas o series de tiempo)
-		buscar:function(){
+		search:function(){
 			var data = this.shared.getPostData()
 			console.log("Esto se busca",data)
 			if(data==null){
-				console.log("Error: debe haber al menos un parametro");
 				return;
 			}
 			var url = null;
@@ -34,16 +33,17 @@ var app = new Vue({
 			}
 			var request = $.post(url,data);
 			request.done(function(response){
-				console.log("la respuesta",response);
 				var results = null;
 				// dependiendo de la opcion
 				// el resultado que envia el servidor
 				// sera copiado en un arreglo adecuado
 				if(option=="layers"){
 					results = store.layers;
+					store.state = "layers_searched"
 				}
 				if(option=="series"){
 					results = store.series;
+					store.state = "series_searched"
 				}
 				var  results_response= response["results"];
 				results.splice(0, results.length);
@@ -52,10 +52,10 @@ var app = new Vue({
 				}
 			});
 			request.progress(function(error){
-				console.log("Cargando resultados...");
+				store.state = "loading";
 			});
 			request.fail(function(error){
-				console.log(error);
+				store.state = "fail";
 			});
 		},
 
@@ -63,4 +63,5 @@ var app = new Vue({
 	}
 
 })
+
 
