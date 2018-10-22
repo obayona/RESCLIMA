@@ -8,7 +8,7 @@ Vue.component("series_component",{
 				<!-- Contenedor de la serie -->
 				<!-- se itera sobre el array shared.series -->
 				<div v-for="serie in shared.series"
-				class="card" >
+				class="card col s12 m4 l4" >
 					<!-- Si la capa tiene estado uninitialized-->
 					<!-- Se muestran animaciones-->
 					<div v-if="serie.state=='uninitialized'">
@@ -20,8 +20,12 @@ Vue.component("series_component",{
 					<!-- Si la serie tiene estado distinto a uninitialized-->
 					<!-- Se muestran los metadatos de la serie -->
 					<div v-else>
-						<h5>{{serie.variable_name}} vs tiempo</h5>
-						<div v-bind:data-plot-id="serie.variable_id" >
+						<div class="card-header cyan accent-4">
+                        <div class="card-title white-text">
+                          <h4 class="card-title">{{serie.variable_name}} vs tiempo</h4>
+                        </div>
+                      </div>
+						<div v-bind:data-plot-id="serie.variable_id" class="card-content-bg">
 						
 							
 						</div>
@@ -30,8 +34,7 @@ Vue.component("series_component",{
 								<!-- Si la serie no tiene estado loaded-->
 								<!-- no se muestran las opciones de la serie,-->
 								<!-- se muestra una animacion-->
-					</div>
-					
+					</div>	
 
 				</div>
 			</div>
@@ -166,7 +169,7 @@ Vue.component("series_component",{
 	     		showlegend: true
 			};
 			console.log(data);
-			Plotly.newPlot(TESTER, data, layout1);
+			Plotly.react(TESTER, data, layout1);
 		},
 		/*plotSingleTrace(x_values, y_values,div_id, y_title, symbol){
 			if(serie)
