@@ -5,6 +5,8 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
+<link rel="stylesheet" href="{% static 'timeSeries/css/seriesview.css' %}" type="text/css">
+
 {% endblock %}
 
 {% block scripts %}
@@ -13,7 +15,7 @@
 
 {% block content %}
 <div id="seriesApp" class="main">
-	<div id="wrapper">
+	<div id="wrapper" class="wrapper">
 		<!-- Layer list -->
 		<series_component></series_component>
 	</div>

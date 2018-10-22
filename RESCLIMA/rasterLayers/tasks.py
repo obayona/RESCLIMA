@@ -22,7 +22,8 @@ def import_raster_layer(rasterlayer_params):
 	# fecha como objeto datetime
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	categories_string = rasterlayer_params["categories_string"]
-	owner = vectorlayer_params["owner"]
+	owner_id = vectorlayer_params["owner"]
+	owner = Researcher.objects.get(id=owner_id)
 
 	'''
 	Diccionario con el resultado de la operacion.
@@ -98,7 +99,8 @@ def import_raster_layer(rasterlayer_params):
 	rasterlayer.srs_wkt = srs_wkt
 	rasterlayer.numBands = numBands
 	rasterlayer.bbox = bbox
-	rasterlayer.type = "raster";
+	rasterlayer.type = "raster"
+	rasterlayer.owner = owner
 	rasterlayer.save()
 	
 	result["error"]=None

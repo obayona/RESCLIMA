@@ -29,9 +29,8 @@ def import_vector_layer(vectorlayer_params):
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	# string de categorias
 	categories_string = vectorlayer_params["categories_string"]
-	owner_id = vectorlayer_params["owner"];
-	owner = Researcher.objects.get(id=owner_id);
-
+	owner_id = vectorlayer_params["owner"]
+	owner = Researcher.objects.get(id=owner_id)
 	'''
 	Diccionario con el resultado de la operacion.
 	Este  diccionario  estara dentro de un objeto 

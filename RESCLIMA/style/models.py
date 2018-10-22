@@ -1,6 +1,6 @@
 from django.db import models
 from layer.models import Layer
-
+from main.models import Researcher
 
 class Style(models.Model):
 	file_path = models.CharField(max_length=255)
@@ -8,4 +8,4 @@ class Style(models.Model):
 	title = models.CharField(max_length=50)
 	type = models.CharField(max_length=10)
 	layers = models.ManyToManyField(Layer)
-	#owner
+	owner = models.ForeignKey(Researcher)
