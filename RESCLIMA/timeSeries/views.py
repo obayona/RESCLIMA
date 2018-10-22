@@ -199,10 +199,10 @@ def get_measurements(request,variable_id, station_id, startdate, enddate):
 		qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
 		params.append(variableId)
 		params.append(int(stationId))
-		if len(startDate) > 0:
+		if len(startDate) > 0 and startDate!="none":
 			qs = qs + ' and ts >= %s'
 			params.append(startDate)
-		if len(endDate) > 0:
+		if len(endDate) > 0 and endDate!="none":
 			qs = qs + ' and ts <= %s'
 			params.append(endDate)
 		qs = qs + ' order by ts;'
