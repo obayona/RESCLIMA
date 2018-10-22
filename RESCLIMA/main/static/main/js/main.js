@@ -39,11 +39,11 @@ var app = new Vue({
 				// sera copiado en un arreglo adecuado
 				if(option=="layers"){
 					results = store.layers;
-					store.state = "layers_searched"
+					store.layers_state = "searched"
 				}
 				if(option=="series"){
 					results = store.series;
-					store.state = "series_searched"
+					store.series_state = "searched"
 				}
 				var  results_response= response["results"];
 				results.splice(0, results.length);
@@ -52,10 +52,21 @@ var app = new Vue({
 				}
 			});
 			request.progress(function(error){
-				store.state = "loading";
+				if(option=="layers"){
+					store.layers_state = "loading";	
+				}
+				if(option=="series"){
+					store.series_state = "loading";
+				}
+				
 			});
 			request.fail(function(error){
-				store.state = "fail";
+				if(option=="layers"){
+					store.layers_state = "fail";	
+				}
+				if(option=="series"){
+					store.series_state = "fail";
+				}
 			});
 		},
 

@@ -6,13 +6,17 @@ Vue.component("bbox_component",{
 			<div>
 				<h4 style="text-align: center">Seleccione una regi&oacute;n</h4>
 			</div>
-			<div id="container" style="text-align:center"></div>
+			<div class="row">
+				<div class="col s3"></div>
+				<div id="bbox_container" class="col s6"></div>
+				<div class="col s3"></div>
+			</div>
 		</div>
 	`,
 	mounted(){
 		// se inicializa el objeto BboxSelector,
 		// recibe un callback cuando actualiza el bbox
-		bboxSelector = new BboxSelector("container",this.setBBox)
+		bboxSelector = new BboxSelector("bbox_container",this.setBBox)
 		// se obtiene el bbox del url
 		var bbox_string = this.$route.query["bbox"];
 		// si hay bbox en el url, se actualiza el bbox
@@ -86,4 +90,5 @@ Vue.component("bbox_component",{
 	}
 
 })
+
 

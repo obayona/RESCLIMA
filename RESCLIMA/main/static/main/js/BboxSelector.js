@@ -1,7 +1,6 @@
 var BboxSelector = function(container,callback){
 
 	var container = document.getElementById(container)
-	console.log("****",container);
 	var vectors; // capa vectorial
 	var box;
 	var transform;
@@ -13,8 +12,10 @@ var BboxSelector = function(container,callback){
 	menu_container.style.backgroundColor = "#CEDBDA";
 	menu_container.style.width = "500px";
 	menu_container.style.zIndex = "1";
-	menu_container.style.display = "inline-block";
+	menu_container.style.padding = "10px";
+
 	var instruction = document.createElement("div");
+	instruction.style.display = "inline-block";
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
 	newAreaBtn.type = "button";
@@ -30,7 +31,6 @@ var BboxSelector = function(container,callback){
 	map_container.style.width = "500px";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
-	map_container.style.display = "inline-block";
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";
@@ -93,7 +93,7 @@ var BboxSelector = function(container,callback){
 		drawBox(bounds);
 		box.deactivate();
 		instruction.innerHTML = "Modifique el &aacute;rea o ...";
-		newAreaBtn.style.display = "block";   
+		newAreaBtn.style.display = "inline-block";   
 	}
 
 	function endDrag(bbox) {
@@ -102,7 +102,7 @@ var BboxSelector = function(container,callback){
 		drawBox(bounds);
 		box.deactivate();
 		instruction.innerHTML = "Modifique el &aacute;rea o ...";
-		newAreaBtn.style.display = "block";        
+		newAreaBtn.style.display = "inline-block";        
 	 }
 	  
 	function dragNewBox() {
@@ -138,4 +138,5 @@ var BboxSelector = function(container,callback){
 		}
 	}
 }
+
 
