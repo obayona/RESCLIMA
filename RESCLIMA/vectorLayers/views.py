@@ -74,7 +74,6 @@ def view_vectorlayer(request,vectorlayer_id):
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()  
 
-@login_required(login_url='noAccess')
 def updateVectorLayer(vectorlayer,request):
 	try:
 		title = request.POST["title"]
@@ -85,10 +84,15 @@ def updateVectorLayer(vectorlayer,request):
 		categories_string = request.POST["categories_string"]
 
 		# se actualiza la capa
+		print "voy a asignar valores"
 		vectorlayer.title = title;
+		print "titulo"
 		vectorlayer.abstract = abstract;
+		print "absatct"
 		vectorlayer.data_date = data_date;
+		print "datadate"
 		vectorlayer.categories_string = categories_string;
+		print "VOY A GUARDAR"
 		vectorlayer.save()
 	except Exception as e:
 		return "Error " + str(e)
@@ -99,14 +103,16 @@ def edit_vectorlayer(request,vectorlayer_id):
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
-
+	print "sin problema*****"
 	if request.method == "GET":
 		categories = Category.objects.all();
 		params = {"vectorlayer":vectorlayer,"categories":categories}
 		return render(request,"update_vectorlayer.html",params)
 
 	elif request.method == "POST":
+		print "actualizo la puta capa***"
 		err_msg = updateVectorLayer(vectorlayer,request)
+		print "hasta ahora bien", err_msg
 		if(err_msg==None):
 			return HttpResponseRedirect("/vector")
 		else:
@@ -149,8 +155,11 @@ def importStyle(request,vectorlayer):
 		f.write(sld_string);
 		f.close();
 
+		owner = vectorlayer.owner;
+
 		style = Style(file_path=path,file_name=fileName,
-		  title=title, type="shapefile");
+		  title=title, type="shapefile",owner=owner);
+
 		style.save()
 		style.layers.add(vectorlayer)
 		style.save()
