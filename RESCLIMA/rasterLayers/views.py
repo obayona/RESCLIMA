@@ -20,12 +20,21 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+limit = 2
 @login_required(login_url='noAccess')
 def list_rasterlayers(request):
 	researcher = request.user.researcher
 	researcher = researcher.id
-	rasterlayers = RasterLayer.objects.filter(owner=researcher).order_by("upload_date")
+	layers = RasterLayer.objects.filter(owner=researcher).order_by("upload_date")
 	styles = Style.objects.filter(type="raster", owner=researcher)
+	page = request.GET.get('page', 1)
+	paginator1 = Paginator(layers, limit)
+	try:
+		rasterlayers = paginator1.page(page)
+	except PageNotAnInteger:
+		rasterlayers = paginator1.page(1)
+	except EmptyPage:
+		rasterlayers = paginator1.page(paginator1.num_pages)
 	obj = {'rasterlayers':rasterlayers,'styles':styles}
 	return render(request,"list_rasterlayers.html",obj)
 
