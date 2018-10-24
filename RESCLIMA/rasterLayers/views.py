@@ -19,6 +19,7 @@ from style.utils import getColorMap
 import json
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from main.models import Researcher
 
 limit = 2
 @login_required(login_url='noAccess')
@@ -182,8 +183,11 @@ def importStyle(request):
 		f.write(sld_string);
 		f.close();
 
+		researcher = request.user.researcher
+		researcher = researcher.id
+		owner = Researcher.objects.get(id=researcher)
 		style = Style(file_path=path,file_name=fileName,
-		  title=title, type="raster");
+		  title=title, type="raster", owner=owner);
 		style.save()
 	except Exception as e:
 		return "Error " + str(e)
