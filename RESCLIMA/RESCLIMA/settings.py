@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'resclima',
-        'USER':'postgres',
-        'PASSWORD':'postgres',
+        'USER':'obayona',
+        'PASSWORD':'EloyEcuador93',
         'HOST': 'Localhost',
         #'PORT':5433
     }
