@@ -44,78 +44,25 @@ def search_layer(request):
 	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):
-	#PONER COMO DESCRIPCION NUMERO DE ESTACIONES
 	query_str = request.body;
 	query_dict = json.loads(query_str)
-	print "el diccionario de busqueda ******",query_dict
+	print "el query de busqueda ******",query_dict
 	qs,params = series_searcher.getTsTextQuery(query_dict)
 	series = []
-	variablesStations = {}
+	full_count = 0;
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		for row in rows:
-			#first we have to group by variable id the stations that measure that variable
-			if(variablesStations.has_key(row[2])):
-				variablesStations[row[2]]["stations_ids"].append(row[0])
-			else:
-				serieData={}
-				serieData["variable_id"] = row[0]
-				serieData["variable_name"] = row[1]
-				serieData["stations_ids"] = []
-				serieData["stations_ids"].append(row[2])
-				serieData["selected"] = False
-				variablesStations[row[0]] = serieData
-	#we then push to an array
-	for id in variablesStations.keys():
-		variablesStations[id]['amount_stations'] = len(variablesStations[id]['stations_ids'])
-		series.append(variablesStations[id])
-	return JsonResponse({"results":series})
+			serie = {}
+			serie["variable_id"]=row[0]
+			serie["variable_name"]=row[1]
+			serie["stations"] = row[2]
+			serie["selected"] = False
+			full_count=row[3]
+			series.append(serie);
 
-
-
-
-"""
-PARAMETROS:
-request: Request de la vista
-queryset: Queryset a utilizar en la paginacion
-pages: Numero de items que quisieras tener en cada pagina
-"""
-def Paginate(request, queryset, pages):
-	# Retorna el objeto paginator para comenzar el trabajo
-	result_list = Paginator(queryset, pages)
- 
-	try:
-		# Tomamos el valor de parametro page, usando GET
-		page = int(request.GET.get('page'))
-	except:
-		page = 1
- 
-	# Si es menor o igual a 0 igualo en 1
-	if page <= 0:
-		page = 1
- 
-	# Si viene un parametro que es mayor a la cantidad
-	# de paginas le igualo el parámetro con las cant de paginas
-	if(page > result_list.num_pages):
-		page = result_list.num_pages
- 
-	# Verificamos si esta dentro del rango
-	if (result_list.num_pages >= page):
-		# Obtengo el listado correspondiente al page
-		pagina = result_list.page(page)
- 
-		context = {
-			'queryset': pagina.object_list,
-			'page': page,
-			'pages': result_list.num_pages,
-			'has_next': pagina.has_next(),
-			'has_prev': pagina.has_previous(),
-			'next_page': page+1,
-			'prev_page': page-1,
-			'firstPage': 1,
-		}
- 
-	return context
+	print series
+	return JsonResponse({"series":series,"full_count":full_count})
 
 

@@ -23,6 +23,7 @@ var app = new Vue({
 				this.$root.$emit('searchLayers');
 			}
 			if(option == "series"){
+				console.log("click en buscar serie")
 				this.$root.$emit('searchSeries');
 			}
 		},

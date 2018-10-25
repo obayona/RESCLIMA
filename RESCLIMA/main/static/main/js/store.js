@@ -88,13 +88,13 @@ var store = {
 			var current = this.series[i];
 			if(current["selected"]){
 				selected_series_str+=current["variable_id"]+"[";
-				iters = current["stations_ids"].length;
+				iters = current["stations"].length;
 				for(var j=0; j<iters; j++){
 					if(j!=iters-1){
-						selected_series_str+=current["stations_ids"][j]+",";
+						selected_series_str+=current["stations"][j]+",";
 					}
 					else{
-						selected_series_str+=current["stations_ids"][j]+"]|";
+						selected_series_str+=current["stations"][j]+"]|";
 					}
 				}
 			}
@@ -110,6 +110,5 @@ var store = {
 	}
 	
 }
-
 
 

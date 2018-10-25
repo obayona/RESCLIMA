@@ -202,6 +202,7 @@ var VectorLayer = function(map,layer){
 		var format = new OpenLayers.Format.SLD();
 		// se obtiene un objeto con las reglas del estilo
 		var sld = format.read(sld);
+		console.log("sld de capa", layer_style,sld)
 		// se obtiene la propiedad  namedLayer del
 		// objeto sld
 		var namedLayers = sld.namedLayers;
@@ -257,6 +258,12 @@ var VectorLayer = function(map,layer){
 				polygon = symbolizer[key]
 				break;
 			}
+		}
+		if (polygon.hasOwnProperty("fillColor")){
+			return polygon.fillColor
+		}
+		if(polygon.hasOwnProperty("strokeColor")){
+			return polygon.strokeColor
 		}
 		return polygon.fillColor;
 	}
@@ -542,5 +549,6 @@ Vue.component("map_component",{
 		}
 	},
 })
+
 
 

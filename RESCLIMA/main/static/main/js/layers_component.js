@@ -55,19 +55,17 @@ Vue.component("layers_component",{
 			</div>
 			<!-- si el estado de las capas es loading se -->
 			<!-- muestra una animacion -->
-			<div v-if="state=='loading'">
-				<div v-if="shared.state=='loading'">
-					<div class="preloader-wrapper big active">
-						<div class="spinner-layer spinner-blue-only">
-							<div class="circle-clipper left">
-								<div class="circle"></div>
-							</div>
-							<div class="gap-patch">
-								<div class="circle"></div>
-							</div>
-							<div class="circle-clipper right">
-								<div class="circle"></div>
-							</div>
+			<div v-if="state=='loading'">			
+				<div class="preloader-wrapper big active">
+					<div class="spinner-layer spinner-blue-only">
+						<div class="circle-clipper left">
+							<div class="circle"></div>
+						</div>
+						<div class="gap-patch">
+							<div class="circle"></div>
+						</div>
+						<div class="circle-clipper right">
+							<div class="circle"></div>
 						</div>
 					</div>
 				</div>
@@ -86,7 +84,7 @@ Vue.component("layers_component",{
 			selected_count:0,
 			state:'initial',
 			// limit y offset controlan la paginacion
-			limit:10,
+			limit:4,
 			offset:0,
 			// maximo offset, al principio
 			// se tiene un valor negativo
