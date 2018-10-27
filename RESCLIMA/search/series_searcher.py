@@ -28,9 +28,11 @@ def getTsTextQuery(query_object):
 	if(query_object.has_key("ini") and query_object.has_key("end")):
 		""" startDate and endDate are datetime instances
 		"""
-		startDateStr = query_object["ini"].strftime("%Y-%m-%d %H:%M:%S")
-		endDateStr = query_object["end"].strftime("%Y-%m-%d %H:%M:%S")
-		where_stm = where_stm + 'AND s."id" EXISTS ( SELECT "m"."idStation" FROM "timeSeries_measurements" as m WHERE %s <= m."ts" AND %s >= m."ts" ) '
+		#startDateStr = query_object["ini"].strftime("%Y-%m-%d %H:%M:%S")
+		#endDateStr = query_object["end"].strftime("%Y-%m-%d %H:%M:%S")
+		startDateStr = query_object["ini"]
+		endDateStr = query_object["end"]
+		where_stm = where_stm + 'AND EXISTS ( SELECT m."idStation_id" FROM "timeSeries_measurement" as m WHERE m."ts">=%s AND m."ts" <= %s AND m."idStation_id" = s.id) '
 		params.append(startDateStr)
 		params.append(endDateStr)
 
@@ -58,6 +60,7 @@ def getTsTextQuery(query_object):
 
 	print("EL QUERY DE BUSQUEDA  "+ qs)
 	return qs, params
+
 
 
 

@@ -2,45 +2,16 @@
 Vue.component("series_component",{
 	template: `
 		<div>
-			<div v-if="shared.series.length>0">
+			<div v-if="shared.variables.length>0">
 			
-
 				<!-- Contenedor de la serie -->
 				<!-- se itera sobre el array shared.series -->
-				<div v-for="serie in shared.series"
-				class="card col s12 m4 l4" >
-					<!-- Si la capa tiene estado uninitialized-->
-					<!-- Se muestran animaciones-->
-					<div v-if="serie.state=='uninitialized'">
-						<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
-						<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
-						<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
-					</div>
-					
-					<!-- Si la serie tiene estado distinto a uninitialized-->
-					<!-- Se muestran los metadatos de la serie -->
-					<div v-else>
-						<div class="card-header cyan accent-4">
-                        <div class="card-title white-text">
-                          <h4 class="card-title">{{serie.variable_name}} vs tiempo</h4>
-                        </div>
-                      </div>
-						<div v-bind:data-plot-id="serie.variable_id" class="card-content-bg">
-						
-							
-						</div>
-								<!-- Contenedor con opciones de la capa -->
-								<!-- Solo se muestra si el estado de la capa es loaded-->
-								<!-- Si la serie no tiene estado loaded-->
-								<!-- no se muestran las opciones de la serie,-->
-								<!-- se muestra una animacion-->
-					</div>	
-
+				<div v-for="variable in shared.variables">
+					<serie_component v-bind:variable="variable"></serie_component>
 				</div>
 			</div>
-			<!-- Si no hay capas en shared.series se muestra un mensaje-->
 			<div v-else>
-				<p>No hay información de las series</p>
+			No hay series de tiempo
 			</div>
 		
 		</div>
@@ -51,51 +22,57 @@ Vue.component("series_component",{
 		variables=id_var1[stacion1,stacion2]|id_var2[stacion1]|...|id_varN */
 		var query_string = this.$route.query["variables"];
 		var ini_date = this.$route.query["ini_date"]; 
-   		var end_date = this.$route.query["end_date"];
-   		//make sure we assign date params a value
-   		if(ini_date==null){
-   			ini_date = "none";
-   		}
-   		if(end_date ==null){
-   			end_date = "none";
-   		}		
+		var end_date = this.$route.query["end_date"];
+		//make sure we assign date params a value
+		if(!ini_date){
+			ini_date = null;
+		}
+		if(!end_date){
+			end_date = null;
+		}		
 		if (!query_string){
 			return;
 		}
 
 		//parse data
-		var variables_info = query_string.split("|");
-		var params = {}
-		var imax = variables_info.length
-		for(var i=0 ; i<imax ; i++){
+		var variables_str = query_string.split("|");
+		for(var i=0 ; i < variables_str.length; i++){
 			//get the variable id
-			var current = variables_info[i];
-			var variable_id = current.charAt(0);
-			if(!variable_id){
-				return;
+			var variable_str = variables_str[i];
+			var j = variable_str.indexOf("[");
+			var k = variable_str.indexOf("]");
+			if(j<0 || k<0){
+				continue;
 			}
-			//get variables of stations
-			var estaciones_str = current.slice(2,current.length-1);
-			var estaciones = estaciones_str.split(",");
-			params[variable_id] = estaciones;
-			var serie = {};
-			serie["variable_id"]=variable_id;
-			serie["variable_name"] = "";
-			serie["symbol"] = "";
-			serie["x_values"] = [];
-			serie["y_values"] =[];
-			serie["stations_ids"] = estaciones;
-			serie["state"]="uninitialized";
-			serie["ini_date"] = ini_date;
-			serie["end_date"] = end_date;
+
+			var variable_id = variable_str.slice(0,j);
+			var stations_str = variable_str.slice(j+1,k);
+
+			var stations_id = stations_str.split(",");
+			
+			var variable = {};
+
+			variable["id"]=variable_id;
+			variable["name"] = "";
+			variable["unit"]="";
+			variable["symbol"] = "";
+			variable["datatype"]="";
+			variable["ini_date"] = ini_date;
+			variable["end_date"] = end_date;
+			// se crean las estaciones
+			variable["stations"] = []
+			for(var j=0; j<stations_id.length;j++){
+				var station = {}
+				station["id"]=stations_id[j]
+				station["x_values"]=[];
+				station["y_values"]=[];
+				variable["stations"].push(station);
+			}
+			variable["state"]="uninitialized";
 
 			// se guarda el objeto en el store
 			// compartido
-			this.shared.series.push(serie);
-			//graficar
-			var divid = serie["variable_id"];
-			this.getStationSerie(serie);
-			
+			this.shared.variables.push(variable);
 		}
 
 	},
@@ -107,7 +84,7 @@ Vue.component("series_component",{
 	methods:{
 		/*Metodo que realiza una peticion ajax
 		para obtener los datos de una sola estacion de una variable*/
-		getStationSerie(serie){
+		/*getStationSerie(serie){
 			var id_variable = serie["variable_id"];
 			var ini_date = serie["ini_date"];
 			var end_date = serie["end_date"]
@@ -197,14 +174,15 @@ Vue.component("series_component",{
 			};
 			data.push(trace);
 			Plotly.newPlot(TESTER, data, layout1);
-		},*/
+		},
 
   	t(serie){
 		var divid = "div"+serie.variable_id;      
         return divid;
-      }
+      }*/
 		
 		
 	}
 })
+
 

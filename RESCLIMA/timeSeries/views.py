@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
-from models import StationType, Station
+from models import StationType, Station, Variable
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from tasks import parseHOBOFile
@@ -151,80 +151,128 @@ def import_file(request):
 			result["err_msg"] = "No se reconoce este tipo de estacion"
 		return HttpResponse(json.dumps(result),content_type='application/json')
 
+'''
+Vista que retorna  una pagina
+para visualizar las series de
+tiempo
+'''
 def visualize(request):
 	if request.method == 'GET':
-#		data = {}
-#		if 'variables' in request.GET:
-#			variablesStr = request.GET['variables']
-#			print variablesStr
-#			variables = variablesStr.strip().split('|')
-#			for variable in variables:
-#				stationsStrStart = variable.strip().find('[')
-#				stationsStrEnd = variable.strip().find(']')
-#				variableId = int(variable.strip()[0:stationsStrStart])
-#				stationsStr = variable.strip()[stationsStrStart+1:stationsStrEnd]
-#				stationsList = stationsStr.strip().split(',')
-#				stations = []
-#				for stationId in stationsList:
-#					stations.append(int(stationId))
-#				data[variable] = stations
-#		ini_date = ''
-#		end_date = ''
-#		if 'ini_date' in request.GET:
-#			ini_date = request.GET['ini_date']
-#		if 'end_date' in request.GET:
-#			end_date = request.GET['end_date']
-		#Call to series_searcher.py method
+		return render(request,"view_series.html");
 
-#	return HttpResponse("OK")
-		return render(request,"view_series.html")
+'''
+Funcion que recupera las mediciones
+de una estacion de una variable, en
+un rango de fechas
+'''
+def _get_measurements(variable_id,station_id,
+					ini_date,end_date,
+					limit,offset):
 
-def get_measurements(request,variable_id, station_id, startdate, enddate):
+	# se validan los parametros
+	if(not(variable_id)):
+		return "Falta argumento variable_id"
+	if(not(station_id)):
+		return "Falta argumento station_id"
+
+
+	# del json se obtiene la variable_id (readings[variable_id])
+	select_stm = 'SELECT readings::json->%s as measurements, ts, count(*) OVER() AS full_count '
+	from_stm = 'FROM "timeSeries_measurement" as m '
+	# se recuperan los measurements de la estacion 
+	# cuyo readings contenga el id de la variable (variable_id)
+	# readings={"variable_id":valor_variable}
+	where_stm = 'WHERE "idStation_id"=%s and readings like \'%%"'+variable_id+'":%%\''
+	# parametros de los placeholders query
+	params = [variable_id,station_id]
+
+	#si hay rango de fechas se agrega al where_stm
+	if(ini_date):
+		where_stm = where_stm + ' and ts>=%s'
+		params.append(ini_date)
+	
+	if(end_date):
+		where_stm = where_stm + ' and ts<=%s'
+		params.append(end_date)
+
+	qs = select_stm + from_stm + where_stm
+	# se agrea order by
+	qs = qs + ' ORDER BY ts'
+	# si hay limit y offset
+	# se agrega al query
+	if(limit and offset):
+		qs = qs + ' LIMIT %s OFFSET %s'
+		params.append(limit)
+		params.append(offset)
+
+	print qs
+
+	measurements = []
+	full_count = 0
+	#  ejecuta el query en la base de datos
+	with connection.cursor() as cursor:
+		cursor.execute(qs, params)
+		rows = cursor.fetchall()
+		for row in rows:
+			m = {}
+			m["value"] = row[0]
+			m["ts"] = row[1]
+			measurements.append(m)
+			full_count = row[2]
+
+	return {"measurements":measurements,"full_count":full_count}
+
+
+def get_measurements(request):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
-	if request.method == 'GET':
-		#data = request.GET.get("info", {})
-		#if len(data) > 0:
-			#data = json.loads(data)
-			#variableId = data.get('variable_id', '')
-			#stationId = data.get('station_id', 0)
-			#startDate = data.get('ini_date', '')
-			#endDate = data.get('end_date', '')
-		variableId = variable_id
-		stationId = station_id
-		startDate = startdate
-		endDate = enddate
-		params = []
-		responseData['variable_id'] = variableId
-		responseData['station_id'] = stationId
-		qs = 'select readings::json->%s as measurements, ts from "timeSeries_measurement" where "idStation_id"=%s and readings like \'%%"'+variableId+'":%%\''
-		params.append(variableId)
-		params.append(int(stationId))
-		if len(startDate) > 0 and startDate!="none":
-			qs = qs + ' and ts >= %s'
-			params.append(startDate)
-		if len(endDate) > 0 and endDate!="none":
-			qs = qs + ' and ts <= %s'
-			params.append(endDate)
-		qs = qs + ' order by ts;'
-		with connection.cursor() as cursor:
-			cursor.execute(qs, params)
-			rows = cursor.fetchall()
-			for row in rows:
-				measurement = row[0]
-				date = row[1]
-				responseData['measurements'].append(measurement)
-				responseData['dates'].append(date)
-		qs = 'select name from \"timeSeries_variable\" where id='+variableId+';'
-		cursor = connection.cursor()
-		cursor.execute(qs)
-		row = cursor.fetchone()
-		responseData["variable_name"]=row[0]
-		qs = 'select symbol from \"timeSeries_variable\" where id='+variableId+';'
-		cursor = connection.cursor()
-		cursor.execute(qs)
-		row = cursor.fetchone()
-		responseData["variable_symbol"]=row[0]
-		print(row)
-	return JsonResponse({"series": responseData})
+	if request.method != 'GET':
+		return HttpResponse(status=500)
+
+	# recupera variables del query string
+	variable_id = request.GET.get('variable_id',None)
+	station_id = request.GET.get('station_id',None)
+	ini_date = request.GET.get('ini_date',None)
+	end_date = request.GET.get('end_date',None)
+	limit = request.GET.get('limit',None)
+	offset = request.GET.get('offset',None)
+
+	if(not(variable_id)):
+		return HttpResponse(status=500)
+	if(not(station_id)):
+		return HttpResponse(status=500)
+
+	# se recuperan los datos de la base de datos
+	"""
+	try:
+		data = _get_measurements(variable_id,station_id,
+								 ini_date,end_date,
+								 limit,offset)
+
+		return JsonResponse({"measurements": data})
+	except Exception as e:
+		print e
+		return HttpResponse(status=500)
+	"""
+	data = _get_measurements(variable_id,station_id,
+								 ini_date,end_date,
+								 limit,offset)
+
+	return JsonResponse(data)
+
+
+def get_variable_info(request,variable_id):
+	try:
+		variable = Variable.objects.get(id=variable_id)
+		variable_json = {}
+		variable_json["name"] = variable.name
+		variable_json["unit"]=variable.unit
+		variable_json["symbol"]=variable.symbol
+		variable_json["datatype"]=variable.datatype
+		return HttpResponse(json.dumps(variable_json),content_type='application/json')
+	except Exception as e:
+		return HttpResponse(status=404)
+
+
+
 
 
