@@ -19,26 +19,41 @@ Vue.component("serie_component",{
 						 <h4 class="card-title">{{variable.name}} vs tiempo</h4>
 					</div>
 				</div>
-				<!-- Contenedor para el plot-->
-				<div v-bind:data-plot-id="variable.id" class="card-content-bg"></div>
-					
-				<!-- botones de paginacion -->
-				<div class="row"
-					v-if="offset != 0 || offset < max_offset">
-					<ul class="pagination">
-						<li v-bind:class="{disabled: offset == 0}"
-						    v-on:click.prevent="prev()">
-							<a href="#!">
-								<i class="material-icons">chevron_left</i>
-							</a>
-						</li>
-						<li v-bind:class="{disabled: offset >= max_offset}"
-						    v-on:click.prevent="next()">
-							<a href="#!">
-								<i class="material-icons">chevron_right</i>
-							</a>
-						</li>
-					</ul>
+				<div class="card-content">
+					<!-- Contenedor para el plot-->
+					<div class="row">
+						<div class="col s10">
+							<div v-bind:data-plot-id="variable.id"></div>
+						</div>
+						<div class="col s2">
+							<ul>
+								<li v-for="station in variable.stations">
+									<strong class="legendSymbol"
+										v-bind:style="{'background':station.color}">
+									</strong>
+									<span>{{"Estación " + station.id}}</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!-- botones de paginacion -->
+					<div class="row"
+						v-if="offset != 0 || offset < max_offset">
+						<ul class="pagination">
+							<li v-bind:class="{disabled: offset == 0}"
+							    v-on:click.prevent="prev()">
+								<a href="#!">
+									<i class="material-icons">chevron_left</i>
+								</a>
+							</li>
+							<li v-bind:class="{disabled: offset >= max_offset}"
+							    v-on:click.prevent="next()">
+								<a href="#!">
+									<i class="material-icons">chevron_right</i>
+								</a>
+							</li>
+						</ul>
+					</div>
 				</div>
 
 			</div>
@@ -125,7 +140,6 @@ Vue.component("serie_component",{
 			});
 		},
 		assingMeasurements(station,measurements){
-			console.log("voy a iterar measurements",measurements);
 			station["x_values"] = [];
 			station["y_values"] = [];
 			for(var i=0;i<measurements.length; i++){
@@ -136,15 +150,23 @@ Vue.component("serie_component",{
 		},
 		initializePlot(variable){
 			// se inicializa el plot
+
 			var data = []
 			var y_title = variable["unit"]+ " ( " + variable["symbol"] + " )";
 			var layout = {
-				yaxis:{
-					title: y_title,
+				showlegend: false,
+				autosize:true,
+				margin: {
+					l: 50,
+					r: 10,
+					b: 50,
+					t: 50,
+					pad: 4
 				},
-				showlegend: true
+				yaxis:{title: y_title}
 			};
-			Plotly.newPlot(this.container,data,layout);
+			Plotly.newPlot(this.container,data,layout,{responsive: true});
+			Plotly.Plots.resize(this.container);
 		},
 		addTrace(variable,station){
 			var container = this.container;
@@ -154,7 +176,8 @@ Vue.component("serie_component",{
 				x:station["x_values"],
 				y:station["y_values"],
 				type: 'scatter',
-				name: 'Estacion '+station["id"]
+				name: 'Estacion '+station["id"],
+				line:{color:station["color"]}
 			};
 			Plotly.addTraces(container,[trace]);
 		},

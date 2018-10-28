@@ -34,6 +34,11 @@ Vue.component("series_component",{
 			return;
 		}
 
+		var colors = ['#1f77b4','#ff7f0e','#2ca02c',
+					  '#d62728','#9467bd','#8c564b',
+					  '#e377c2','#7f7f7f','#bcbd22',
+					  '#17becf']
+
 		//parse data
 		var variables_str = query_string.split("|");
 		for(var i=0 ; i < variables_str.length; i++){
@@ -66,6 +71,9 @@ Vue.component("series_component",{
 				station["id"]=stations_id[j]
 				station["x_values"]=[];
 				station["y_values"]=[];
+				var color = colors.shift();
+				station["color"]=color;
+				colors.push(color);
 				variable["stations"].push(station);
 			}
 			variable["state"]="uninitialized";
@@ -82,105 +90,6 @@ Vue.component("series_component",{
 		}
 	},
 	methods:{
-		/*Metodo que realiza una peticion ajax
-		para obtener los datos de una sola estacion de una variable*/
-		/*getStationSerie(serie){
-			var id_variable = serie["variable_id"];
-			var ini_date = serie["ini_date"];
-			var end_date = serie["end_date"]
-			// referencia al componente
-			var self = this;
-			for(var i=0;i<serie["stations_ids"].length;i++){
-				var current = serie["stations_ids"][i];
-				var url = "/series/measurements/"+id_variable+"/"+current+"/"+ini_date+"/"+end_date+"/";
-				// peticion GET
-				var request = $.get(url);
-				request.done(function(data){
-					serie["x_values"].push(data["series"]["dates"]);
-					serie["y_values"].push(data["series"]["measurements"]);
-					serie["variable_name"] = data["series"]["variable_name"];
-					serie["symbol"] = data["series"]["variable_symbol"];
-					// se actualiza el estado de la serie
-					serie["state"]="metadata_loaded";
-					self.plotSingleTrace(serie);
-		
-				});
-				
-			}
-			
-		},	
-		plotSingleTrace(serie){
-			if(serie["state"]=="uninitialized"){
-				console.log("uninitialized");
-				
-			}
-			var TESTER = document.querySelectorAll("[data-plot-id=\'"+serie["variable_id"]+"\']")[0];
-			console.log(TESTER);
-			var data = []
-			var x_len = serie["x_values"].length;
-			var y_len = serie["y_values"].length;
-			var x_values_list = serie["x_values"];
-			var y_values_list = serie["y_values"];
-
-			if(x_len!=y_len){
-				console.log("Unequal lengths");
-				return;
-			}
-			for(var i=0;i<x_len;i++){
-
-				var trace1 = {
-		 			x: x_values_list[i], 
-		  			y: y_values_list[i], 
-		  			type: 'scatter'
-				};
-				data.push(trace1);
-			}
-
-			var layout1 = {
-				xaxis: {
-    				title: 's',
-  				},
-	  			yaxis: {
-	       			title: serie["symbol"],
-	       		},
-	     		showlegend: true
-			};
-			console.log(data);
-			Plotly.react(TESTER, data, layout1);
-		},
-		/*plotSingleTrace(x_values, y_values,div_id, y_title, symbol){
-			if(serie)
-			var TESTER = document.querySelectorAll("[data-plot-id=\'"+div_id+"\']")[0];
-			//var TESTER = document.querySelectorAll("[data-plot-id='5']")[0];
-			console.log("[data-plot-id=\'"+div_id+"\']");
-			console.log(TESTER);
-			//var TESTER =  $('[data-plot-id=\"'+div_id+'\"]');
-			var data = [];
-			var trace = {
-		 			x: x_values, 
-		  			y: y_values, 
-		  			type: 'path'
-				};
-			var layout1 = {
-				title:y_title+" vs tiempo",
-				xaxis: {
-	    			title: 's',
-	    			
-	  			},
-		  		yaxis: {
-		       		title: symbol,
-		     	},
-		     	showlegend: true
-			};
-			data.push(trace);
-			Plotly.newPlot(TESTER, data, layout1);
-		},
-
-  	t(serie){
-		var divid = "div"+serie.variable_id;      
-        return divid;
-      }*/
-		
 		
 	}
 })

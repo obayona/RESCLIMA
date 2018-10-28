@@ -3,7 +3,7 @@
 	margin: 0;
 }
 .card{
-	width: 50%;
+	width: 75%;
 	margin: 0 auto;
 	margin-top: 2%; 
 }
@@ -14,3 +14,12 @@
 .card-header{
 	padding: 1%;
 }
+
+.legendSymbol{
+	margin: 2px;
+	display: inline-block;
+	background: rgb(31, 119, 180);
+	width: 20px;
+	height: 4px;
+}
+
