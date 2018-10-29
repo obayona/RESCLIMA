@@ -151,6 +151,46 @@ def saveTimeSeries(stations,stationTypes):
 		else:
 			print result
 
+# genera y guarda series de tiempo
+def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
+	
+	for station in stations:
+		#ask to user if they want to continue
+		answer = input("Ingrese 0 si desea terminar, 1 si desea continuar\n")
+		if(int(answer)==0):
+			return
+		#else
+		stationtype_id = station["stationType_id"]
+		stationType_brand = None
+		station_id = station["id"]
+		variables= None
+		for stationType in stationTypes:
+			if(stationType["id"]==stationtype_id):
+				variables = stationType["variables"]
+				stationType_brand = stationType["brand"]
+
+		print "Estacion ",station_id
+		# genera fechas dinamicamente
+		print("Generando datos para la estacion marca "+ stationType_brand + "y id "+ str(station_id) )
+		start_year = input("Ingrese año de inicio\n")
+		end_year = input ("Ingrese año final\n")
+		times = createTimes(int(start_year),int(end_year))
+		query = 'INSERT INTO "timeSeries_measurement"("idStation_id","ts","readings") VALUES'
+		params = []
+		for t in times:
+			values = createValues(variables);
+			query = query + '(%s::integer,%s::timestamp,%s::json),'
+			params.append(station_id)
+			params.append(t)
+			params.append(values)
+
+		query = query[:-1]
+		result = executeInsert(dbParams,query,params)
+		if result==None:
+			print "Serie guardada"
+		else:
+			print result
+
 
 if __name__ == "__main__":
 	file_name = "dbParams.json"
