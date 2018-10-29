@@ -30,7 +30,7 @@
 </head>
 
 <body>
-	
+	<!-- Header -->
 	<header id="header" class="page-topbar">
 		<!-- start header nav-->
 		<div class="navbar-fixed">
@@ -84,14 +84,12 @@
 		<!-- end header nav-->
 	</header>		
 
+	<!-- Contenido -->
 	<div class="main">
 		{% block content %}
 		{% endblock %}
 	</div>	
-	
-</body>	
-
-	<!-- START FOOTER -->
+	<!-- footer -->
     <footer class="page-footer">
 		<div class="footer-copyright">
 			<div class="container">
@@ -106,6 +104,7 @@
 			</div>
 		</div>
 	</footer>
+
 	<!-- END FOOTER -->		
 	{% block scripts_body %}
 	{% endblock %}
@@ -113,5 +112,6 @@
 </body>
 
 </html>
+
 
 

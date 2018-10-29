@@ -6,9 +6,14 @@ Vue.component("serie_component",{
 			<!-- se muestra una animacion -->
 			<div 
 			 v-bind:style="[variable.state=='uninitialized'?{'display':''}:{'display':'none'}]">
-				<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
-				<div style="width:200px;height:20px;margin:10px;" class="animated-background"></div>
-				<div style="width:20px;height:20px;margin:10px;" class="animated-background"></div>
+				<div class="card-header cyan accent-4">
+					<div class="card-title white-text">
+						 <h4 class="card-title">Cargando...</h4>
+					</div>
+				</div>
+				<div class="card-content">
+					<div style="width:100%;height:500px;margin:10px;" class="animated-background"></div>
+				</div>
 			</div>
 					
 			<!-- Si la serie tiene estado distinto a uninitialized-->
@@ -26,17 +31,30 @@ Vue.component("serie_component",{
 							<div v-bind:data-plot-id="variable.id"></div>
 						</div>
 						<div class="col s2">
-							<ul>
-								<li v-for="station in variable.stations"
-								 class="legendItem"
-								 v-bind:style="[station.visible?{'opacity':'1'}:{'opacity':'0.5'}]"
-								 v-on:click.prevent="showHideTrace(station)">
-									<strong class="legendSymbol"
-										v-bind:style="{'background':station.color}">
-									</strong>
-									<span>{{"Estación " + station.id}}</span>
-								</li>
-							</ul>
+							<div>
+								<div v-for="station in variable.stations">
+									<!-- Si la estacion tiene estado loading -->
+									<div v-if="station.state == 'loading'">
+										<div style="width:100px;height:20px;margin:10px;" class="animated-background"></div>
+									</div>
+									<!-- Si la estacion tiene estado failed -->
+									<div v-if="station.state == 'failed'">
+										<i class="material-icons" style="color:red;">error</i>
+										<span style="opacity:0.5;color:red;">{{"Estación " + station.id}}</span>
+									</div>
+									<!--Si la traza de la estacion esta cargada -->
+									<!-- se muestra el legend item -->
+									<div class="legendItem"
+									 v-if="station.state == 'loaded'"
+									 v-bind:style="[station.visible?{'opacity':'1'}:{'opacity':'0.5'}]"
+									 v-on:click.prevent="showHideTrace(station)">
+										<strong class="legendSymbol"
+											v-bind:style="{'background':station.color}">
+										</strong>
+										<span>{{"Estación " + station.id}}</span>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 					<!-- botones de paginacion -->
@@ -128,6 +146,7 @@ Vue.component("serie_component",{
 			url+="&offset="+this.offset;
 			console.log(url);
 			var request = $.get(url);
+			station["state"]="loading";
 			request.done(function(response){
 				var measurements = response["measurements"];
 				// se actualiza
@@ -139,7 +158,7 @@ Vue.component("serie_component",{
 				self.addTrace(variable,station);
 			});
 			request.fail(function(response){
-				console.log("Error",response);
+				station["state"]="failed";
 			});
 		},
 		assingMeasurements(station,measurements){
@@ -150,6 +169,7 @@ Vue.component("serie_component",{
 				station["x_values"].push(m["ts"]);
 				station["y_values"].push(m["value"]);
 			}
+			station["state"]="loaded";
 		},
 		initializePlot(variable){
 			// se inicializa el plot
