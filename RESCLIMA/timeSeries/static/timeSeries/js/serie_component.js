@@ -27,7 +27,10 @@ Vue.component("serie_component",{
 						</div>
 						<div class="col s2">
 							<ul>
-								<li v-for="station in variable.stations">
+								<li v-for="station in variable.stations"
+								 class="legendItem"
+								 v-bind:style="[station.visible?{'opacity':'1'}:{'opacity':'0.5'}]"
+								 v-on:click.prevent="showHideTrace(station)">
 									<strong class="legendSymbol"
 										v-bind:style="{'background':station.color}">
 									</strong>
@@ -170,7 +173,10 @@ Vue.component("serie_component",{
 		},
 		addTrace(variable,station){
 			var container = this.container;
+			var data = container.data;
+			var n_traces = data.length;
 
+			station["trace_index"]=n_traces;
 			// se crea el trace
 			var trace = {
 				x:station["x_values"],
@@ -180,6 +186,19 @@ Vue.component("serie_component",{
 				line:{color:station["color"]}
 			};
 			Plotly.addTraces(container,[trace]);
+		},
+		showHideTrace(station){
+			console.log(station["visible"])
+			station["visible"]=!station["visible"];
+			console.log(station["visible"])
+			var container = this.container;
+			var data = container.data;
+			var trace_index = station["trace_index"];
+			var trace = data[trace_index];
+			console.log(trace)
+			console.log(station)
+			trace.visible = station["visible"];
+			Plotly.redraw(container);
 		},
 		prev(){
 			if(this.offset <= 0){

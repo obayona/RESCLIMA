@@ -15,6 +15,9 @@
 	padding: 1%;
 }
 
+.legendItem{
+	cursor:pointer;
+}
 .legendSymbol{
 	margin: 2px;
 	display: inline-block;

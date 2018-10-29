@@ -71,6 +71,7 @@ Vue.component("series_component",{
 				station["id"]=stations_id[j]
 				station["x_values"]=[];
 				station["y_values"]=[];
+				station["visible"]=true;
 				var color = colors.shift();
 				station["color"]=color;
 				colors.push(color);
