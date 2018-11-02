@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from wsgiref.util import FileWrapper
 from django.shortcuts import render, redirect
 from os.path import join
 from forms import ImportRasterForm
@@ -55,6 +56,19 @@ def import_raster(request):
 			print "El error en import_raster", e
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
+
+
+def export_rasterLayer(request,rasterlayer_id):
+	rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
+	file_path = rasterlayer.file_path
+	file_name = rasterlayer.file_name
+	fullName = join(file_path,file_name)
+
+	f = FileWrapper(open(fullName,"r"))
+	response = HttpResponse(f, content_type="application/zip")
+	response['Content-Disposition'] = "attachment; filename=" + file_name
+	return response
+
 
 #posiblemente se use en multicapa
 def view_raster(request,rasterlayer_id):
@@ -226,6 +240,7 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 
 
 
