@@ -55,7 +55,7 @@ def export_shapefile(request, vectorlayer_id):
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
-	return exporter.export_data(vectorlayer)
+	return exporter.export_shapefile(vectorlayer)
 
 
 def export_geojson(request, vectorlayer_id):
@@ -84,15 +84,10 @@ def updateVectorLayer(vectorlayer,request):
 		categories_string = request.POST["categories_string"]
 
 		# se actualiza la capa
-		print "voy a asignar valores"
 		vectorlayer.title = title;
-		print "titulo"
 		vectorlayer.abstract = abstract;
-		print "absatct"
 		vectorlayer.data_date = data_date;
-		print "datadate"
 		vectorlayer.categories_string = categories_string;
-		print "VOY A GUARDAR"
 		vectorlayer.save()
 	except Exception as e:
 		return "Error " + str(e)
@@ -103,16 +98,13 @@ def edit_vectorlayer(request,vectorlayer_id):
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
-	print "sin problema*****"
 	if request.method == "GET":
 		categories = Category.objects.all();
 		params = {"vectorlayer":vectorlayer,"categories":categories}
 		return render(request,"update_vectorlayer.html",params)
 
 	elif request.method == "POST":
-		print "actualizo la puta capa***"
 		err_msg = updateVectorLayer(vectorlayer,request)
-		print "hasta ahora bien", err_msg
 		if(err_msg==None):
 			return HttpResponseRedirect("/vector")
 		else:
@@ -207,5 +199,4 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
-
 

@@ -1,7 +1,6 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect
 from django.http import HttpResponse, JsonResponse
-from django.contrib import messages
+from wsgiref.util import FileWrapper
 from models import StationType, Station, Variable
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
@@ -13,6 +12,7 @@ import time
 import datetime
 import json
 import shutil
+import tempfile
 
 '''
 Vista  que  retorna una  Pagina home 
@@ -83,6 +83,20 @@ def import_station(request):
 		err_msg = addStation(request.POST);
 		return HttpResponse(err_msg);
 
+
+"""
+Funcion auxiliar, crea un nombre de
+archivo, usando  la hora actual del
+sistema, un prefijo y la extension
+"""
+def createFileName(prefix,extension):
+	t = time.time()
+	ts = datetime.datetime.fromtimestamp(t)
+	timestamp_str = ts.strftime('%Y-%m-%d-%H-%M-%S')
+	fileName = prefix + timestamp_str + extension
+	return fileName
+
+
 '''
 Funcion auxiliar para guardar un archivo
 Recibe un objeto UploadedFile de  django
@@ -91,13 +105,8 @@ temporal. Retorna la ruta del archivo.
 '''
 def saveFile(ftemp):
 	# directorio temporal del sistema
-	temp_dir = settings.TEMPORARY_FILES_PATH;
-	# se obtiene un timestamp
-	t = time.time()
-	ts = datetime.datetime.fromtimestamp(t)
-	timestamp_str = ts.strftime('%Y-%m-%d-%H-%M-%S')
-	# se genera un nuevo nombre para el archivo
-	fileName = "timeseries-"+timestamp_str + ".csv"
+	temp_dir = settings.TEMPORARY_FILES_PATH
+	fileName = createFileName("timeseries-",".csv")
 	fullName = os.path.join(temp_dir,fileName)
 	# si el objeto ftemp tiene el atributo 
 	# temporary_file_path ya esta en el disco duro
@@ -160,20 +169,39 @@ def visualize(request):
 	if request.method == 'GET':
 		return render(request,"view_series.html");
 
-'''
-Funcion que recupera las mediciones
-de una estacion de una variable, en
-un rango de fechas
-'''
-def _get_measurements(variable_id,station_id,
+
+"""
+Vista que recupera informacion de una
+variable, la retorna como json
+"""
+def get_variable_info(request,variable_id):
+	try:
+		variable = Variable.objects.get(id=variable_id)
+		variable_json = {}
+		variable_json["name"] = variable.name
+		variable_json["unit"]=variable.unit
+		variable_json["symbol"]=variable.symbol
+		variable_json["datatype"]=variable.datatype
+		return HttpResponse(json.dumps(variable_json),content_type='application/json')
+	except Exception as e:
+		return HttpResponse(status=404)
+
+"""
+Crea un query para recuperar de la
+base de datos, las mediciones de 
+una estacion de una variable, en 
+un rango de fechas. Retorna el 
+resultado del query
+"""
+def query_measurements(variable_id,station_id,
 					ini_date,end_date,
 					limit,offset):
 
 	# se validan los parametros
 	if(not(variable_id)):
-		return "Falta argumento variable_id"
+		return None,"Falta argumento variable_id"
 	if(not(station_id)):
-		return "Falta argumento station_id"
+		return None,"Falta argumento station_id"
 
 
 	# del json se obtiene la variable_id (readings[variable_id])
@@ -205,24 +233,75 @@ def _get_measurements(variable_id,station_id,
 		params.append(limit)
 		params.append(offset)
 
-	print qs
-
-	measurements = []
-	full_count = 0
-	#  ejecuta el query en la base de datos
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
-		for row in rows:
-			m = {}
-			m["value"] = row[0]
-			m["ts"] = row[1]
-			measurements.append(m)
-			full_count = row[2]
-
-	return {"measurements":measurements,"full_count":full_count}
+		return rows,None
 
 
+'''
+Funcion que recupera las mediciones
+de una estacion de una variable, en
+un rango de fechas, retorna un dict
+con los resultados
+'''
+def get_measurements_dict(variable_id,station_id,
+					ini_date,end_date,
+					limit,offset):
+
+	# recupera los datos de la base de datos
+	rows,error = query_measurements(variable_id,station_id,
+					   ini_date,end_date,
+					   limit,offset)
+
+	if error:
+		return None,error
+
+
+	measurements = []
+	full_count = 0
+
+	for row in rows:
+		m = {}
+		m["value"] = row[0]
+		m["ts"] = row[1]
+		measurements.append(m)
+		full_count = row[2]
+
+	return {"measurements":measurements,"full_count":full_count},None
+
+
+'''
+Funcion que recupera las mediciones
+de una estacion de una variable, en
+un rango de fechas
+'''
+def get_measurements_csv(variable_id,station_id,
+					ini_date,end_date,fileName):
+
+	# recupera los datos de la base de datos
+	rows,error = query_measurements(variable_id,station_id,
+					   ini_date,end_date,
+					   None,None)
+	if error:
+		return None,error
+
+	f = open(fileName,'w')
+	header = "Station:%s,Variable:%s\n"%(station_id,variable_id)
+	f.write(header)
+	columns = "timestamp UTC-0\tvalue\n"
+	f.write(columns)
+
+	for row in rows:
+		line = "%s\t%s\n"%(row[1],row[0])
+		f.write(line)
+
+
+"""
+Vista que retorna las mediciones
+de una estacion de una variable, 
+en un rango de fechas
+"""
 def get_measurements(request):
 	responseData = {'measurements': [], 'dates': [], 'variable_id': '', 'station_id': ''}
 	if request.method != 'GET':
@@ -242,37 +321,59 @@ def get_measurements(request):
 		return HttpResponse(status=500)
 
 	# se recuperan los datos de la base de datos
-	"""
-	try:
-		data = _get_measurements(variable_id,station_id,
+	data,error = get_measurements_dict(variable_id,station_id,
 								 ini_date,end_date,
 								 limit,offset)
 
-		return JsonResponse({"measurements": data})
-	except Exception as e:
-		print e
+	if error:
 		return HttpResponse(status=500)
-	"""
-	data = _get_measurements(variable_id,station_id,
-								 ini_date,end_date,
-								 limit,offset)
 
 	return JsonResponse(data)
 
+"""
+Vista que recupera las mediciones de 
+una variable de todas las estaciones
+que  se  envien en  el  request. Las 
+mediciones se  guardan  en  archivos
+csv y se crea un zip con todo
+"""
+def download_measurements(request):
+	ini_date = request.GET.get('ini_date',None)
+	end_date = request.GET.get('end_date',None)
+	variable_str = request.GET.get('variable',None)
 
-def get_variable_info(request,variable_id):
-	try:
-		variable = Variable.objects.get(id=variable_id)
-		variable_json = {}
-		variable_json["name"] = variable.name
-		variable_json["unit"]=variable.unit
-		variable_json["symbol"]=variable.symbol
-		variable_json["datatype"]=variable.datatype
-		return HttpResponse(json.dumps(variable_json),content_type='application/json')
-	except Exception as e:
-		return HttpResponse(status=404)
+	i = variable_str.find("[")
+	j = variable_str.find("]")
 
+	if(i==-1 or j==-1):
+		return HttpResponse(status=500)
 
+	variable_id = variable_str[:i]
+	stations_str = variable_str[i+1:j]
+	stations_id = stations_str.split(",")
 
+	# se crea una carpeta temporal
+	dst_dir = tempfile.mkdtemp()
+	# por cada estacion se crea un archivo
+	for station_id in stations_id:
+		fileName = os.path.join(dst_dir,variable_id+"_"+station_id+".csv")
+		get_measurements_csv(variable_id,station_id,ini_date,end_date,fileName)
+
+	# se comprime la carpeta
+	zip_dst = dst_dir + "_zip";
+	# se crea un zip con los archivos del shapefile
+	zip_dst = shutil.make_archive(zip_dst, 'zip', dst_dir)
+	# se elimina la carpeta temporal
+	shutil.rmtree(dst_dir)
+	# se lee el zip y se lo envia al usuario
+	zip_file = open(zip_dst,"r")
+
+	f = FileWrapper(zip_file)
+	response = HttpResponse(f, content_type="application/zip")
+	prefix = "variable_"+variable_id+"_"
+	fileName = createFileName(prefix,".zip")
+	response['Content-Disposition'] = "attachment; filename=" + fileName
+	
+	return response
 
 
