@@ -9,14 +9,6 @@ def count_file_lines(f):
 	f.seek(0)
 	return count_lines
 
-# parsea una medicion segun su tipo de dato
-def parseMeasure(measure,datatype):
-	if(datatype=="float"):
-		return float(measure);
-	elif(datatype=="string"):
-		return measure;
-	else:
-		return None;
 
 def transformToUTC(dt,local_tz_str):
 	if(local_tz_str=="UTC"):
@@ -35,3 +27,4 @@ def saveMeasurements(station,id_provider,measurements_dict,date_time):
 		provider = Provider.objects.get(id=id_provider)
 		measurement = Measurement(idProvider = provider, ts = date_time, readings = measurements_dict, idStation = None)
 	measurement.save()
+

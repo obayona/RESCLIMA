@@ -9,6 +9,7 @@ import os
 import commands
 from celery import shared_task, current_task
 
+
 '''
 Funcion que recupera  el  encoding de un
 archivo. Si no lo encuentra retorna None
@@ -32,6 +33,34 @@ def getFileEncoding(fileName):
 
 	return encoding
 
+'''
+Obtiene las columnas de una linea del csv,
+la cual tiene este formato:
+"co1","col2, puede tener comas, ",col3 sin comillas,"col4"
+Retorna un arreglo con las columnas
+'''
+def getColumns(line):
+	columns = []
+	column = ""
+	ignoreComas = False
+	for c in line:
+		if(c=="," and not(ignoreComas)):
+			columns.append(column)
+			column = ""
+			continue
+		
+		if(c=='"' and not(ignoreComas)):
+			ignoreComas = True
+			continue
+		
+		if(c=='"' and ignoreComas):
+			ignoreComas = False
+			continue
+
+		column = column + c
+
+	columns.append(column)
+	return columns
 
 '''
 parseHobo(file)
@@ -40,9 +69,19 @@ que proviene de las estaciones
 meteorologicas de tipo HOBO-MX2300
 y se encarga de guardar los datos 
 en la base de datos.
---TODO--- PROBAR CON OTROS ARCHIVOS
-Y PREGUNTAR EL TIMEZONE DEL ARCHIVO
 '''
+
+# parsea una medicion segun su tipo de dato
+def parseMeasure(measure,datatype):
+
+	if(datatype=="float"):
+		measure = measure.replace(",",".")
+		return float(measure)
+	elif(datatype=="string"):
+		return measure;
+	else:
+		return None;
+
 @shared_task
 def parseHOBOFile(hoboParams):
 	# se obtiene el nombre del archivo
@@ -77,21 +116,19 @@ def parseHOBOFile(hoboParams):
 	3ra linea: datos
 	'''
 	num_lines = count_file_lines(f)
-	if (num_lines<3):
+	if (num_lines<4):
 		result["error"]="Error: archivo sin datos";
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
 	# formato de la fecha
-	datetime_format = "%m/%d/%y %I:%M:%S %p";
+	datetime_format = "%Y-%m-%d %H:%M:%S"
 	# time zone de las fechas de los datos (ej.: UTC,GMT+2,GMT-4,etc)
 	local_tz_str = None;
 	# numero de serie de la estacion
 	serialNum = None;
 	# objeto con datos de la estacion
 	station = None;
-	# las variables del archivo
-	variables = []
 
 	# actualiza el porcentaje de avance de la tarea: 5%
 	result["error"]=None
@@ -107,6 +144,12 @@ def parseHOBOFile(hoboParams):
 	if(encoding==None):
 		encoding = 'utf-8'
 
+
+	# se obtienen las variables de la base de datos
+	temp = Variable.objects.get(name=u"Temperatura")
+	rh = Variable.objects.get(name=u"Humedad relativa")
+	variables = [temp,rh]
+
 	# se itera el archivo
 	for i,line in enumerate(f,1):
 		try:
@@ -121,12 +164,15 @@ def parseHOBOFile(hoboParams):
 		# si se lee la primera linea del archivo
 		# se recupera el numero serial de la estacion
 		if(i==1):
-			# la primera linea contiene "string1: string2"
-			# string2 es el  numero serial  de la estacion
+			# la primera linea contiene "Serial Number: string --"
+			# string es el  numero serial  de la estacion
 			parts = line.split(":")
 			if (len(parts)==2):
 				serialNum = parts[1]
+				# se eliminan caracteres en blanco
 				serialNum = serialNum.strip(' \t\n\r')
+				# se remueven los tres ultimos caracteres (" --")
+				serialNum = serialNum[:-3]
 			else:
 				# se borra el archivo
 				os.remove(fileName)
@@ -160,11 +206,14 @@ def parseHOBOFile(hoboParams):
 
 			continue;
 
-		# si se lee la segunda linea
-		# se tienen los headers
+		# se ignora la linea 2, porque es vacia
 		if(i==2):
-			headers = line.split("\t");
-			if len(headers)!=8:
+			continue;
+
+		# la tercera linea contiene los headers
+		if(i==3):
+			headers = getColumns(line);
+			if len(headers)!=14:
 				# se borra el archivo
 				os.remove(fileName)
 				msg = "Error: el archivo debe tener ocho columnas, "
@@ -176,52 +225,18 @@ def parseHOBOFile(hoboParams):
 			# se obtiene la informacion del timezone
 			# el string debe ser parseado para obtener el ofset 
 			# en horas
-			header_date = headers[1]
+			header_date = headers[0]
 			index = header_date.find("GMT")
 			time_zone_str = header_date[index:].strip(' \t\n\r')
-			ofset_str = time_zone_str[3:]
-			index = ofset_str.find(":")
-			ofset_str = ofset_str[:index]
-			ofset = int(ofset_str)
+			offset_str = time_zone_str[4:7]
+			offset = int(offset_str)
 			# se crea el string del timezone
-			if(ofset<0):
-				local_tz_str = "Etc/GMT-" + str(abs(ofset));
-			elif(ofset >0):
-				local_tz_str = "Etc/GMT+" + str(abs(ofset));
+			if(offset<0):
+				local_tz_str = "Etc/GMT-" + str(abs(offset));
+			elif(offset >0):
+				local_tz_str = "Etc/GMT+" + str(abs(offset));
 			else:
 				local_tz_str="UTC";
-
-
-			# La primera columna es un contador
-			# y la segunda columna es la fecha.
-			# Se las ignora
-			headers = headers[2:];
-
-			# se crea un diccionario con los nombres
-			# de las variables
-			name_dict = {}
-			name_dict[0] = u"Temperatura"
-			name_dict[1] = u"Humedad relativa"
-			name_dict[2] = u"Lluvia"
-			name_dict[3] = u"Dirección del viento"
-			name_dict[4] = u"Velocidad del viento"
-			name_dict[5] = u"Velocidad de rafagas"
-
-			# se recuperan los pk de las variables
-			for index,header in enumerate(headers):
-				# se busca la variable por el nombre
-				results = Variable.objects.filter(name=name_dict[index]);
-				if(results.count()!=1):
-					# se borra el archivo
-					os.remove(fileName)
-					result["error"]="Error: No existe la variable "+name_dict[index]
-					current_task.update_state(state='FAILURE',meta=result)
-					return result
-
-				variable = results[0];
-				# se guarda en la lista el id de la
-				# variable
-				variables.append(variable);
 
 			# se actualiza el progreso
 			result["percent"]=20
@@ -229,17 +244,17 @@ def parseHOBOFile(hoboParams):
 
 			continue;
 
-		# si la linea es mayor que la 2
+		# si la linea es mayor que la 3
 		# se obtienen las mediciones
-		measures = line.split("\t")
-		if(len(measures)!=8):
+		measures = getColumns(line)
+		if(len(measures)!=14):
 			# se borra el archivo
 			os.remove(fileName)
 			result["error"]="Error: falta una columna en la linea "+str(i)
 			current_task.update_state(state='FAILURE',meta=result)
 			return result
-		# se recupera la fecha hora de la segunda columna
-		datetime_str = measures[1]
+		# se recupera la fecha hora de la primera columna
+		datetime_str = measures[0]
 		try:
 			# se crea un objeto datetime desde el string y el formato
 			dt = datetime.strptime(datetime_str,datetime_format);
@@ -252,15 +267,17 @@ def parseHOBOFile(hoboParams):
 			current_task.update_state(state='FAILURE',meta=result)
 			return result
 
-		# se obtienen las mediciones
-		# se remueven las dos primeras columnas
-		measures = measures[2:]
+		# en la columna 1 esta temperatura y en la 6, la humedad relativa
+		variables_index = [1,6]
 		measures_dict = {}
-		for index,measure in enumerate(measures):
+		for i,j in enumerate(variables_index):
+			measure = measures[j]
+			measure = measure.strip(' \t\n\r')
+			variable = variables[i]
+
 			if measure == "":
 				continue;
 
-			variable = variables[index]
 			idVariable = variable.id;
 			datatype = variable.datatype;
 			measure = parseMeasure(measure,datatype);
@@ -285,5 +302,6 @@ def parseHOBOFile(hoboParams):
 	# se completa la tarea
 	result["percent"]=100		
 	return result
+
 
 
