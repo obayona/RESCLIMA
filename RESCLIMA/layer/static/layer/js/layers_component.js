@@ -93,8 +93,12 @@ Vue.component("layers_component",{
 									</p>
 									<!-- Links para descargar y remover la capa-->
 									<div>
-										<a style="padding:10px;color:green" href="#"><i class="material-icons">file_download</i>Descargar</a>
-										<a style="padding:10px;color:red" href="#"><i class="material-icons">delete</i>Eliminar</a>
+										<a style="padding:10px;color:green" v-bind:href="downloadLink(layer)">
+											<i class="material-icons">file_download</i>Descargar
+										</a>
+										<a style="padding:10px;color:red" href="#!" v-on:click.prevent="removeLayer(layer)">
+											<i class="material-icons">delete</i>Eliminar
+										</a>
 									</div>
 								</div>
 								<!-- Si la capa no tiene estado loaded-->
@@ -120,7 +124,6 @@ Vue.component("layers_component",{
 		var navbar = elements[0];
 		var height = navbar.getBoundingClientRect()["height"];
 		height = Math.ceil(height);
-		console.log(height,String(height) + "px");
 		layerContainer.style.top = String(height) + "px";
 
 		/* Se lee el parametro "layers" del queryString
@@ -253,8 +256,40 @@ Vue.component("layers_component",{
 		},
 		openFilters(layer){
 			this.$root.$emit("openFilters",layer);
+		},
+		downloadLink(layer){
+			if(layer.type=="vector"){
+				return "/vector/export/"+layer.id;
+			}
+			else if(layer.type=="raster"){
+				return "/raster/export/"+layer.id;
+			}
+			else{
+				return "#!"
+			}
+		},
+		removeLayer(removing_layer){
+			var index = removing_layer.index;
+			var layers = this.shared.layers;
+			// se elimina la capa de la lista 
+			// de capas
+			layers.splice(index,1);
+
+			var numLayers = layers.length;
+
+			// se actualizan los index y z-index
+			// de las otras capas
+			for(var i=0;i<numLayers;i++){
+				var layer = layers[i];
+				layer.index = i;
+				layer.zIndex = numLayers - index;
+				layer.openlayer_layer.setZIndex(layer.zIndex)
+			}
+			// se remueve el capa del mapa de openlayers
+			var map = this.shared.map;
+			map.removeLayer(removing_layer.openlayer_layer,false);
+			removing_layer.openlayer_layer.destroy();
 		}
 	}
 })
-
 
