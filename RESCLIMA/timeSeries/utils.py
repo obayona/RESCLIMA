@@ -1,7 +1,9 @@
 # -*- encoding: utf-8 -*-
 
 from timeSeries.models import Variable,Station,Measurement,Provider
+from django.db import connection
 import pytz
+import json
 
 # cuenta las lineas de un archivo
 def count_file_lines(f):
@@ -21,10 +23,10 @@ def transformToUTC(dt,local_tz_str):
 # guarda una medicion en la base de datos
 def saveMeasurements(station,id_provider,measurements_dict,date_time):
 
-	if id_provider == None and station!= None:
-		measurement = Measurement(idStation = station, ts = date_time, readings = measurements_dict, idProvider = None)
-	else:
-		provider = Provider.objects.get(id=id_provider)
-		measurement = Measurement(idProvider = provider, ts = date_time, readings = measurements_dict, idStation = None)
-	measurement.save()
+	measurements=json.dumps(measurements_dict);
+	idStation = station.id
 
+	qs = "SELECT InsertMeasurements(%s::integer,%s::timestamp,%s::json)"
+	params = [idStation,date_time,measurements]
+	with connection.cursor() as cursor:
+		cursor.execute(qs, params)
