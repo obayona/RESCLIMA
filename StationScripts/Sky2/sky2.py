@@ -153,7 +153,7 @@ def insertMeasures(dbParams,measurements):
 								password=dbParams["password"],
 								dbname=dbParams["dbname"])
 		cursor = conn.cursor()
-		query = "SELECT InsertSky2Measurements(%s::integer,%s::timestamp,%s::json)"
+		query = "SELECT InsertMeasurements(%s::integer,%s::timestamp,%s::json)"
 		idStation = measurements["idStation"]
 		timestamp_str = measurements["datetime"]
 		values = measurements["values"]
@@ -249,4 +249,5 @@ if __name__ == "__main__":
 
 	cv.acquire()
 	cv.wait()
+
 

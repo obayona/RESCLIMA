@@ -13,11 +13,12 @@ ON "timeSeries_variable" FOR EACH ROW EXECUTE PROCEDURE
 tsvector_update_trigger("ts_index", 'pg_catalog.spanish', name, categories_string);
 
 /*Function to insert a measurement that comes from a
-meteorologycal station of type Sky2*/
-CREATE OR REPLACE FUNCTION InsertSky2Measurements
+meteorologycal station*/
+CREATE OR REPLACE FUNCTION InsertMeasurements
 (idStation INTEGER, ts_in TIMESTAMP,readings JSON)
 RETURNS void AS $$
 BEGIN
+	/*See valida que ese valor no exista*/
 	IF NOT(EXISTS(SELECT * FROM "timeSeries_measurement"
 		WHERE "idStation_id"=idStation and "ts"=ts_in))
 	THEN
@@ -37,3 +38,4 @@ FROM "Layer_layer", plainto_tsquery('spanish','Playas') query
 WHERE query @@ textsearchable_index
 ORDER BY rank DESC
 LIMIT 10;*/
+
