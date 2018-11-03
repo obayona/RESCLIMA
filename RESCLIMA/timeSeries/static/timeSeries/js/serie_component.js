@@ -1,4 +1,3 @@
-
 Vue.component("serie_component",{
 	template: `
 		<!--Contenedor del component -->
@@ -40,8 +39,8 @@ Vue.component("serie_component",{
 								<span class="logo-text">{{variable.name}} vs tiempo</span>
 							</a>
 						</h1></li></ul>
-						<ul class="right" v-bind:click.prevent="downloadFile()"><li>
-							<a href="#!" title="Descargar">
+						<ul class="right"><li>
+							<a v-bind:href="downloadLink" title="Descargar">
 								<i class="material-icons">file_download</i>
 							</a>
 						</li></ul>
@@ -138,14 +137,40 @@ Vue.component("serie_component",{
 
 	data(){
 		return {
+			// referencia al contenedor del plot
 			container:null,
+			// variable para la paginacion
 			limit:100,
 			offset:0,
 			max_offset:-1,
 			shared:store,
 		}
 	},
+	computed:{
+		// crea el link de descarga de datos
+		downloadLink:function(){
+			var url = "/series/measurements/download/?variable="
+			var variable = this.variable;
+			var variable_str = variable.id + "["
+			var length = variable.stations.length - 1;
+			for(var i=0;i< length;i++){
+				var station = variable.stations[i];
+				variable_str += station.id + "," 
+			}
+			var station = variable.stations[length];
+			variable_str += station.id + "]"
+			url += variable_str;
 
+			if(variable["ini_date"]){
+				url = url + "&ini_date=" + variable["ini_date"];
+			}
+			if(variable["end_date"]){
+				url = url + "&end_date=" + variable["end_date"];
+			}
+			
+			return url;
+		}
+	},
 	methods:{
 		/*
 		Realiza una peticion ajax para 
@@ -315,16 +340,7 @@ Vue.component("serie_component",{
 			var variable = this.variable;
 			this.initializePlot(variable);
 			this.getMeasurements(variable);
-		},
-		/*
-		Metodo que solicita al servidor
-		que descargue los datos de una variable como 
-		un archivo*/
-		downloadFile(){
-			console.log("Descargar variable",this.variable)
 		}
-	},
+	}
 })
-
-
 

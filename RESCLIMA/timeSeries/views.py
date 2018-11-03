@@ -276,8 +276,11 @@ Funcion que recupera las mediciones
 de una estacion de una variable, en
 un rango de fechas
 '''
-def get_measurements_csv(variable_id,station_id,
+def get_measurements_csv(variable,station,
 					ini_date,end_date,fileName):
+
+	variable_id = str(variable.id)
+	station_id = str(station.id)
 
 	# recupera los datos de la base de datos
 	rows,error = query_measurements(variable_id,station_id,
@@ -287,8 +290,15 @@ def get_measurements_csv(variable_id,station_id,
 		return None,error
 
 	f = open(fileName,'w')
-	header = "Station:%s,Variable:%s\n"%(station_id,variable_id)
-	f.write(header)
+	header_variable = "Variable:%s,Unit:%s\n"%(variable.name,variable.unit)
+	header_variable=header_variable.encode("utf-8")
+	f.write(header_variable)
+	
+	station_attr = (station.serialNum,station.location.x,station.location.y)
+	header_station = "Station:%s,lon:%s,lat%s\n"%station_attr
+	header_station = header_station.encode("utf-8")
+	f.write(header_station)
+	
 	columns = "timestamp UTC-0\tvalue\n"
 	f.write(columns)
 
@@ -352,12 +362,18 @@ def download_measurements(request):
 	stations_str = variable_str[i+1:j]
 	stations_id = stations_str.split(",")
 
+	# recupera la variable
+	variable = Variable.objects.get(pk=variable_id);
+
+
 	# se crea una carpeta temporal
 	dst_dir = tempfile.mkdtemp()
 	# por cada estacion se crea un archivo
 	for station_id in stations_id:
-		fileName = os.path.join(dst_dir,variable_id+"_"+station_id+".csv")
-		get_measurements_csv(variable_id,station_id,ini_date,end_date,fileName)
+		# se recupera la estacion
+		station = Station.objects.get(pk=station_id)
+		fileName = os.path.join(dst_dir,"variable_"+station_id+".csv")
+		get_measurements_csv(variable,station,ini_date,end_date,fileName)
 
 	# se comprime la carpeta
 	zip_dst = dst_dir + "_zip";
@@ -375,5 +391,4 @@ def download_measurements(request):
 	response['Content-Disposition'] = "attachment; filename=" + fileName
 	
 	return response
-
 
