@@ -15,6 +15,21 @@
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<link rel="stylesheet" href="{% static 'main/css/custom.css' %}" type="text/css">
 	<link rel=icon href="{% static 'main/images/favicon.png' %}" sizes="16x16" type="image/png">
+	<style>
+		.preloader-background{
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: #eee;
+			
+			position: fixed;
+			z-index: 100;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;	
+		}
+	</style>
 	{% block styles %}
 	{% endblock %}
 	
@@ -30,6 +45,14 @@
 </head>
 
 <body>
+
+	<!-- Preloader -->
+	<div id="loader-wrapper">
+		<div id="loader"></div>
+		<div class="loader-section section-left"></div>
+		<div class="loader-section section-right"></div>
+	</div>
+
 	<!-- Header -->
 	<header id="header" class="page-topbar">
 		<!-- start header nav-->
@@ -112,6 +135,4 @@
 </body>
 
 </html>
-
-
 
