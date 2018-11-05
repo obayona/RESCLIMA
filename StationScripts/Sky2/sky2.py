@@ -18,7 +18,7 @@ sys.setdefaultencoding("utf-8")
 # la base de datos
 
 # archivos de configuracion, log y backup
-configFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/config.json";
+configFileName = "/home/manager/RESCLIMA/dbparams.json";
 logFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/log.txt"
 backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt";
 

@@ -193,7 +193,7 @@ def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
 
 
 if __name__ == "__main__":
-	file_name = "dbParams.json"
+	file_name = "/home/manager/RESCLIMA/dbparams.json"
 	dbParams = None
 	with open(file_name) as data_file:
 		dbParams = json.load(data_file)

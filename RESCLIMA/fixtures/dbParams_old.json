@@ -1,7 +1,0 @@
-{
-    "dbname": "resclima",
-    "user":"obayona",
-    "password":"EloyEcuador93",
-    "host": "localhost",
-    "port":5432
-}
