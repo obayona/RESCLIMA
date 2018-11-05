@@ -21,8 +21,8 @@ var store = {
 	// de un URL y cuyos valores seran los valores del query string 
 	getQueryParams:function(){
 		var queryDict = {}
-		if(this.text!=''){
-			queryDict["text"]=text
+		if(this.text){
+			queryDict["text"]=this.text
 		}
 		var selected_categories_str=""
 		for (var i=0;i<this.categories.length; i++){
@@ -110,5 +110,6 @@ var store = {
 	}
 	
 }
+
 
 

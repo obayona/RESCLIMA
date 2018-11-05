@@ -20,7 +20,8 @@ def export_shapefile(vectorlayer):
 	# crea un directorio temporal
 	dst_dir = tempfile.mkdtemp()
 	# ruta del shapefile
-	dst_file = str(os.path.join(dst_dir, vectorlayer.filename))
+	dst_file = os.path.join(dst_dir, vectorlayer.filename)
+	dst_file = dst_file.encode('utf-8')
 	# obtiene el sistema de coordenadas
 	# original de la capa
 	dst_spatial_ref = osr.SpatialReference()
@@ -29,7 +30,7 @@ def export_shapefile(vectorlayer):
 	# con la libreria osr se crea el shapefile
 	driver = ogr.GetDriverByName("ESRI shapefile")
 	datasource = driver.CreateDataSource(dst_file)	
-	layer = datasource.CreateLayer(str(vectorlayer.filename),dst_spatial_ref)
+	layer = datasource.CreateLayer(vectorlayer.filename.encode('utf-8'),dst_spatial_ref)
 
 	# se guardan los atributos de la capa en 
 	# el archivo

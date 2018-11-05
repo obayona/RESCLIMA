@@ -65,7 +65,7 @@ def export_rasterLayer(request,rasterlayer_id):
 	fullName = join(file_path,file_name)
 
 	f = FileWrapper(open(fullName,"r"))
-	response = HttpResponse(f, content_type="application/zip")
+	response = HttpResponse(f, content_type="image/tiff")
 	response['Content-Disposition'] = "attachment; filename=" + file_name
 	return response
 
@@ -240,7 +240,5 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
-
-
 
 

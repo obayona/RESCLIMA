@@ -8,8 +8,6 @@ var app = new Vue({
 	router,
 	el:'#searchForm',
 	data:{
-		city:null,
-		currentComponent:"categories_component",
 		shared:store // referencia al store de datos global
 	},
 	methods:{
@@ -23,7 +21,6 @@ var app = new Vue({
 				this.$root.$emit('searchLayers');
 			}
 			if(option == "series"){
-				console.log("click en buscar serie")
 				this.$root.$emit('searchSeries');
 			}
 		},
@@ -32,5 +29,4 @@ var app = new Vue({
 	}
 
 })
-
 

@@ -1,8 +1,12 @@
-var category_component = Vue.component("categories_component",{
+var category_component = Vue.component("textsearch_component",{
 	template: `
 		<div class="container">
 			<div>
-				<h4 style="text-align: center">Seleccione categor&iacute;as para mejorar la b&uacute;squeda</h4>
+				<input 
+				 type="search" 
+				 v-model="shared.text"
+				 autofocus>
+				<p class="caption">Seleccione categor&iacute;as para mejorar la b&uacute;squeda</p>
 			</div>
 			<br>
 			<div class="container" style="text-align:center">
@@ -19,6 +23,10 @@ var category_component = Vue.component("categories_component",{
 		</div>
 	`,
 	mounted(){
+		// se obtiene el texto del url
+		var text = this.$route.query["text"];
+		this.store.text = text;
+
 		// se obtienen las categorias seleccionadas desde el url
 		var categories_string = this.$route.query["categories"];
 		// se obtienen las categorias desde el servidor
@@ -67,5 +75,6 @@ var category_component = Vue.component("categories_component",{
 		}
 	}
 })
+
 
 

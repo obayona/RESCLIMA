@@ -18,7 +18,8 @@ Vue.component("series_component",{
 							<i class="material-icons left">remove_red_eye</i>Visualizar</a>
 						<a
 						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
-						v-bind:disabled="selected_count==0">
+						v-bind:disabled="selected_count==0"
+						v-on:click="downloadSeries">
 							<i class="material-icons left">file_download</i>Descargar</a>
 					</div>
 					<div v-for="serie in shared.series">
@@ -102,7 +103,6 @@ Vue.component("series_component",{
 	},
 	methods:{
 		searchSeries(){
-			console.log("voy a buscar series")
 			// se obtienen los parametros de busqueda
 			var data = this.shared.getPostData()
 			if(data==null){
@@ -117,8 +117,8 @@ Vue.component("series_component",{
 			// se realiza la peticion ajax
 			data = JSON.stringify(data);
 			var request = $.post(url,data);
+			self.state = "loading";	
 			request.done(function(response){
-				console.log(response)
 				var  results = response["series"];
 				// se determina el maximo offset
 				var full_count = response["full_count"];
@@ -140,9 +140,6 @@ Vue.component("series_component",{
 				// se cambia el estado
 				self.state = "searched";
 			});
-			request.progress(function(error){
-				self.state = "loading";	
-			});
 			request.fail(function(error){
 				self.state = "fail";	
 			});
@@ -158,11 +155,47 @@ Vue.component("series_component",{
 		visualizeSeries(){
 			//redirect to the url to visualize the selected time series
 			var url = "series/view/" + this.shared.getSeriesParams();
-			console.log("Url de series a visualizar: "+ url)
 			//this.$router.replace(url);
 			//this.$router.go();
 			url = encodeURI(url)
 			window.open(url,'_blank');
+		},
+		createDownloadLink(serie){
+			var url = "/series/measurements/download/?variable="
+			var variable_str = serie.variable_id + "["
+			var length = serie.stations.length - 1;
+			for(var i=0;i< length;i++){
+				var station = serie.stations[i];
+				variable_str += station + "," 
+			}
+			var station = serie.stations[length];
+			variable_str += station + "]"
+			url += variable_str;
+
+			if(this.shared.ini_date){
+				url = url + "&ini_date=" + this.shared.ini_date;
+			}
+			if(this.shared.end_date){
+				url = url + "&end_date=" + this.shared.end_date;
+			}
+			
+			return url;
+		},
+		downloadSeries(){
+			// se iteran todas las capas seleccionadas
+			for(var i=0; i<this.shared.series.length; i++){
+				var serie = this.shared.series[i];
+				if (serie["selected"]){
+					var url = this.createDownloadLink(serie)
+					var link = document.createElement("a");
+					link.style.display = 'none';
+					document.body.appendChild(link);
+					link.setAttribute('download',"serie_"+serie["id"]);
+					link.href = url;
+					link.click();
+					document.body.removeChild(link);
+				}
+			}
 		},
 		prev(){
 			if(this.offset <= 0){

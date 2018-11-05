@@ -13,7 +13,8 @@ Vue.component("layers_component",{
 							<i class="material-icons left">remove_red_eye</i>Visualizar</a>
 						<a
 						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
-						v-bind:disabled="selected_count==0">
+						v-bind:disabled="selected_count==0"
+						v-on:click="downloadLayers">
 							<i class="material-icons left">file_download</i>Descargar</a>
 					</div>
 					<div v-for="layer in shared.layers">
@@ -55,7 +56,7 @@ Vue.component("layers_component",{
 			</div>
 			<!-- si el estado de las capas es loading se -->
 			<!-- muestra una animacion -->
-			<div v-if="state=='loading'">			
+			<div v-if="state=='loading'" style="text-align: center;">			
 				<div class="preloader-wrapper big active">
 					<div class="spinner-layer spinner-blue-only">
 						<div class="circle-clipper left">
@@ -84,7 +85,7 @@ Vue.component("layers_component",{
 			selected_count:0,
 			state:'initial',
 			// limit y offset controlan la paginacion
-			limit:4,
+			limit:10,
 			offset:0,
 			// maximo offset, al principio
 			// se tiene un valor negativo
@@ -113,8 +114,8 @@ Vue.component("layers_component",{
 			// se realiza la peticion ajax
 			data = JSON.stringify(data);
 			var request = $.post(url,data);
+			self.state = "loading";	
 			request.done(function(response){
-				console.log(response)
 				var  results = response["layers"];
 				// se determina el maximo offset
 				var full_count = response["full_count"];
@@ -125,7 +126,6 @@ Vue.component("layers_component",{
 				}else{
 					self.max_offset = 0;
 				}
-				console.log(self.max_offset)
 
 				// se copian los resultados en el
 				// array layers
@@ -136,10 +136,6 @@ Vue.component("layers_component",{
 				}
 				// se cambia el estado
 				self.state = "searched";
-				console.log(self.state);
-			});
-			request.progress(function(error){
-				self.state = "loading";	
 			});
 			request.fail(function(error){
 				self.state = "fail";	
@@ -167,6 +163,28 @@ Vue.component("layers_component",{
 			url = encodeURI(url)
 			window.open(url,'_blank');
 		},
+		downloadLayers(){
+			// se iteran todas las capas seleccionadas
+			for(var i=0; i<this.shared.layers.length; i++){
+				var layer = this.shared.layers[i];
+				if (layer["selected"]){
+					var url = "#"
+					var link = document.createElement("a");
+					link.style.display = 'none';
+  					document.body.appendChild(link);
+					link.setAttribute('download',"layer_"+layer["id"]);
+					if(layer["type"]=="vector"){
+						url = "/vector/export/"+layer["id"]
+					}
+					if(layer["type"]=="raster"){
+						url = "/raster/export/"+layer["id"]	
+					}
+					link.href = url;
+					link.click();
+					document.body.removeChild(link);
+				}
+			}
+		},
 		prev(){
 			if(this.offset <= 0){
 				return;
@@ -184,5 +202,4 @@ Vue.component("layers_component",{
 	}
 
 })
-
 

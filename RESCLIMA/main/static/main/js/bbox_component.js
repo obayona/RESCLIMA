@@ -2,14 +2,13 @@
 
 Vue.component("bbox_component",{
 	template: `
-		<div>
-			<div>
-				<h4 style="text-align: center">Seleccione una regi&oacute;n</h4>
+		<div class="row">
+			<div class="col s1">
 			</div>
-			<div class="row">
-				<div class="col s3"></div>
-				<div id="bbox_container" class="col s6"></div>
-				<div class="col s3"></div>
+			<div class="col s10">
+				<div id="bbox_container" style="text-align:center;"></div>
+			</div>
+			<div class="col s1">
 			</div>
 		</div>
 	`,
@@ -37,10 +36,10 @@ Vue.component("bbox_component",{
 			} 
 		 	if(rigth < -180 || rigth > 180){ 
 		 		return;
-            }
+			}
  			if(bottom < -90 || bottom > 90){ 
  				return;
-            }
+			}
 			if(top < -90 || top > 90){
 				return;
 			}
@@ -90,5 +89,4 @@ Vue.component("bbox_component",{
 	}
 
 })
-
 
