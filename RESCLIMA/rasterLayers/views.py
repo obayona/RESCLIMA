@@ -1,26 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.http import HttpResponse
-from django.http import HttpResponseRedirect
-from wsgiref.util import FileWrapper
-from django.shortcuts import render, redirect
+import os
 from os.path import join
-from forms import ImportRasterForm
-from forms import ImportStyleForm
-from RESCLIMA import settings
-from models import RasterLayer
-from style.models import Style
-from search.models import Category
 import datetime
 import time
 import importer
-from search.models import Category
-from style.utils import transformSLD
-from style.utils import getColorMap
 import json
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from wsgiref.util import FileWrapper
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from RESCLIMA import settings
+from models import RasterLayer
+from style.models import Style
+from style.utils import transformSLD,getColorMap
+from search.models import Category
 from main.models import Researcher
+
 
 limit = 10
 @login_required(login_url='noAccess')
@@ -145,8 +143,12 @@ def edit_raster(request, rasterlayer_id):
 def delete_rasterLayer(request,rasterlayer_id):
 	try:
 		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
+		file_path = rasterlayer.file_path
+		file_name = rasterlayer.file_name
+		fullName = join(file_path,file_name)
+		os.remove(fullName)
 		rasterlayer.delete()
-		return redirect('raster_list')
+		return HttpResponseRedirect("/raster")
 	except RasterLayer.DoesNotExist:
 		return HttpResponseNotFound()
 
@@ -199,19 +201,24 @@ def import_style(request):
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
+		file_path = style.file_path;
+		file_name = style.file_name;
+		fullName = join(file_path,file_name)
+		os.remove(fullName)
 		style.delete()
-		return redirect('raster_list')
+		return HttpResponseRedirect("/raster")
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()  
 
 def export_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		file_path = style.file_path;
-		file_name = style.file_name;
-		fullName = join(file_path,file_name);
-		f = open(fullName,'r');
+		file_path = style.file_path
+		file_name = style.file_name
+		fullName = join(file_path,file_name)
+		f = open(fullName,'r')
 		sld = f.read()
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+

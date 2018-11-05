@@ -54,7 +54,6 @@ def service(request, version):
 
 
 def tileMap(request, version, rasterlayer_id):
-	print "TILE MAP****"
 
 	if version != "1.0":
 		raise Http404
@@ -175,3 +174,4 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 	except:
 		traceback.print_exc()
 		return HttpResponse("Error")
+

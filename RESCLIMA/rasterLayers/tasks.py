@@ -6,6 +6,7 @@ from osgeo import gdal
 from celery import shared_task, current_task
 from .utils import getBBox
 from .models import RasterLayer
+from main.models import Researcher
 
 @shared_task
 def import_raster_layer(rasterlayer_params):
@@ -22,7 +23,7 @@ def import_raster_layer(rasterlayer_params):
 	# fecha como objeto datetime
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	categories_string = rasterlayer_params["categories_string"]
-	owner_id = vectorlayer_params["owner"]
+	owner_id = rasterlayer_params["owner"]
 	owner = Researcher.objects.get(id=owner_id)
 
 	'''
