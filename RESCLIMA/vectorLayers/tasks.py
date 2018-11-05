@@ -1,7 +1,6 @@
 # -*- encoding: utf-8 -*-
 
 from __future__ import absolute_import, unicode_literals
-import shutil
 import os
 import datetime
 from celery import shared_task, current_task
@@ -49,8 +48,6 @@ def import_vector_layer(vectorlayer_params):
 		datasource = ogr.Open(os.path.join(temp_dir,vectorlayer_name))
 		layer = datasource.GetLayer(0)
 	except Exception as e:
-		# si la capa no es valida se borra la carpeta temporal
-		shutil.rmtree(temp_dir)
 		# actualiza con un mensaje de error
 		result["error"] = " La capa vectorial no es válida " + str(e)
 		current_task.update_state(state='FAILURE',meta=result)
@@ -154,7 +151,6 @@ def import_vector_layer(vectorlayer_params):
 			success,value = utils.getOGRFeatureAttribute(attr, src_feature,encoding)
 			if not success:
 				# si hay un error en un valor se cancela todo
-				shutil.rmtree(temp_dir)
 				vectorlayer.delete()
 				# actualiza porque hay error
 				result["error"]="Error al obtener los valores del atributo " + str(attr.name)
@@ -189,9 +185,8 @@ def import_vector_layer(vectorlayer_params):
 	# se actualiza el progreso
 	result["percent"]= 90
 	current_task.update_state(state='PROGRESS',meta=result)
-	# se elimina la carpeta temporal
-	shutil.rmtree(temp_dir)
 
 	result["percent"]=100
 	return result
+
 

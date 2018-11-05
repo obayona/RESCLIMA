@@ -1,8 +1,18 @@
 # -*- encoding: utf-8 -*-
 import os
-import tempfile
+import time, datetime
 import shutil
 from tasks import import_vector_layer
+from RESCLIMA import settings
+
+def createTempFolder():
+	t = time.time()
+	ts = datetime.datetime.fromtimestamp(t)
+	timestamp_str = ts.strftime('%Y-%m-%d-%H-%M-%S')
+	folderName = "layer" + timestamp_str
+	fullName = os.path.join(settings.TEMPORARY_FILES_PATH,folderName)
+	os.mkdir(fullName)
+	return fullName
 
 ''' 
 Funcion para importar los datos de
@@ -77,7 +87,7 @@ def import_data(request):
 
 	# se crea una una carpeta temporal
 	# para guardar los archivos
-	temp_dir = tempfile.mkdtemp()
+	temp_dir = createTempFolder()
 	vectorlayer_name = filename + ".shp" # nombre del archivo shapefile
 
 	for ftemp in list_files:
@@ -141,3 +151,4 @@ def import_data(request):
 	result["task_id"] = task.id;
 
 	return result;
+

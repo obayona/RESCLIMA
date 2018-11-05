@@ -111,10 +111,12 @@ def saveFile(ftemp):
 	# si el objeto ftemp tiene el atributo 
 	# temporary_file_path ya esta en el disco duro
 	if (hasattr(ftemp,'temporary_file_path')):
+		print "en el disco duro, serie de tiempo",fullName
 		ftemp_path = ftemp.temporary_file_path()
 		# mueve el archivo
 		shutil.move(ftemp_path,fullName)
 	else:
+		print "en la memoria, serie de tiempo",fullName
 		# el archivo esta en memoria y se debe 
 		# escribir en el disco
 		f = open(fullName,'w')

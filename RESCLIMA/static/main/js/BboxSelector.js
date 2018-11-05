@@ -1,7 +1,6 @@
 var BboxSelector = function(container,callback){
 
 	var container = document.getElementById(container)
-	console.log("****",container);
 	var vectors; // capa vectorial
 	var box;
 	var transform;
@@ -11,10 +10,13 @@ var BboxSelector = function(container,callback){
 	// el toolbox de opciones
 	var menu_container = document.createElement("div");
 	menu_container.style.backgroundColor = "#CEDBDA";
-	menu_container.style.width = "500px";
+	menu_container.style.width = "700px";
+	menu_container.style.display="inline-block";
 	menu_container.style.zIndex = "1";
-	menu_container.style.display = "inline-block";
+	menu_container.style.padding = "10px";
+
 	var instruction = document.createElement("div");
+	instruction.style.display = "inline-block";
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
 	newAreaBtn.type = "button";
@@ -27,10 +29,10 @@ var BboxSelector = function(container,callback){
 	menu_container.appendChild(newAreaBtn);
 
 	var map_container = document.createElement("div");
-	map_container.style.width = "500px";
+	map_container.style.width = "700px";
+	map_container.style.display="inline-block";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
-	map_container.style.display = "inline-block";
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";
@@ -44,18 +46,18 @@ var BboxSelector = function(container,callback){
 		numZoomLevels:11,
 		units: 'm'
 	});
+
 	var osm = new OpenLayers.Layer.OSM();
 	var StyleMap = new OpenLayers.StyleMap({
-	                // a nice style for the transformation box
-	                "transform": new OpenLayers.Style({
-			                        display: "${getDisplay}",
-			                        cursor: "${role}",
-			                        pointRadius: 5,
-			                        fillColor: "white",
-			                        fillOpacity: 1,
-			                        strokeColor: "black"
-	              				 })
-	            	});
+					"transform": new OpenLayers.Style({
+									display: "${getDisplay}",
+									cursor: "${role}",
+									pointRadius: 5,
+									fillColor: "white",
+									fillOpacity: 1,
+									strokeColor: "black"
+								})
+				});
 	vectors = new OpenLayers.Layer.Vector("Vector Layer", {
 		styleMap: StyleMap
 	});
@@ -93,7 +95,7 @@ var BboxSelector = function(container,callback){
 		drawBox(bounds);
 		box.deactivate();
 		instruction.innerHTML = "Modifique el &aacute;rea o ...";
-		newAreaBtn.style.display = "block";   
+		newAreaBtn.style.display = "inline-block";   
 	}
 
 	function endDrag(bbox) {
@@ -102,7 +104,7 @@ var BboxSelector = function(container,callback){
 		drawBox(bounds);
 		box.deactivate();
 		instruction.innerHTML = "Modifique el &aacute;rea o ...";
-		newAreaBtn.style.display = "block";        
+		newAreaBtn.style.display = "inline-block";        
 	 }
 	  
 	function dragNewBox() {

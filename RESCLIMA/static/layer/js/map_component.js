@@ -116,8 +116,8 @@ var VectorLayer = function(map,layer){
 		var url = "/vector/geojson/" + id_layer;
 		var request = $.get(url);
 		// TODO - implementar callbacks de error
-		request.done(function(data){
-			renderFeatureLayer(data);
+		request.done(function(response){
+			renderFeatureLayer(response);
 		});
 	}
 
@@ -142,10 +142,7 @@ var VectorLayer = function(map,layer){
 		});
 		// con el parser de geojson se obtienen los features
 		// de la capa
-		console.log("se lee el json")
-		console.log(data)
 		var features = geojson_format.read(data);
-		console.log("json leido")
 		// los features estan en EPSG:4326 
 		// y deben ser transformados a EPSG:900913
 		for (i=0; i<features.length; i++){
@@ -205,6 +202,7 @@ var VectorLayer = function(map,layer){
 		var format = new OpenLayers.Format.SLD();
 		// se obtiene un objeto con las reglas del estilo
 		var sld = format.read(sld);
+		console.log("sld de capa", layer_style,sld)
 		// se obtiene la propiedad  namedLayer del
 		// objeto sld
 		var namedLayers = sld.namedLayers;
@@ -260,6 +258,12 @@ var VectorLayer = function(map,layer){
 				polygon = symbolizer[key]
 				break;
 			}
+		}
+		if (polygon.hasOwnProperty("fillColor")){
+			return polygon.fillColor
+		}
+		if(polygon.hasOwnProperty("strokeColor")){
+			return polygon.strokeColor
 		}
 		return polygon.fillColor;
 	}
@@ -348,9 +352,9 @@ var RasterLayer = function(map,layer){
 
 Vue.component("map_component",{
 	template: `
-		<div id="map_component">
+		<div id="map_component" style="height:700px;">
 			<!-- Contenedor del mapa de OpenLayers -->
-			<div id="map_container" style="width:100%;height: 600px;">
+			<div id="map_container" style="width:100%;height:100%;">
 				<!-- Controlador del zoom del mapa personalizado-->
 				<div id="customZoom">
 					<a href="#customZoomIn" id="customZoomIn">+</a>
@@ -545,5 +549,6 @@ Vue.component("map_component",{
 		}
 	},
 })
+
 
 

@@ -3,3 +3,4 @@ var store = {
 	currentLayer:null,
 	map:null
 }
+

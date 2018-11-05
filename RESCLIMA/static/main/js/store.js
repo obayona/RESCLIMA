@@ -16,14 +16,13 @@ var store = {
 	search_option:'layers',
 	layers:[],
 	series:[],
-
 	// retorna el modelo como un diccionario, 
 	// cuyas claves seran los parametros de un query string 
 	// de un URL y cuyos valores seran los valores del query string 
 	getQueryParams:function(){
 		var queryDict = {}
-		if(this.text!=''){
-			queryDict["text"]=text
+		if(this.text){
+			queryDict["text"]=this.text
 		}
 		var selected_categories_str=""
 		for (var i=0;i<this.categories.length; i++){
@@ -80,8 +79,7 @@ var store = {
 			return null
 		}
 		queryDict["option"]=this.search_option
-		console.log("esto estoy mandando", queryDict)
-		return JSON.stringify(queryDict)
+		return queryDict
 	},
 	getSeriesParams:function(){
 		//get the selected series objects inside shared, and form the url to visualize the series
@@ -90,13 +88,13 @@ var store = {
 			var current = this.series[i];
 			if(current["selected"]){
 				selected_series_str+=current["variable_id"]+"[";
-				iters = current["stations_ids"].length;
+				iters = current["stations"].length;
 				for(var j=0; j<iters; j++){
 					if(j!=iters-1){
-						selected_series_str+=current["stations_ids"][j]+",";
+						selected_series_str+=current["stations"][j]+",";
 					}
 					else{
-						selected_series_str+=current["stations_ids"][j]+"]|";
+						selected_series_str+=current["stations"][j]+"]|";
 					}
 				}
 			}
@@ -112,5 +110,6 @@ var store = {
 	}
 	
 }
+
 
 

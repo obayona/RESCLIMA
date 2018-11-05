@@ -1,8 +1,8 @@
 Vue.component("time_component",{
 	template: `
 		<div class="container">
-			<div>
-				<h4 style="text-align: center">Seleccione un rango de fechas</h4>
+			<div style="text-align: center">
+				<p >Seleccione un rango de fechas</p>
 			</div>
 			<br>
 			<div style="text-align:center">
