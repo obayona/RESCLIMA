@@ -57,12 +57,13 @@ Vue.component("layers_component",{
 										  v-on:click.prevent="zoomToLayer(layer)">
 											<i class="material-icons">zoom_in</i>
 										</span>
+										<!--
 										<span title="Filtros"
 										 class="layerBtn" 
 										 v-if="layer.type=='vector'"
 										 v-on:click.prevent="openFilters(layer)">
 											<i class="material-icons">filter_list</i>
-										</span>
+										</span>-->
 									</div>
 								</div>
 
@@ -289,6 +290,12 @@ Vue.component("layers_component",{
 			var map = this.shared.map;
 			map.removeLayer(removing_layer.openlayer_layer,false);
 			removing_layer.openlayer_layer.destroy();
+
+			if(layers.length>0){
+				this.shared.currentLayer = layers[0];
+			}else{
+				this.shared.currentLayer = null;
+			}
 		}
 	}
 })

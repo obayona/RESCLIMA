@@ -89,7 +89,7 @@ DB_PARAMS = "/home/manager/RESCLIMA/dbparams.json"
 dbParams = None
 with open(DB_PARAMS) as data_file:
         dbParams = json.load(data_file)
-
+print dbParams
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.contrib.gis.db.backends.postgis',
