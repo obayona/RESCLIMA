@@ -22,7 +22,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from main.models import Researcher
 
-limit = 2
+limit = 10
 @login_required(login_url='noAccess')
 def list_rasterlayers(request):
 	researcher = request.user.researcher
@@ -57,7 +57,6 @@ def import_raster(request):
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
-
 def export_rasterLayer(request,rasterlayer_id):
 	rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
 	file_path = rasterlayer.file_path
@@ -69,34 +68,11 @@ def export_rasterLayer(request,rasterlayer_id):
 	response['Content-Disposition'] = "attachment; filename=" + file_name
 	return response
 
-
-#posiblemente se use en multicapa
-def view_raster(request,rasterlayer_id):
-	try:
-		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
-		bbox = rasterlayer.bbox.geojson
-		# se comprueba si tiene estilo
-		layer_styles = Style.objects.filter(layers__id=rasterlayer_id)
-		legend = [];
-		if layer_styles.count()==1:
-			style = layer_styles[0]
-			legend = getColorMap(style);
-
-	except RasterLayer.DoesNotExist:
-		return HttpResponseNotFound()
-
-	obj = {"rasterlayer":rasterlayer,
-		"bbox":bbox,
-		"legend":legend}
-
-	return render(request,"view_raster.html",obj)
-
 def style_legend(request,style_id):
 	style = Style.objects.get(id=style_id)
 	legend = getColorMap(style);
 	return HttpResponse(json.dumps(legend),content_type='application/json')
 
-@login_required(login_url='noAccess')
 def updateRasterLayer(rasterlayer,request):
 	try:
 		title = request.POST["title"]
@@ -175,7 +151,6 @@ def delete_rasterLayer(request,rasterlayer_id):
 		return HttpResponseNotFound()
 
 # Styles
-#posiblemente se use en multicapa
 def importStyle(request):
 	try:
 		title = request.POST["title"]
@@ -240,5 +215,3 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
-
-

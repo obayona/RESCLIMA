@@ -3,5 +3,4 @@ mapnik
 lxml
 psycopg2
 python-dateutil
-configparser
 celery

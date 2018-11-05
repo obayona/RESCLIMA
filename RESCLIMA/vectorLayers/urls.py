@@ -6,7 +6,6 @@ urlpatterns =[
 	url(r'^import$', vectorLayers_views.import_shapefile),
 	url(r'^export/(?P<vectorlayer_id>\d+)$', vectorLayers_views.export_shapefile),
 	url(r'^geojson/(?P<vectorlayer_id>\d+)$', vectorLayers_views.export_geojson),
-	url(r'^view/(?P<vectorlayer_id>\d+)$', vectorLayers_views.view_vectorlayer),
 	url(r'^edit/(?P<vectorlayer_id>\d+)$', vectorLayers_views.edit_vectorlayer),
 	url(r'^delete/(?P<vectorlayer_id>\w+)/$$', vectorLayers_views.delete_vectorLayer, name="delete_layer"),
 	# estilos

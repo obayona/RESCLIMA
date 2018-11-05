@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-limit = 2
+limit = 10
 @login_required(login_url='noAccess')
 def list_vectorlayers(request):
 	researcher = request.user.researcher
@@ -32,7 +32,6 @@ def list_vectorlayers(request):
 	except EmptyPage:
 		vectorlayers = paginator.page(paginator.num_pages)
 	return render(request,"list_vectorlayers.html",{'vectorlayers':vectorlayers})
-
 
 @login_required(login_url='noAccess')
 def import_shapefile(request):
@@ -49,14 +48,12 @@ def import_shapefile(request):
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
-
 def export_shapefile(request, vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
 	return exporter.export_shapefile(vectorlayer)
-
 
 def export_geojson(request, vectorlayer_id):
 	try:
@@ -65,14 +62,6 @@ def export_geojson(request, vectorlayer_id):
 		return HttpResponseNotFound()
 	geojson = exporter.export_geojson(vectorlayer)
 	return JsonResponse(geojson)
-
-#posiblemente se use en multicapa
-def view_vectorlayer(request,vectorlayer_id):
-	try:
-		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
-		return render(request,"view_vectorlayer.html",{"vectorlayer":vectorlayer});
-	except VectorLayer.DoesNotExist:
-		return HttpResponseNotFound()  
 
 def updateVectorLayer(vectorlayer,request):
 	try:
@@ -125,7 +114,6 @@ def delete_vectorLayer(request,vectorlayer_id):
 
 # Styles
 
-#posiblemente se use en multicapa
 def importStyle(request,vectorlayer):
 	try:
 		title = request.POST["title"]
@@ -186,7 +174,6 @@ def delete_style(request,style_id):
 		return HttpResponse("OK");
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()
-
 
 def export_style(request,style_id):
 	try:
