@@ -18,7 +18,7 @@ def parseUserTextInput(text,categories):
 	num_tokens = len(tokens)
 	for index, token in enumerate(tokens):
 		if(index != num_tokens - 1):
-			token += " & "
+			token += " | "
 		ts_query_str += token
 
 	num_categories = len(categories)
@@ -26,7 +26,7 @@ def parseUserTextInput(text,categories):
 		return ts_query_str
 
 	if(num_tokens>0):
-		ts_query_str += " & ("
+		ts_query_str += " | ("
 
 	for index, category in enumerate(categories):
 		category = category.replace(" ","|")
@@ -38,4 +38,5 @@ def parseUserTextInput(text,categories):
 		ts_query_str += ")"
 
 	return ts_query_str
+
 
