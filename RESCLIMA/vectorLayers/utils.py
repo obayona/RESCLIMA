@@ -116,7 +116,7 @@ def getOGRFeatureAttribute(attr, feature, encoding):
     # si se requiere encoding
 	if needs_encoding:
 		try:
-			value = value.decode(encoding)
+			value = value.encode(encoding)
 		except UnicodeDecodeError:
 			return (False, "Unable to decode value in " +
 						repr(attr_name) + " attribute.&nbsp; " +

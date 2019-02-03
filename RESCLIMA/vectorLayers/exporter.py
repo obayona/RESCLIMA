@@ -125,5 +125,5 @@ def export_geojson(vectorlayer):
 			value = utils.getAttrValue(attr,value,vectorlayer.encoding)
 			feature_json["properties"][attr_name] = value;
 			
-	return geojson
+	return json.dumps(geojson, encoding=vectorlayer.encoding)
 
