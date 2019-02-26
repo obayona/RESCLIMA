@@ -94,10 +94,18 @@ Vue.component("layers_component",{
 		}
 	},
 	mounted(){
-		this.$root.$on('searchLayers', this.searchLayers);
+		this.$root.$on('searchLayers', this.restart);
 	},
 	methods:{
+		restart(){
+			this.state = "initial";
+			this.limit = 10,
+			this.offset = 0,
+			this.max_offset = -1,
+			this.searchLayers();
+		},
 		searchLayers(){
+			this.selected_count = 0
 			// se obtienen los parametros de busqueda
 			var data = this.shared.getPostData()
 			if(data==null){
@@ -202,4 +210,5 @@ Vue.component("layers_component",{
 	}
 
 })
+
 
