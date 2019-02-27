@@ -38,7 +38,7 @@ Vue.component("layers_component",{
 						<!-- Si la capa es igual a currentLayer, se pinta-->
 						<div v-for="layer in shared.layers"
 						class="layerItem"
-						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9'}:{}]">
+						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]">
 							<!-- Si la capa tiene estado uninitialized-->
 							<!-- Se muestran animaciones-->
 							<div v-if="layer.state=='uninitialized'">
@@ -299,5 +299,4 @@ Vue.component("layers_component",{
 		}
 	}
 })
-
 
