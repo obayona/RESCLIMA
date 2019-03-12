@@ -17,7 +17,7 @@ Vue.component("layers_component",{
 				<i v-else class="material-icons">keyboard_arrow_up</i>
 			</div>
 			<!-- Wrapper-->
-			<div id="layerWrapper">
+			<div class="boxWrapper">
 				<!-- Menu con opciones de las capas-->
 				<div class="positionMenu">
 					<div class="positionBtn"
@@ -38,7 +38,7 @@ Vue.component("layers_component",{
 						<!-- Si la capa es igual a currentLayer, se pinta-->
 						<div v-for="layer in shared.layers"
 						class="layerItem"
-						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9'}:{}]">
+						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]">
 							<!-- Si la capa tiene estado uninitialized-->
 							<!-- Se muestran animaciones-->
 							<div v-if="layer.state=='uninitialized'">

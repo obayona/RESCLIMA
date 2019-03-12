@@ -100,10 +100,18 @@ Vue.component("series_component",{
 		}
 	},
 	mounted(){
-		this.$root.$on('searchSeries', this.searchSeries);
+		this.$root.$on('searchSeries', this.restart);
 	},
 	methods:{
+		restart(){
+			this.state = "initial";
+			this.limit = 10,
+			this.offset = 0,
+			this.max_offset = -1,
+			this.searchSeries();
+		},
 		searchSeries(){
+			this.selected_count = 0
 			// se obtienen los parametros de busqueda
 			var data = this.shared.getPostData()
 			if(data==null){
@@ -243,4 +251,5 @@ Vue.component("series_component",{
 		
 	}
 })
+
 
