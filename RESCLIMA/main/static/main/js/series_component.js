@@ -109,7 +109,8 @@ Vue.component("series_component",{
 			// maximo offset, al principio
 			// se tiene un valor negativo
 			max_offset:-1,
-			shared:store
+			shared:store,
+			
 		}
 	},
 	mounted(){
@@ -136,11 +137,39 @@ Vue.component("series_component",{
 			// se agrega el limit y el offset
 			data["limit"] = self.limit;
 			data["offset"] = self.offset;
+			headers = {'X-CSRFToken': this.shared.getCookie("csrftoken")}
 			// se realiza la peticion ajax
 			data = JSON.stringify(data);
 			var request = $.post(url,data);
 			self.state = "loading";	
-			request.done(function(response){
+			axios.post(url, data, {'headers':headers})
+		    .then(response => {
+		    	response = response['data'];
+		    	var  results = response["series"];
+				// se determina el maximo offset
+				var full_count = response["full_count"];
+				var max_offset = full_count - self.limit;
+
+				if(max_offset>0){
+					self.max_offset = max_offset;
+				}else{
+					self.max_offset = 0;
+				}
+
+				// se copian los resultados en el
+				// array layers
+				var series = self.shared.series;
+				series.splice(0, series.length);
+				for (var i=0;i< results.length; i++){
+					series.push(results[i]);
+				}
+				// se cambia el estado
+				self.state = "searched";
+		    })
+		    .catch(e => {
+		    	self.state = "fail";
+		    })
+			/*request.done(function(response){
 				var  results = response["series"];
 				// se determina el maximo offset
 				var full_count = response["full_count"];
@@ -164,7 +193,7 @@ Vue.component("series_component",{
 			});
 			request.fail(function(error){
 				self.state = "fail";	
-			});
+			});*/
 
 		},
 		selectSerie(serie){

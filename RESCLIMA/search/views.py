@@ -1,12 +1,18 @@
 # encoding: utf-8
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.db import connection
 from django.core.paginator import Paginator
-from models import Category
+from search.models import Category
 import json
-import layer_searcher, series_searcher
+import sys 
+import os
+sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/search"))
+import layer_searcher
+import series_searcher
+
 
 def categories_json(request):
 	categories = Category.objects.all()
@@ -22,9 +28,9 @@ def categories_json(request):
 
 
 def search_layer(request):
-	query_str = request.body;
+	query_str = request.body
 	query_dict = json.loads(query_str)
-	print "el query de busqueda ******",query_dict
+	#print "el query de busqueda ******",query_dict
 	qs,params = layer_searcher.create_query(query_dict)
 	layers = []
 	full_count = 0;
@@ -40,13 +46,12 @@ def search_layer(request):
 			layer["selected"] = False
 			full_count = row[5]
 			layers.append(layer)
-	print layers
+	print(layers)
 	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):
 	query_str = request.body;
 	query_dict = json.loads(query_str)
-	print "el query de busqueda ******",query_dict
 	qs,params = series_searcher.getTsTextQuery(query_dict)
 	series = []
 	full_count = 0;
@@ -61,8 +66,6 @@ def search_series(request):
 			serie["selected"] = False
 			full_count=row[3]
 			series.append(serie);
-
-	print series
 	return JsonResponse({"series":series,"full_count":full_count})
 
 

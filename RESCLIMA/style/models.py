@@ -8,4 +8,4 @@ class Style(models.Model):
 	title = models.CharField(max_length=50)
 	type = models.CharField(max_length=10)
 	layers = models.ManyToManyField(Layer)
-	owner = models.ForeignKey(Researcher)
+	owner = models.ForeignKey(Researcher, null=True)

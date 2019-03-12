@@ -2,14 +2,13 @@
 import os, os.path, tempfile, zipfile
 import shutil, traceback
 from osgeo import ogr
-from models import VectorLayer, Attribute, Feature, AttributeValue
-import utils
+from vectorLayers.models import VectorLayer, Attribute, Feature, AttributeValue
+import vectorLayers.utils as utils
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from osgeo import osr
 from django.http import HttpResponse
 from wsgiref.util import FileWrapper
-import json
-
+import simplejson as json
 """
 Obtiene los  datos de una capa 
 vectorial, crea un shapefile y 
@@ -124,6 +123,5 @@ def export_geojson(vectorlayer):
 			value = attr_value.value;
 			value = utils.getAttrValue(attr,value,vectorlayer.encoding)
 			feature_json["properties"][attr_name] = value;
-			
-	return json.dumps(geojson, encoding=vectorlayer.encoding)
+	return json.dumps(geojson,ensure_ascii=False)
 

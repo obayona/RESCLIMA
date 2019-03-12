@@ -1,12 +1,13 @@
+import sys
+import os
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponseNotFound, JsonResponse
 from django.http import HttpResponseRedirect
-from models import VectorLayer
+from vectorLayers.models import VectorLayer
 from search.models import Category
 from style.models import Style
 from style.utils import transformSLD
-import importer, exporter
 from RESCLIMA import settings
 import datetime
 import time
@@ -16,6 +17,9 @@ from os.path import join
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/vectorLayers"))
+import vectorLayers.importer as importer
+import vectorLayers.exporter as exporter
 
 limit = 10
 @login_required(login_url='noAccess')

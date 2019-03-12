@@ -2,8 +2,7 @@
 import json
 import psycopg2
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+#reload(sys)
 
 # ejecuta los querys insert
 def executeInsert(dbParams,query,queryParams):
@@ -64,9 +63,9 @@ def saveCategories(dbParams):
 	query = query[:-1]
 	result = executeInsert(dbParams,query,params)
 	if result==None:
-		print "Datos guardados"
+		print ("Datos guardados")
 	else:
-		print result
+		print (result)
 
 # crea el categories_string a partir 
 # de una lista de categorias
@@ -101,9 +100,9 @@ def saveVariables(dbParams):
 	result = executeInsert(dbParams,query,params)
 	
 	if result==None:
-		print "Datos guardados"
+		print ("Datos guardados")
 	else:
-		print result
+		print (result)
 
 # guarda los tipos de station
 def saveStationTypes(dbParams):
@@ -126,9 +125,9 @@ def saveStationTypes(dbParams):
 	result = executeInsert(dbParams,query,params)
 	
 	if result==None:
-		print "Tipos de estaciones guardadas"
+		print ("Tipos de estaciones guardadas")
 	else:
-		print result
+		print (result)
 
 	# recupera los tipos de estaciones
 	query = 'SELECT id,brand,model FROM "timeSeries_stationtype"'
@@ -163,9 +162,9 @@ def saveStationTypes(dbParams):
 	query = query[:-1]
 	result = executeInsert(dbParams,query,params)
 	if result==None:
-		print "Se guardaron las relaciones stationType -< variable"
+		print ("Se guardaron las relaciones stationType -< variable")
 	else:
-		print result
+		print (result)
 
 # guarda las estaciones
 def saveStations(dbParams):
@@ -202,9 +201,9 @@ def saveStations(dbParams):
 	query = query[:-1]
 	result = executeInsert(dbParams,query,params)
 	if result==None:
-		print "Datos guardados"
+		print ("Datos guardados")
 	else:
-		print result
+		print (result)
 
 
 if __name__ == "__main__":
@@ -213,14 +212,14 @@ if __name__ == "__main__":
 	with open(file_name) as data_file:
 		dbParams = json.load(data_file)
 
-	print "Los parametros de la base de datos: ",dbParams
-	print "Guardando categorias..."
+	print ("Los parametros de la base de datos: %s",dbParams)
+	print ("Guardando categorias...")
 	saveCategories(dbParams)
-	print "Guardando Variables..."
+	print ("Guardando Variables...")
 	saveVariables(dbParams)
-	print "Guardando Tipos de estaciones..."
+	print ("Guardando Tipos de estaciones...")
 	saveStationTypes(dbParams)
-	print "Guardando Estaciones ..."
+	print ("Guardando Estaciones ...")
 	saveStations(dbParams)
 
 

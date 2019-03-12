@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponse
-from models import Layer
+from .models import Layer
 import json
 
 def view_layers(request):

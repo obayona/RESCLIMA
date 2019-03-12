@@ -1,6 +1,6 @@
 from lxml import etree
 from os.path import join
-from models import Style
+from style.models import Style
 import traceback
 
 # Transforma un archivo sld version 1.1.0 a 
@@ -28,13 +28,12 @@ def transformSLD(sld):
     # en el string children_str se agregan los hijos
     children_str = ""
     for child in children:
-        children_str = children_str + etree.tostring(child);
-    
+        children_str = children_str + etree.tostring(child,encoding="unicode");
     # se agrega el string de los hijos a la cabecera
     new_sld = new_sld + children_str
+
     # se cierra el ultimo tag
     new_sld = new_sld + "</sld:StyledLayerDescriptor>"
-
     # se reemplazan los prefix "se" por "sld"
     new_sld = new_sld.replace("se:","sld:");
     # se reemplazan los prefix "SvgParameter" por "CssParameter" 

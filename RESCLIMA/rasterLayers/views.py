@@ -4,8 +4,8 @@ import os
 from os.path import join
 import datetime
 import time
-import importer
-import json
+import rasterLayers.importer as importer
+import simplejson as json
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -13,11 +13,12 @@ from wsgiref.util import FileWrapper
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from RESCLIMA import settings
-from models import RasterLayer
+from rasterLayers.models import RasterLayer
 from style.models import Style
 from style.utils import transformSLD,getColorMap
 from search.models import Category
 from main.models import Researcher
+from django.views.decorators.csrf import csrf_protect
 
 
 limit = 10
@@ -39,6 +40,7 @@ def list_rasterlayers(request):
 	return render(request,"list_rasterlayers.html",obj)
 
 @login_required(login_url='noAccess')
+@csrf_protect
 def import_raster(request):
 	if request.method == "GET":
 		categories = Category.objects.all();
@@ -46,14 +48,15 @@ def import_raster(request):
 	elif request.method == "POST":
 		result = {}
 		try:
-			print "se ejecuta la tarea en import_raster"
 			result = importer.import_data(request)
-			print "el resultado de la tarea en import_raster", result
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
-			print "El error en import_raster", e
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
+		'''
+		result = importer.import_data(request)
+		return HttpResponse(json.dumps(result),content_type='application/json')
+		'''
 
 def export_rasterLayer(request,rasterlayer_id):
 	rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
@@ -166,9 +169,8 @@ def importStyle(request):
 		fullName = join(path,fileName)
 		f = request.FILES['file']
 
-		sld_string = f.read();
+		sld_string = f.read();		
 		sld_string = transformSLD(sld_string);
-
 		f.close();
 		f = open(fullName,'w');
 		f.write(sld_string);
@@ -177,8 +179,7 @@ def importStyle(request):
 		researcher = request.user.researcher
 		researcher = researcher.id
 		owner = Researcher.objects.get(id=researcher)
-		style = Style(file_path=path,file_name=fileName,
-		  title=title, type="raster", owner=owner);
+		style = Style(file_path=path,file_name=fileName,title=title, type="raster", owner=owner);
 		style.save()
 	except Exception as e:
 		return "Error " + str(e)
