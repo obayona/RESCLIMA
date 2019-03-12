@@ -17,7 +17,7 @@ def getTsTextQuery(query_object):
 	where_stm = where_stm + 'st_v."variable_id" = v."id" '
 	
 	# si hay bbox
-	if(query_object.has_key("bbox")):
+	if("bbox" in query_object):
 		bbox_str = create_str_polygon_postgis(query_object["bbox"])
 		if bbox_str == None:
 			return "Error"
@@ -25,7 +25,7 @@ def getTsTextQuery(query_object):
 		params.append(bbox_str)
 
 	# is hay fechas de inicio y fin
-	if(query_object.has_key("ini") and query_object.has_key("end")):
+	if("ini" in query_object and "end" in query_object):
 		""" startDate and endDate are datetime instances
 		"""
 		#startDateStr = query_object["ini"].strftime("%Y-%m-%d %H:%M:%S")
@@ -39,7 +39,7 @@ def getTsTextQuery(query_object):
 		where_stm = where_stm + 'AND EXISTS ( SELECT m."idStation_id" FROM "timeSeries_measurement" as m WHERE m."idStation_id" = s.id) '
 
 	# si hay texto
-	if(query_object.has_key("text") or query_object.has_key("categories") ):
+	if("text" in query_object or "categories" in query_object ):
 		#check if the user entered a text or categories to the search
 		text = query_object.get("text","")
 		categories = query_object.get("categories", [])
@@ -60,7 +60,6 @@ def getTsTextQuery(query_object):
 		params.append(limit)
 		params.append(offset)
 
-	print("EL QUERY DE BUSQUEDA  "+ qs)
 	return qs, params
 
 

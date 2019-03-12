@@ -60,6 +60,5 @@ def create_query(query_object):
 		params.append(limit)
 		params.append(offset)
 
-	print sql_query, params
 	return sql_query, params
 

@@ -1,17 +1,19 @@
 # -*- encoding: utf-8 -*-
-
 from __future__ import absolute_import, unicode_literals
 import os
 import datetime
 from celery import shared_task, current_task
 from django.db import transaction
 from osgeo import ogr
-from .models import VectorLayer, Attribute, Feature, AttributeValue
 from main.models import Researcher
 from osgeo import osr
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos import Polygon
 import vectorLayers.utils as utils
+#import sys
+#import os
+#sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/vectorLayers"))
+from vectorLayers.models import VectorLayer, Attribute, Feature, AttributeValue
 
 
 @shared_task

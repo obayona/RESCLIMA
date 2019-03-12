@@ -177,3 +177,5 @@ migrations/*
 *settings.py
 settings.py
 RESCLIMA/static/*
+
+.Rhistory

@@ -5,7 +5,7 @@ from RESCLIMA import settings
 import time
 import datetime
 import shutil
-from tasks import import_raster_layer
+from rasterLayers.tasks import import_raster_layer
 
 '''
 Funcion  para  importar  los datos de
@@ -57,6 +57,7 @@ def import_data(request):
 	fullName = join(path,fileName)
 	# se codifica a utf-8 el nombre del archivo
 	fullName = fullName.encode('utf-8')
+	print(fullName)
 	# se guarda el archivo
 	
 	# si el objeto tiene el atributo temporary_file_path
@@ -68,8 +69,9 @@ def import_data(request):
 	else:
 		# el archivo esta en memoria y se debe 
 		# escribir en el disco
-		f = open(fullName,'w')
+		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
+			#sprint(chunk)
 			f.write(chunk)
 		f.close()
 

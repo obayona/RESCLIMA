@@ -1,6 +1,10 @@
 {% extends 'main/base.html' %}
 {% load static %}
 
+{% block styles %}
+	<link rel="stylesheet" href="{% static 'timeSeries/css/up_down_arrows.css' %}" type="text/css">
+{% endblock %}
+	
 {% block title%}RESCLIMA | INGRESAR ESTACION{% endblock %}
 
 {% block content %}
@@ -42,14 +46,14 @@
 						<!--Latitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_latitude" name="latitude" required="" type="number" min="-90.0" max="90.0"/>
+								<input id="id_latitude" name="latitude" required="" type="text" pattern="^-?\d+(\.\d{1,7})?$"/>
 								<label for="id_latitude">Latitud*</label>
 							</div>
 						</div>
 						<!--longitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_longitude" name="longitude" required="" type="number" min="-180.0" max="180.0"/>
+								<input id="id_longitude" name="longitude" required="" type="text" pattern="^-?\d+(\.\d{1,7})?$"/>
 								<label for="id_longitude">Longitud*</label>
 							</div>
 						</div>

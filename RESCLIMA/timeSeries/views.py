@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
-from models import StationType, Station, Variable
+from timeSeries.models import StationType, Station, Variable
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from tasks import parseHOBOFile
+from timeSeries.tasks import parseHOBOFile
 from RESCLIMA import settings
 from django.db import connection
 import os
@@ -111,16 +111,15 @@ def saveFile(ftemp):
 	# si el objeto ftemp tiene el atributo 
 	# temporary_file_path ya esta en el disco duro
 	if (hasattr(ftemp,'temporary_file_path')):
-		print "en el disco duro, serie de tiempo",fullName
 		ftemp_path = ftemp.temporary_file_path()
 		# mueve el archivo
 		shutil.move(ftemp_path,fullName)
 	else:
-		print "en la memoria, serie de tiempo",fullName
 		# el archivo esta en memoria y se debe 
 		# escribir en el disco
-		f = open(fullName,'w')
+		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
+			print(chunk)
 			f.write(chunk)
 		f.close()
 
@@ -152,10 +151,8 @@ def import_file(request):
 			fileName = saveFile(file_ptr)
 			params = {}
 			params["fileName"]=fileName
-			print "se ejecuta la tarea en celery timeserie"
 			task = parseHOBOFile.delay(params)
 			result["task_id"] = task.id
-			print "el id del task ", task.id
 			result["err_msg"] = None
 		else:
 			result["task_id"] = None

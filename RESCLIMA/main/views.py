@@ -46,11 +46,11 @@ def get_task_info(request):
 	task_id = request.GET.get('task_id', None)
 	if task_id is not None:
 		task = AsyncResult(task_id)
-		print "Lo que recupero  ",task_id
+		print ("Lo que recupero  "+task_id)
 		if task.result:
 			if "error" in task.result:
 				if task.result["error"]:
-					print "voy a imprimir un error"
+					print ("voy a imprimir un error")
 					#print "el mensaje de error",task.result["error"].encode('utf-8')
 		data = {}
 		data["state"] = task.state

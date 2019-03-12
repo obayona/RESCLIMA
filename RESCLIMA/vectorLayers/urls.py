@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from vectorLayers import views as vectorLayers_views
+import vectorLayers.views as vectorLayers_views
 
 urlpatterns =[
 	url(r'^$',vectorLayers_views.list_vectorlayers,name="vector_list"),

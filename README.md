@@ -44,7 +44,7 @@ Descomprimir el archivo gdal-2.1.0.tar.gz (ubicado en el directorio raiz)
 
 $ cd gdal-2.1.0/
 
-$ ./configure  --prefix=/usr/ --with-python
+$ ./configure  --prefix=/usr/ --with-python3
 
 $ make
 
@@ -52,7 +52,7 @@ $ sudo make install
 
 $ cd swig/python/
 
-$ sudo python setup.py install
+$ sudo python3 setup.py install
 
 Para comprobar si la instalacion fue correcta, en el interprete de python importar gdal:
 
@@ -142,14 +142,16 @@ SELECT create_hypertable('"timeSeries_measurement"','ts');
 
 La creacion del hypertable, no debe dar ningun problema
 
-
 Para cargar datos iniciales en una tabla:
-
-python manage.py loaddata TimeSeries/fixtures/variables.json
-
-python manage.py loaddata TimeSeries/fixtures/stationTypes.json 
+colocarse dentro de RESCLIMA/RESCLIMA/fixtures/
+python loaddata.py
 
 En RESCLIMA/RESCLIMA se encuentra un script.sql con TRIGGERS, INDEX y FUNCTIONS. Entonces hay que conectarse a la base de datos y ejecutar ese script 
+
+Para crear los triggers, ejecutar script.sql
+sudo -u postgres psql
+\c resclima
+\i RESCLIMA/script.sql
 
 # Instalacion Mapnik
 

@@ -18,7 +18,7 @@
 						<div id="errorMsg"></div>
 					</div>
 					<div class="row">
-						<form enctype="multipart/form-data" method="post" action="import" id="rasterForm">
+						<form enctype="multipart/form-data" method="post" action="import" id="rasterForm"> {% csrf_token %}
 							<!-- File chooser --> 
 							<div class="row">
 								<label for="id_import_file">Importar geoTIFF</label>

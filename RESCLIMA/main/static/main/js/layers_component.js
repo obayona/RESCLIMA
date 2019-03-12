@@ -110,13 +110,15 @@ Vue.component("layers_component",{
 			// se agrega el limit y el offset
 			data["limit"] = self.limit;
 			data["offset"] = self.offset;
-			
+			headers = {'X-CSRFToken': this.shared.getCookie("csrftoken")}
 			// se realiza la peticion ajax
 			data = JSON.stringify(data);
-			var request = $.post(url,data);
+			//var request = $.post(url,data,headers);
 			self.state = "loading";	
-			request.done(function(response){
-				var  results = response["layers"];
+			axios.post(url, data, {'headers':headers})
+		    .then(response => {
+		    	response = response['data'];
+		    	var  results = response['layers'];
 				// se determina el maximo offset
 				var full_count = response["full_count"];
 				var max_offset = full_count - self.limit;
@@ -136,10 +138,11 @@ Vue.component("layers_component",{
 				}
 				// se cambia el estado
 				self.state = "searched";
-			});
-			request.fail(function(error){
-				self.state = "fail";	
-			});
+		    })
+		    .catch(e => {
+		      self.state = "fail";
+		    })
+			
 		},
 		selectLayer(layer){
 			layer.selected = !layer.selected;
