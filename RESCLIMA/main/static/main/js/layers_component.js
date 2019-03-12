@@ -33,6 +33,19 @@ Vue.component("layers_component",{
 							</div>
 						</div>		
 					</div>
+					<!-- Botones para visualizar y descargar-->
+					<div v-if="shared.layers.length > 7">
+						<a
+						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+						v-bind:disabled="selected_count==0"
+						v-on:click="visualizeLayers">
+							<i class="material-icons left">remove_red_eye</i>Visualizar</a>
+						<a
+						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+						v-bind:disabled="selected_count==0"
+						v-on:click="downloadLayers">
+							<i class="material-icons left">file_download</i>Descargar</a>
+					</div>
 					<!-- botones de paginacion -->
 					<div class="row"
 						v-if="offset != 0 || offset < max_offset">
