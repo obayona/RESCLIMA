@@ -38,6 +38,20 @@ Vue.component("series_component",{
 							</div>
 						</div>		
 					</div>
+					<!-- Botones de visualizar y descargar -->
+					<div v-if="shared.series.length > 7">
+						<a
+						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+						v-bind:disabled="selected_count==0"
+						v-on:click="visualizeSeries">
+							<i class="material-icons left">remove_red_eye</i>Visualizar</a>
+						<a
+						class="btn waves-effect waves-light gradient-45deg-light-blue-cyan" 
+						v-bind:disabled="selected_count==0"
+						v-on:click="downloadSeries">
+							<i class="material-icons left">file_download</i>Descargar</a>
+					</div>
+
 					<!-- botones de paginacion -->
 					<div class="row"
 						v-if="offset != 0 || offset < max_offset">
