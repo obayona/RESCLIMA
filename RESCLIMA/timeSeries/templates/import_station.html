@@ -39,35 +39,35 @@
 						<!--Numero serial-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_serialNum" name="serialNum" required="" type="text" data-length="30">
+								<input id="id_serialNum" name="serialNum" required="" type="text" data-length="30" oninvalid="setCustomValidity('Campo requerido')" oninput="setCustomValidity('')">
 								<label for="id_serialNum">N&uacute;mero serial*</label>
 							</div>
 						</div>
 						<!--Latitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_latitude" name="latitude" required="" type="text" pattern="^-?\d+(\.\d{1,7})?$"/>
+								<input id="id_latitude" name="latitude" required="" type="text" pattern="^-?(\d|[1-8]\d)(\.\d{1,7})?|90(\.00)?" oninvalid="setCustomValidity('Debe estar entre 90.000000° y -90.000000°')" oninput="setCustomValidity('')"/>
 								<label for="id_latitude">Latitud*</label>
 							</div>
 						</div>
 						<!--longitud-->
 						<div class="row">
 							<div class="input-field col s12">
-								<input id="id_longitude" name="longitude" required="" type="text" pattern="^-?\d+(\.\d{1,7})?$"/>
+								<input id="id_longitude" name="longitude" required="" type="text" pattern="^-?(\d|[1-9]\d|1[0-7]\d)(\.\d{1,7})?|180(\.00)?" oninvalid="setCustomValidity('Debe estar entre 180.000000° y -180.000000°')" oninput="setCustomValidity('')"/>
 								<label for="id_longitude">Longitud*</label>
 							</div>
 						</div>
 						<!--Frecuencia-->
 						<div class="row optional">
 							<div class="input-field col s12">
-								<input id="id_frequency" name="frequency" step="1" type="number" min="15" max="60" value="15"/>
+								<input id="id_frequency" name="frequency" type="text" pattern="^(1[5-9]|[2-5][0-9]|60)$" value="15" oninvalid="setCustomValidity('La frequencia debe estar entre 15 y 60 segundos')" oninput="setCustomValidity('')" />
 								<label for="id_frequency">Frecuencia de requerimientos (en minutos)</label>
 							</div>
 						</div>
 						<!--Token-->
 						<div class="row optional">
 							<div class="input-field col s12">
-								<input id="id_token" name="token" type="text" data-length="30"/>
+								<input id="id_token" name="token" type="text" required="" data-length="30" oninvalid="setCustomValidity('Campo requerido')" oninput="setCustomValidity('')"/>
 								<label for="id_frequency">Token</label>
 							</div>
 						</div>

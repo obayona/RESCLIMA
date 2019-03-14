@@ -3,6 +3,9 @@
 
 {% block title%}RESCLIMA | BUSCAR{% endblock %}
 
+  {% block styles %}
+	<link rel="stylesheet" href="{% static 'vectorLayers/css/dateStyle.css' %}" type="text/css">
+  {% endblock %}
 
   {% block scripts %}
   <script src="{% static 'vectorLayers/js/import_shapefile.js' %}" type= "text/javascript"></script>

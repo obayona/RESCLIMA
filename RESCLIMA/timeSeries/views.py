@@ -120,7 +120,7 @@ def saveFile(ftemp):
 		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
 			print(chunk)
-			f.write(chunk)
+			f.write(chunk.encode('utf-8'))
 		f.close()
 
 	return fullName
@@ -287,23 +287,25 @@ def get_measurements_csv(variable,station,
 					   None,None)
 	if error:
 		return None,error
-
-	f = open(fileName,'w')
+	f = open(fileName.encode('utf-8').strip(),'wb')
 	header_variable = "Variable:%s,Unit:%s\n"%(variable.name,variable.unit)
-	header_variable=header_variable.encode("utf-8")
-	f.write(header_variable)
+	#header_variable=header_variable.encode("utf-8")
+	f.write(bytearray(header_variable,encoding='utf-8'))
 	
 	station_attr = (station.serialNum,station.location.x,station.location.y)
 	header_station = "Station:%s,lon:%s,lat%s\n"%station_attr
-	header_station = header_station.encode("utf-8")
-	f.write(header_station)
+	#header_station = header_station.encode("utf-8")
+	f.write(bytearray(header_station,encoding='utf-8'))
 	
 	columns = "timestamp UTC-0\tvalue\n"
-	f.write(columns)
+	#columns = bytes(columns, encoding='utf-8')
+	f.write(bytearray(columns,encoding='utf-8'))
 
 	for row in rows:
 		line = "%s\t%s\n"%(row[1],row[0])
-		f.write(line)
+		#line = bytearray(line, encoding='utf-8')
+
+		f.write(bytearray(line,encoding='utf-8'))
 
 
 """
@@ -381,7 +383,7 @@ def download_measurements(request):
 	# se elimina la carpeta temporal
 	shutil.rmtree(dst_dir)
 	# se lee el zip y se lo envia al usuario
-	zip_file = open(zip_dst,"r")
+	zip_file = open(zip_dst,"rb")
 
 	f = FileWrapper(zip_file)
 	response = HttpResponse(f, content_type="application/zip")
