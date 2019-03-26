@@ -1,5 +1,5 @@
 # encoding: utf-8
-from utils import parseUserTextInput, create_str_polygon_postgis;
+from search.utils import parseUserTextInput, create_str_polygon_postgis;
 
 
 # Genera un query dinamico dependiendo

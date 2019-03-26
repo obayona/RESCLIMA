@@ -1,0 +1,100 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title%}RESCLIMA | INGRESAR OTRAS ESTACIONES CLIMATICAS{% endblock %}
+
+{% block content %}
+<div class="section">
+	<div class="row">
+        <!--TEXTO PLANO A CAMBIAR-->
+        <h3 class="blue-text text-blue accent-3">Subir otras Estaciones clim&aacute;ticas</h3>
+        <p> Resclima soporta el ingreso de datos desde estaciones HOBO-X y BloomSky, pero tambi&eacute;n 
+        permite la carga de datos desde otras estaciones, para lo cual los archivos deben tener el siguiente formato</p>
+        
+        <h4 class="blue-text text-blue accent-2">Datos necesarios</h4>
+        <div class="col s12 m1"></div>
+        <div class="table-responsive center col s12 m10 m-2">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre de header</th>
+                    <th scope="col">Descripci&oacute;n</th>
+                    <th scope="col">Unidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="blue lighten-4">
+                <th scope="row">1</th>
+                    <td>Date Time, -GMT [USO HORARIO]</td>
+                    <td>Fecha en formato "%Y-%m-%d %H:%M:%S" y uso horario por ejemplo 
+                    (GMT -0500)</td>
+                    <td>NA</td>
+                </tr>
+                <tr>
+                <th scope="row">2</th>
+                    <td>Temp, (*C)</td>
+                    <td>Temperatura</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">3</th>
+                    <td>Temp - Max, (*C)</td>
+                    <td>Temperatura m&aacute;xima</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr>
+                    <th scope="row">4</th>
+                    <td>Temp - Min, (*C)</td>
+                    <td>Temperatura m&iacute;nima</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">5</th>
+                    <td>Temp - Avg, (*C)</td>
+                    <td>Temperatura promedio</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr>
+                    <th scope="row">6</th>
+                    <td>Temp - StdDev, (*C)</td>
+                    <td>Desviacion Estandar de Temperatura</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">7</th>
+                    <td>RH, (%)</td>
+                    <td>Temperatura promedio</td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <th scope="row">8</th>
+                    <td>RH - Max, (%)</td>
+                    <td>Temperatura promedio</td>
+                    <td>%</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">9</th>
+                    <td>RH - Min, (%)</td>
+                    <td>Temperatura promedio</td>
+                    <td>%</td>
+                </tr>
+            </tbody>
+            </table>
+        <div>
+        <h4 class="blue-text text-blue accent-3" >Archivos de muestra</h4>
+        <div class="row">
+            <div class="col s12 m2"></div>
+            <div class="col s12 m8">
+                <div class="card cyan darken-1">
+                    <div class="card-action">
+                        <a href={% url 'sample'%} download>Descargar Archivo de muestra</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

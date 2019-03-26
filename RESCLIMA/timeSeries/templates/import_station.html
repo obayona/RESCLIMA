@@ -32,6 +32,7 @@
 									{% for stationType in stationTypes  %}
 									<option value={{stationType.id}} data-automatic={{stationType.automatic}}>{{stationType}}</option>
 									{% endfor %}
+									<option value='' data-automatic=''>Otros</option>
 								</select>
 								{% endif %}
 							</div>

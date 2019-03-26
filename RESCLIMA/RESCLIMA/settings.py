@@ -84,12 +84,11 @@ WSGI_APPLICATION = 'RESCLIMA.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DB_PARAMS = "/home/manager/RESCLIMA/dbparams.json"
+DB_PARAMS = "/home/manuel/Desktop/RESCLIMA/dbparams.json"
 
 dbParams = None
 with open(DB_PARAMS) as data_file:
         dbParams = json.load(data_file)
-print dbParams
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.contrib.gis.db.backends.postgis',

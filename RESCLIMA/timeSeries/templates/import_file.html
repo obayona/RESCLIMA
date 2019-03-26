@@ -29,9 +29,13 @@
 									{% for stationType in stationTypes %}
 									<option value = {{stationType.id}}>{{stationType}}</option>
 									{% endfor %}
+									<option value = "otros">Otros</option>
 								</select>
 								{% endif %}
 							</div>
+						</div>
+						<div class="row card blue-grey darken-1" id="fileMsg">
+
 						</div>
 						<!-- File chooser --> 
 						<div class="row">
@@ -225,6 +229,19 @@
 	$(document).ready(function() {
 		var formImport = $("#importForm");
 		formImport.submit(formSubmit);
+	});
+
+	$(document).ready(function(){
+   		$("select#id_stationType").change(function(){
+			$('#fileMsg').empty();
+        	var selectedStation = $(this).children("option:selected").text();
+			if(selectedStation === 'Otros'){
+				$('#fileMsg').append("<div class='card-content white-text'><b> Guia para subir archivos de <a href='{% url 'others' %}' target='_blank'> otras estaciones </a> </b></div>");
+			}else{
+        		$('#fileMsg').append("<div class='card-content white-text'><b> Debe ingresar archivos con el formato de estaciones " + selectedStation
+			+ '</b></div>');
+			}
+		});
 	});
 </script>
 {% endblock %}

@@ -3,9 +3,9 @@ import json
 import psycopg2
 import random
 from datetime import datetime
+import importlib
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+importlib.reload(sys)
 
 # ejecuta los querys insert
 def executeInsert(dbParams,query,queryParams):
@@ -132,7 +132,7 @@ def saveTimeSeries(stations,stationTypes):
 			if(stationType["id"]==stationtype_id):
 				variables = stationType["variables"]
 
-		print "Estacion ",station_id
+		print("Estacion ",station_id)
 		# genera fechas desde el 2015 al 2018
 		times = createTimes(2015,2018)
 		query = 'INSERT INTO "timeSeries_measurement"("idStation_id","ts","readings") VALUES'
@@ -147,9 +147,9 @@ def saveTimeSeries(stations,stationTypes):
 		query = query[:-1]
 		result = executeInsert(dbParams,query,params)
 		if result==None:
-			print "Serie guardada"
+			print("Serie guardada")
 		else:
-			print result
+			print(result)
 
 # genera y guarda series de tiempo
 def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
@@ -169,7 +169,7 @@ def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
 				variables = stationType["variables"]
 				stationType_brand = stationType["brand"]
 
-		print "Estacion ",station_id
+		print("Estacion ",station_id)
 		# genera fechas dinamicamente
 		print("Generando datos para la estacion marca "+ stationType_brand + "y id "+ str(station_id) )
 		start_year = input("Ingrese año de inicio\n")
@@ -187,22 +187,22 @@ def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
 		query = query[:-1]
 		result = executeInsert(dbParams,query,params)
 		if result==None:
-			print "Serie guardada"
+			print("Serie guardada")
 		else:
-			print result
+			print(result)
 
 
 if __name__ == "__main__":
-	file_name = "/home/manager/RESCLIMA/dbparams.json"
+	file_name = "/home/manuel/Desktop/RESCLIMA/dbparams.json"
 	dbParams = None
 	with open(file_name) as data_file:
 		dbParams = json.load(data_file)
 
-	print "Los parametros de la base de datos: ",dbParams
+	print("Los parametros de la base de datos: ",dbParams)
 	
 	stations, stationTypes = getData(dbParams)
-	print "Las estaciones obtenidas", stations
-	print "Los tipos de estaciones con sus variables: ", stationTypes
-	print "Creando series de tiempo..."
+	print ("Las estaciones obtenidas", stations)
+	print ("Los tipos de estaciones con sus variables: ", stationTypes)
+	print ("Creando series de tiempo...")
 	saveTimeSeries(stations,stationTypes)
 
