@@ -364,7 +364,7 @@ def parseGenericFile(genericParams):
 
 	percent_cont = 0
 
-
+	
 	# se obtienen las variables de la base de datos
 	temp = Variable.objects.get(name=u"Temperatura")
 	rh = Variable.objects.get(name=u"Humedad relativa")
@@ -381,7 +381,7 @@ def parseGenericFile(genericParams):
 	# se itera el archivo
 	try:
 		for i,line in enumerate(f,1):
-
+		
 			# si se lee la primera linea del archivo
 			# se recupera el numero serial de la estacion
 			if(i==1):
@@ -440,6 +440,96 @@ def parseGenericFile(genericParams):
 					result["error"]=msg
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
+
+				# se obtiene la informacion del timezone
+				# el string debe ser parseado para obtener el ofset 
+				# en horas
+				header_date = headers[0]
+				index = header_date.find("GMT")
+				time_zone_str = header_date[index:].strip(' \t\n\r')
+				offset_str = time_zone_str[4:7]
+				offset = int(offset_str)
+				# se crea el string del timezone
+				if(offset<0):
+					local_tz_str = "Etc/GMT-" + str(abs(offset));
+				elif(offset >0):
+					local_tz_str = "Etc/GMT+" + str(abs(offset));
+				else:
+					local_tz_str="UTC";
+
+				# se actualiza el progreso
+				result["percent"]=20
+				current_task.update_state(state='PROGRESS',meta=result)
+
+				continue;
+
+			# si la linea es mayor que la 3
+			# se obtienen las mediciones
+			measures = getColumns(line)
+			if(len(measures)!=14):
+				# se borra el archivo
+				os.remove(fileName)
+				result["error"]="Error: falta una columna en la linea "+str(i)
+				current_task.update_state(state='FAILURE',meta=result)
+				return result
+			# se recupera la fecha hora de la primera columna
+			datetime_str = measures[0]
+			try:
+				# se crea un objeto datetime desde el string y el formato
+				dt = datetime.strptime(datetime_str,datetime_format);
+				# se transforma la fecha del time zone local a UTC
+				dt = transformToUTC(dt,local_tz_str);
+			except Exception as e:
+				# se borra el archivo
+				os.remove(fileName)
+				result["error"]="Error: la fecha "+datetime_str+" no es correcta"+str(e)
+				current_task.update_state(state='FAILURE',meta=result)
+				return result
+
+			# en la columna 1 esta temperatura y en la 6, la humedad relativa
+			#variables_index = [1,6]
+			measures_dict = {}
+			measures_len = len(measures)
+			#for i,j in enumerate(variables_index):
+			for j in (1,measures_len):
+				measure = measures[j]
+				measure = measure.strip(' \t\n\r')
+				variable = variables[j] 
+
+				if measure == "":
+					continue;
+
+				idVariable = variable.id;
+				datatype = variable.datatype;
+				measure = parseMeasure(measure,datatype);
+				# se agrega al diccionario de variables y
+				# mediciones
+				measures_dict[idVariable]=measure;
+			
+			# se guardan las mediciones
+			saveMeasurements(station,None,measures_dict, dt);
+
+			# se actualiza el porcentaje de progreso de 30 a 90
+			percent_cont = percent_cont%10
+			percent_cont += 1
+			# cada 50 lineas actualiza el progreso
+			if(percent_cont==0):
+				percent = 30 + (float(i)/num_lines)*75
+				result["error"]=None
+				result["percent"]=percent
+				current_task.update_state(state='PROGRESS',meta=result)
+	except Exception as e:
+		# se borra el archivo
+		print(str(e))
+		os.remove(fileName)
+		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+		current_task.update_state(state='FAILURE',meta=result)
+		return result
+
+	# se completa la tarea
+	result["percent"]=100		
+	return result
+
 
 				# se obtiene la informacion del timezone
 				# el string debe ser parseado para obtener el ofset 
