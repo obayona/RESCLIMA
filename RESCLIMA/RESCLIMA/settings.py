@@ -27,7 +27,7 @@ SECRET_KEY = 'k2va29q6&j)hb4cb1q7jq(k(qtl(sr0!hcunjzp@wc6@mt8!ps'
 DEBUG = True
 MESSAGE_LEVEL = 40 
 ALLOWED_HOSTS = ['*']
-
+SITE_ID = 1
 
 # Application definition
 
@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'RESCLIMA.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DB_PARAMS = "/home/manuel/Desktop/RESCLIMA/dbparams.json"
+DB_PARAMS = "/home/manager/RESCLIMA/dbparams.json"
 
 dbParams = None
 with open(DB_PARAMS) as data_file:
