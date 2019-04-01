@@ -119,7 +119,6 @@ def saveFile(ftemp):
 		# escribir en el disco
 		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
-			print(chunk)
 			f.write(chunk.encode('utf-8'))
 		f.close()
 

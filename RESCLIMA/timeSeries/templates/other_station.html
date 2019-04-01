@@ -9,10 +9,19 @@
 	<div class="row">
         <!--TEXTO PLANO A CAMBIAR-->
         <h3 class="blue-text text-blue accent-3">Subir otras Estaciones clim&aacute;ticas</h3>
-        <p> Resclima soporta el ingreso de datos desde estaciones HOBO-X y BloomSky, pero tambi&eacute;n 
+        <p class="ml-2"> Resclima soporta el ingreso de datos desde estaciones HOBO-X y BloomSky, pero tambi&eacute;n 
         permite la carga de datos desde otras estaciones, para lo cual los archivos deben tener el siguiente formato</p>
         
         <h4 class="blue-text text-blue accent-2">Datos necesarios</h4>
+        <div>
+        <p class='ml-2'>Para subir un archivo se requieren al menos 4 lineas:</p>
+            <ul class='ml-2 collection'>
+                <li class='collection-item'>Primera l&iacute;nea: Contiene el n&uacute;mero de serie de la estaci&oacute;n</li>
+                <li class='collection-item'>Segunda l&iacute;nea: Vac&iacute;o</li>
+                <li class='collection-item'>Tercera l&iacute;nea: Contiene el header del csv</li>
+                <li class='collection-item'>Cuarta l&iacute;nea: Datos</li>
+            </ul>
+        </div>
         <div class="col s12 m1"></div>
         <div class="table-responsive center col s12 m10 m-2">
         <table class="table table-hover table-bordered">
@@ -65,20 +74,50 @@
                 <tr class="blue lighten-4">
                     <th scope="row">7</th>
                     <td>RH, (%)</td>
-                    <td>Temperatura promedio</td>
+                    <td>Humedad Relativa promedio</td>
                     <td>%</td>
                 </tr>
                 <tr>
                     <th scope="row">8</th>
                     <td>RH - Max, (%)</td>
-                    <td>Temperatura promedio</td>
+                    <td>Humedad relativa máxima</td>
                     <td>%</td>
                 </tr>
                 <tr class="blue lighten-4">
                     <th scope="row">9</th>
                     <td>RH - Min, (%)</td>
-                    <td>Temperatura promedio</td>
+                    <td>Humedad relativa minima</td>
                     <td>%</td>
+                </tr>
+                <tr>
+                    <th scope="row">9</th>
+                    <td>UV (lo)</td>
+                    <td>Indice UV</td>
+                    <td>(lo)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">9</th>
+                    <td>Precipitaci&oacute;n, (mm)</td>
+                    <td>Lluvia</td>
+                    <td>mm</td>
+                </tr>
+                <tr >
+                    <th scope="row">9</th>
+                    <td>Direcci&oacute;n del viento (º)</td>
+                    <td>Direcci&oacute;n del viento</td>
+                    <td>(º)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">9</th>
+                    <td>Velocidad del viento (m/s)</td>
+                    <td>Velocidad del viento</td>
+                    <td>(m/s)</td>
+                </tr>
+                <tr>
+                    <th scope="row">9</th>
+                    <td>Velocidad de r&aacute;fagas (m/s)</td>
+                    <td>Velocidad de r&aacute;fagas</td>
+                    <td>(m/s)</td>
                 </tr>
             </tbody>
             </table>

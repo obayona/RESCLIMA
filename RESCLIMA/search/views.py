@@ -9,7 +9,7 @@ from search.models import Category
 import json
 import sys 
 import os
-sys.path.append(os.path.abspath("/home/manuel/Desktop/RESCLIMA/RESCLIMA/search"))
+#sys.path.append(os.path.abspath("/home/manuel/Desktop/RESCLIMA/RESCLIMA/search"))
 import search.layer_searcher as layer_searcher
 import search.series_searcher as series_searcher
 

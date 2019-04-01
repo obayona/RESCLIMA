@@ -21,6 +21,22 @@
 					"Detección de lluvia",
 					"Presión",
 					"Indice UV"]
-	}
+				},
+				{
+					"brand": "Otro",
+					"model": "Otro",
+					"automatic":false,
+					"variables":["Luminancia",
+								"Temperatura",
+								"Humedad relativa",
+								"Imagen SKY2",
+								"Detección de lluvia",
+								"Presión",
+								"Indice UV",
+								"Lluvia",
+								"Dirección del viento",
+								"Velocidad del viento",
+								"Velocidad de rafagas"]
+				}
 ]
 

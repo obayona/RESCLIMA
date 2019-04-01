@@ -5,7 +5,6 @@ import random
 from datetime import datetime
 import importlib
 import sys
-importlib.reload(sys)
 
 # ejecuta los querys insert
 def executeInsert(dbParams,query,queryParams):
