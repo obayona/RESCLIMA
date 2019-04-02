@@ -4,7 +4,7 @@ from wsgiref.util import FileWrapper
 from timeSeries.models import StationType, Station, Variable
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from timeSeries.tasks import parseHOBOFile
+from timeSeries.tasks import parseHOBOFile, parseGenericFile
 from RESCLIMA import settings
 from django.db import connection
 import os
@@ -152,6 +152,13 @@ def import_file(request):
 			params = {}
 			params["fileName"]=fileName
 			task = parseHOBOFile.delay(params)
+			result["task_id"] = task.id
+			result["err_msg"] = None
+		else if stationType == "Otro-Otro":
+			fileName = saveFile(file_ptr)
+			params = {}
+			params["fileName"]=fileName
+			task = parseGenericFile.delay(params)
 			result["task_id"] = task.id
 			result["err_msg"] = None
 		else:
