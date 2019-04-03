@@ -291,9 +291,8 @@ def parseHOBOFile(hoboParams):
 				current_task.update_state(state='PROGRESS',meta=result)
 	except Exception as e:
 		# se borra el archivo
-		print(str(e))
 		os.remove(fileName)
-		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+		result["error"]="Error1: el encoding "+encoding +" "+e +" del archivo no es correcto"
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
@@ -373,7 +372,7 @@ def parseGenericFile(genericParams):
 	wind_vel = Variable.objects.get(name=u"Velocidad del viento")
 	wind = Variable.objects.get(name=u"Velocidad de rafagas")
 	lum = Variable.objects.get(name=u"Luminancia")
-	detec_rain = Variable.objects.get(name=u"Dtección de lluvia")
+	detec_rain = Variable.objects.get(name=u"Detección de lluvia")
 	press = Variable.objects.get(name=u"Presión")
 	uv = Variable.objects.get(name=u"Indice UV")   #es un numero float
 	variables = [temp,rh,rain,wind_dir,wind_vel,wind,lum,detec_rain,press,uv]
@@ -520,9 +519,8 @@ def parseGenericFile(genericParams):
 				current_task.update_state(state='PROGRESS',meta=result)
 	except Exception as e:
 		# se borra el archivo
-		print(str(e))
 		os.remove(fileName)
-		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+		result["error"]="Error2: el encoding "+encoding + " del archivo no es correcto"
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 

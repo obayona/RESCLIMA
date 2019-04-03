@@ -29,7 +29,7 @@ def export_shapefile(vectorlayer):
 	# con la libreria osr se crea el shapefile
 	driver = ogr.GetDriverByName("ESRI shapefile")
 	datasource = driver.CreateDataSource(dst_file)	
-	layer = datasource.CreateLayer(vectorlayer.filename.encode('utf-8'),dst_spatial_ref)
+	layer = datasource.CreateLayer(vectorlayer.filename.encode('utf-8').decode(),dst_spatial_ref)
 
 	# se guardan los atributos de la capa en 
 	# el archivo
@@ -83,7 +83,7 @@ def export_shapefile(vectorlayer):
 	# se elimina la carpeta temporal
 	shutil.rmtree(dst_dir)
 	# se lee el zip y se lo envia al usuario
-	zip_file = open(zip_dst,"r")
+	zip_file = open(zip_dst,"rb")
 
 	f = FileWrapper(zip_file)
 	response = HttpResponse(f, content_type="application/zip")
