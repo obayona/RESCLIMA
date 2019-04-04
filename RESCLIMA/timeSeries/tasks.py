@@ -210,7 +210,7 @@ def parseHOBOFile(hoboParams):
 					os.remove(fileName)
 					msg = "Error: el archivo debe tener ocho columnas, "
 					ms = msg + "se tienen "+str(len(headers)) + " columnas"
-					result["error"]=msg
+					result["error"]=ms
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
@@ -435,8 +435,8 @@ def parseGenericFile(genericParams):
 					# se borra el archivo
 					os.remove(fileName)
 					msg = "Error: el archivo debe tener ocho columnas, "
-					ms = msg + "se tienen "+str(len(headers)) + " columnas"
-					result["error"]=msg
+					ms = msg + "se tienen "+str(len(headers)) + " columnas"+str(headers)
+					result["error"]=ms
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
@@ -489,12 +489,10 @@ def parseGenericFile(genericParams):
 			#variables_index = [1,6]
 			measures_dict = {}
 			measures_len = len(measures)
-			#for i,j in enumerate(variables_index):
 			for j in (1,measures_len):
 				measure = measures[j]
 				measure = measure.strip(' \t\n\r')
 				variable = variables[j] 
-
 				if measure == "":
 					continue;
 
@@ -520,7 +518,7 @@ def parseGenericFile(genericParams):
 	except Exception as e:
 		# se borra el archivo
 		os.remove(fileName)
-		result["error"]="Error2: el encoding "+encoding + " del archivo no es correcto"
+		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto" + ": "+str(e)
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 

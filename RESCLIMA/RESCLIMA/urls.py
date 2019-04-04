@@ -35,6 +35,8 @@ urlpatterns = [
 	url(r'^series/', include("timeSeries.urls")),
 	url(r'^raster/', include("rasterLayers.urls")),
 	url(r'^tms/', include("tms.urls")),
+	url(r'^help/$', helpfaq, name='help'),
+    url(r'^help/jsonquestion/$', jsonfaqs, name='jsonquestion' ),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
