@@ -119,8 +119,7 @@ def saveFile(ftemp):
 		# escribir en el disco
 		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
-			print(chunk)
-			f.write(chunk.encode('utf-8'))
+			f.write(chunk)
 		f.close()
 
 	return fullName
@@ -154,7 +153,8 @@ def import_file(request):
 			task = parseHOBOFile.delay(params)
 			result["task_id"] = task.id
 			result["err_msg"] = None
-		elif stationType == "Otro-Otro":
+
+		elif stationType_str == "Otro-Otro":
 			fileName = saveFile(file_ptr)
 			params = {}
 			params["fileName"]=fileName
@@ -400,3 +400,23 @@ def download_measurements(request):
 	
 	return response
 
+"""
+Vista para mostrar la forma de 
+crear archivos para subir otro
+tipo de estaciones
+"""
+def others_stations(request):
+		return render(request, 'other_station.html', {})
+
+
+"""
+Vista para la descarga del archivo
+de muestra para datos de otras
+estaciones
+"""
+def samplefile(request):
+	with open('../data/stations/other_station_format.csv', 'rb') as sample:
+		response = HttpResponse(sample.read())
+		response = HttpResponse(content_type='text/csv')
+		response['Content-Disposition'] = 'attachment;filename=other_station_format.csv'
+		return response

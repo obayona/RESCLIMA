@@ -210,7 +210,7 @@ def parseHOBOFile(hoboParams):
 					os.remove(fileName)
 					msg = "Error: el archivo debe tener ocho columnas, "
 					ms = msg + "se tienen "+str(len(headers)) + " columnas"
-					result["error"]=msg
+					result["error"]=ms
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
@@ -291,9 +291,8 @@ def parseHOBOFile(hoboParams):
 				current_task.update_state(state='PROGRESS',meta=result)
 	except Exception as e:
 		# se borra el archivo
-		print(str(e))
 		os.remove(fileName)
-		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+		result["error"]="Error1: el encoding "+encoding +" "+e +" del archivo no es correcto"
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
@@ -373,7 +372,7 @@ def parseGenericFile(genericParams):
 	wind_vel = Variable.objects.get(name=u"Velocidad del viento")
 	wind = Variable.objects.get(name=u"Velocidad de rafagas")
 	lum = Variable.objects.get(name=u"Luminancia")
-	detec_rain = Variable.objects.get(name=u"Dtección de lluvia")
+	detec_rain = Variable.objects.get(name=u"Detección de lluvia")
 	press = Variable.objects.get(name=u"Presión")
 	uv = Variable.objects.get(name=u"Indice UV")   #es un numero float
 	variables = [temp,rh,rain,wind_dir,wind_vel,wind,lum,detec_rain,press,uv]
@@ -436,8 +435,8 @@ def parseGenericFile(genericParams):
 					# se borra el archivo
 					os.remove(fileName)
 					msg = "Error: el archivo debe tener ocho columnas, "
-					ms = msg + "se tienen "+str(len(headers)) + " columnas"
-					result["error"]=msg
+					ms = msg + "se tienen "+str(len(headers)) + " columnas"+str(headers)
+					result["error"]=ms
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
@@ -490,12 +489,10 @@ def parseGenericFile(genericParams):
 			#variables_index = [1,6]
 			measures_dict = {}
 			measures_len = len(measures)
-			#for i,j in enumerate(variables_index):
 			for j in (1,measures_len):
 				measure = measures[j]
 				measure = measure.strip(' \t\n\r')
 				variable = variables[j] 
-
 				if measure == "":
 					continue;
 
@@ -520,14 +517,11 @@ def parseGenericFile(genericParams):
 				current_task.update_state(state='PROGRESS',meta=result)
 	except Exception as e:
 		# se borra el archivo
-		print(str(e))
 		os.remove(fileName)
-		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto"
+		result["error"]="Error: el encoding "+encoding + " del archivo no es correcto" + ": "+str(e)
 		current_task.update_state(state='FAILURE',meta=result)
 		return result
 
 	# se completa la tarea
 	result["percent"]=100		
 	return result
-
-
