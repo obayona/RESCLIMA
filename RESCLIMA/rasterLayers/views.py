@@ -64,7 +64,7 @@ def export_rasterLayer(request,rasterlayer_id):
 	file_name = rasterlayer.file_name
 	fullName = join(file_path,file_name)
 
-	f = FileWrapper(open(fullName,"r"))
+	f = FileWrapper(open(fullName,"rb"))
 	response = HttpResponse(f, content_type="image/tiff")
 	response['Content-Disposition'] = "attachment; filename=" + file_name
 	return response

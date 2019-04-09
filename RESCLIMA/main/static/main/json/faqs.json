@@ -1,0 +1,26 @@
+{
+   "que": { 
+
+        "¿Qué es RESCLIMA?":"RESCLIMA es una plataforma para subir, buscar, visualizar y descargar datos espaciales (capas) y series de tiempo provenientes de estaciones meteorológicas. DATA-CITY es una plataforma de visualización genérica de datos que tiene como propósito de valorizar el conocimiento de los investigadores de ESPOL",
+        "¿A quienes se dirige RESCLIMA?":"RESCLIMA está orientado a ser una herramienta para investigación y captura de datos en tiempo real",
+        "¿Qué ofrece DATA-CITY?":"Ofrece la visualización de datos de estaciones climáticas y datos espaciales",
+        "¿Qué dependencias requiere DATA-CITY?":["Django REST Framework 3.9.0",
+        "django-dash 0.5.5",
+        "django-cleanup 3.0.1",
+        "easy_thumbnails 2.5",
+        "xmltodict 0.11.0",
+        "celery-progress 0.0.3",
+        "django==1.11",
+        "lxml",
+        "psycopg2",
+        "python-dateutil",
+        "celery",
+        "jsonfield"],
+        "Qué datos incluye RESCLIMA": ["Datos de estaciones meteorológicas",
+        "Capas rasters",
+        "Capas vectoriales"]
+    },
+    "donde":{
+        "¿Dónde se almacenan los archivos ?": "Los directorios a modificar para los archivos tasks se encuentran en DATACITY/simulation/task.py. Puede cambiar las rutas donde se almacenen los archivos de capas rasters, shapefiles y capas vectoriales se encuentran en DATACITY/RESCLIMA/RESCLIMA/settings.py"
+    }
+}

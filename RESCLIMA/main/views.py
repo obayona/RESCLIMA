@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from wsgiref.util import FileWrapper
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -40,6 +41,10 @@ def profile(request):
 	researcher = request.user.researcher
 	return render(request, 'main/profile.html', {'researcher': researcher, })
 
+#Redirecciona a la página de ayuda y faqs
+def helpfaq(request):
+	researcher = request.user.researcher
+	return render(request, 'main/help.html', {'researcher': researcher,})
 
 # retorna informacion de una tarea de Celery
 def get_task_info(request):
@@ -65,5 +70,14 @@ def get_task_info(request):
 		data["result"]={"error":"Error, el task se perdió"}
 		return HttpResponse(json.dumps(data), content_type='application/json')
 
-
+"""
+Vista que sirve para guardar el archivo
+de preguntas mas frecuentes para la vista
+de ayuda
+"""
+def jsonfaqs(request):
+	wrapper = FileWrapper(open('./main/static/main/json/faqs.json',"r"))
+	response = HttpResponse(wrapper, content_type='application/json')
+	response['Content-Disposition'] = 'attachement; filename=dump.json'
+	return response
 

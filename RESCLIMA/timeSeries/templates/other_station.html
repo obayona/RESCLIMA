@@ -1,0 +1,121 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+
+{% block title%}RESCLIMA | INGRESAR OTRAS ESTACIONES CLIMATICAS{% endblock %}
+
+{% block content %}
+<div class="section">
+	<div class="row">
+        <!--TEXTO PLANO A CAMBIAR-->
+        <h3 class="blue-text text-blue accent-3">Subir otras Estaciones clim&aacute;ticas</h3>
+        <p class="ml-2"> Resclima soporta el ingreso de datos desde estaciones HOBO-X y BloomSky, pero tambi&eacute;n 
+        permite la carga de datos desde otras estaciones, para lo cual los archivos deben tener el siguiente formato</p>
+        
+        <h4 class="blue-text text-blue accent-2">Datos necesarios</h4>
+        <div>
+        <p class='ml-2'>Para subir un archivo se requieren al menos 4 lineas:</p>
+            <ul class='ml-2 collection'>
+                <li class='collection-item'>Primera l&iacute;nea: Contiene el n&uacute;mero de serie de la estaci&oacute;n</li>
+                <li class='collection-item'>Segunda l&iacute;nea: Vac&iacute;o</li>
+                <li class='collection-item'>Tercera l&iacute;nea: Contiene el header del csv</li>
+                <li class='collection-item'>Cuarta l&iacute;nea: Datos</li>
+            </ul>
+        </div>
+        <div class="col s12 m1"></div>
+        <div class="table-responsive center col s12 m10 m-2">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nombre de header</th>
+                    <th scope="col">Descripci&oacute;n</th>
+                    <th scope="col">Unidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                <tr class="blue lighten-4">
+                <th scope="row">0</th>
+                    <td>Date Time, GMT -0500</td>
+                    <td>Fecha y hora de la toma de datos</td>
+                    <td>yy-mm-dd hh:mm:s</td>
+                </tr>
+                <tr>
+                <th scope="row">1</th>
+                    <td>Temp, (*C)</td>
+                    <td>Temperatura</td>
+                    <td>Grados Celsius (*C)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">2</th>
+                    <td>RH, (%)</td>
+                    <td>Humedad Relativa promedio</td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Precipitaci&oacute;n, (mm)</td>
+                    <td>Lluvia</td>
+                    <td>mm</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">4</th>
+                    <td>Direcci&oacute;n del viento (º)</td>
+                    <td>Direcci&oacute;n del viento (float)</td>
+                    <td>(ø)</td>
+                </tr>
+                <tr>
+                    <th scope="row">5</th>
+                    <td>Velocidad del viento (m/s)</td>
+                    <td>Velocidad del viento</td>
+                    <td>(m/s)</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">6</th>
+                    <td>Velocidad de r&aacute;fagas</td>
+                    <td>Velocidad de r&aacute;fagas (float)</td>
+                    <td>(m/s)</td>
+                </tr>
+                <tr>
+                    <th scope="row">7</th>
+                    <td>Luminancia</td>
+                    <td>Luminancia: Candela por metro cuadrado</td>
+                    <td>cd/m2</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">8</th>
+                    <td>Detecci&oacute;n de lluvia</td>
+                    <td>Detecci&oacute;n de lluvia </td>
+                    <td>boolean</td>
+                </tr>
+                <tr>
+                    <th scope="row">9</th>
+                    <td>Presi&oacute;n</td>
+                    <td>Presi&oacute;n milibar (float)</td>
+                    <td>mbar</td>
+                </tr>
+                <tr class="blue lighten-4">
+                    <th scope="row">10</th>
+                    <td>UV</td>
+                    <td>Indice UV</td>
+                    <td>(lo)</td>
+                </tr>
+            </tbody>
+            </table>
+        <div>
+        <h4 class="blue-text text-blue accent-3" >Archivos de muestra</h4>
+        <div class="row">
+            <div class="col s12 m2"></div>
+            <div class="col s12 m8">
+                <div class="card cyan darken-1">
+                    <div class="card-action">
+                        <a href={% url 'sample'%} download>Descargar Archivo de muestra</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

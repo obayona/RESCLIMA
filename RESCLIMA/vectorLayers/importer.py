@@ -2,7 +2,7 @@
 import os
 import time, datetime
 import shutil
-from tasks import import_vector_layer
+from vectorLayers.tasks import import_vector_layer
 from RESCLIMA import settings
 
 def createTempFolder():
