@@ -1,0 +1,113 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA| AYUDA{% endblock %}
+
+{% block content %}
+
+<div class="main">
+    <div id="wrapper">
+	<!-- Empieza a mostrar el contenido -->
+        <div id="profile-page-header" class="card">
+          <div class="card-image waves-effect waves-block waves-light">
+          	<img class="activator" src="{% static 'main/images/14.png' %}" alt="user background">
+	        </div>
+          <figure class="card-profile-image">
+        		<img src="{% static 'main/images/faqs.png' %}" alt="profile image" class="circle z-depth-2 responsive-img activator gradient-45deg-light-blue-cyan gradient-shadow">
+          </figure>
+          <div class="card-content">
+            <div class="row pt-2">
+              <div class="col s12 m6 offset-m6">
+                <h3 class="card-title grey-text text-darken-4"> ¿Cómo podemos ayudarte? </h3>
+                <h3 class="medium grey-text">{{ researcher.first_name }} {{ researcher.last_name }}</h3>
+              </div>
+            </div>
+      		</div>
+        </div>
+	</div>
+		<div class="col-6 col-sm-12 col-md-6">
+			<h3 class = "center">Preguntas Frecuentes</h3>
+		</div>
+		<div id="searchForm" class="container">
+		<div class="section">
+			<div class="row">
+				<div class="col s12">
+					<h4 class='blue-text blue-darken-2'>¿Qu&eacute;?</h4>
+							<ul id="que" class="collapsible"></ul>					
+					<h4 class='blue-text blue-darken-2'>¿D&oacute;nde?</h4>
+							<ul id="donde" class="collapsible" data-collapsible="accordion" ></ul>
+					<h4 class='blue-text blue-darken-2'>Presenta Problemas</h4>	
+					<ul class="collapsible" data-collapsible="accordion">
+						<li>
+							<div class="collapsible-header">Reportar un problema</div>
+							<div class="collapsible-body teal lighten-5">
+								<p class="">
+									En el caso de encontrar un problema dir&iacute;jase a 
+									<a href="https://github.com/fndos/DATACITY/issues" class="" target="blank"> 
+									este enlace</a>	e inf&oacute;rmenos 		
+								</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<hr style="border-width:2px;">
+			<div class="row">
+				<div style="margin-top:20px;">
+				<keep-alive>
+					<component v-bind:is='shared.search_option+"_component"'></component>
+				</keep-alive>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+{% endblock content %}
+
+{% block scripts_body %}
+<script type="text/javascript">
+
+	//JQuery function to populate the most frequent cuestions according to 
+	// a json file located on ..../help/jsonquestion
+	$(function(){
+		$.getJSON( "./jsonquestion", function( data ) {
+			$.each( data, function( key, val ) {
+				for(var ikey in val){
+					var lio = $("<li/>",{
+					}).appendTo("#"+key);
+					var header = $("<div/>",{
+						"class": "collapsible-header",
+					}).appendTo(lio);
+
+					header.text(ikey);
+
+					var faller = $("<div/>",{
+						"class": "collapsible-body teal lighten-5",
+					});
+
+					lio.append(faller);
+			
+					if($.isArray(val[ikey])){
+						var ul = $("<ul id ="+ikey+"></ul>").appendTo(faller)
+						$.each(val[ikey], function( index, value ) {
+							$(ul).append("<li>"+value+"</li>");
+						});
+					}else{
+						console.log(val[ikey])
+						faller.append(val[ikey])
+					}
+				}
+				$('.collapsible').collapsible();
+			});
+		});
+	});
+
+	$( ".collapsible-header" ).click(function() {
+	});
+
+</script>
+{% endblock scripts_body %}

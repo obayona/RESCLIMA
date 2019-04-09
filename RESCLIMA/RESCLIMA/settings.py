@@ -27,7 +27,7 @@ SECRET_KEY = 'k2va29q6&j)hb4cb1q7jq(k(qtl(sr0!hcunjzp@wc6@mt8!ps'
 DEBUG = True
 MESSAGE_LEVEL = 40 
 ALLOWED_HOSTS = ['*']
-
+SITE_ID = 1
 
 # Application definition
 
@@ -89,7 +89,6 @@ DB_PARAMS = "/home/manager/RESCLIMA/dbparams.json"
 dbParams = None
 with open(DB_PARAMS) as data_file:
         dbParams = json.load(data_file)
-print dbParams
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.contrib.gis.db.backends.postgis',

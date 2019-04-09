@@ -9,9 +9,8 @@ from search.models import Category
 import json
 import sys 
 import os
-sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/search"))
-import layer_searcher
-import series_searcher
+import search.layer_searcher as layer_searcher
+import search.series_searcher as series_searcher
 
 
 def categories_json(request):
