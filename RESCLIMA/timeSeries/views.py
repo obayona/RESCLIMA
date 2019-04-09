@@ -154,7 +154,7 @@ def import_file(request):
 			task = parseHOBOFile.delay(params)
 			result["task_id"] = task.id
 			result["err_msg"] = None
-		else if stationType == "Otro-Otro":
+		elif stationType == "Otro-Otro":
 			fileName = saveFile(file_ptr)
 			params = {}
 			params["fileName"]=fileName

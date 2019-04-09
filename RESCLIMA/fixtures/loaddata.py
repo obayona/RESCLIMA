@@ -168,7 +168,7 @@ def saveStationTypes(dbParams):
 
 # guarda las estaciones
 def saveStations(dbParams):
-	file_name = "stations.json"
+	file_name = "real_sky2_stations.json"
 	stations = None
 	with open(file_name) as data_file:
 		stations = json.load(data_file)
