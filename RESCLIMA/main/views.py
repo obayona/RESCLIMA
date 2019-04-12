@@ -33,7 +33,7 @@ def noAccess(request):
 	return render(request, 'main/noAccess.html', {})
 
 def home(request):
-    	return render(request,"main/home.html")
+	return render(request,"main/home.html")
 
 @login_required(login_url='noAccess')
 def profile(request):

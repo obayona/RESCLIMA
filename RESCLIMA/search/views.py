@@ -7,11 +7,8 @@ from django.db import connection
 from django.core.paginator import Paginator
 from search.models import Category
 import json
-import sys 
-import os
-sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/search"))
-import layer_searcher
-import series_searcher
+from search import layer_searcher
+from search import series_searcher
 
 
 def categories_json(request):

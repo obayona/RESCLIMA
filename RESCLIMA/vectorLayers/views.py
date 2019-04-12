@@ -12,7 +12,7 @@ from RESCLIMA import settings
 import datetime
 import time
 import json
-import utils
+import vectorLayers.utils
 from os.path import join
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect

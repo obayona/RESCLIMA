@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models
-from jsonfield import JSONField
+from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 from search.models import FilterSearchTable
 

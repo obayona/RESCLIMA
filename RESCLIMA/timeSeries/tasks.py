@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import, unicode_literals
 from datetime import datetime
-from dateutil.parser import parse
 from timeSeries.models import Variable,Station,Measurement
 from timeSeries.utils import *
 import os
