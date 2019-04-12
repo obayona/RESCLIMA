@@ -4,7 +4,7 @@ from wsgiref.util import FileWrapper
 from timeSeries.models import StationType, Station, Variable
 from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
-from timeSeries.tasks import parseHOBOFile
+from timeSeries.tasks import parseHOBOFile, parseGenericFile
 from RESCLIMA import settings
 from django.db import connection
 import os
@@ -119,7 +119,6 @@ def saveFile(ftemp):
 		# escribir en el disco
 		f = open(fullName,'wb')
 		for chunk in ftemp.chunks():
-			print(chunk)
 			f.write(chunk)
 		f.close()
 
@@ -152,6 +151,14 @@ def import_file(request):
 			params = {}
 			params["fileName"]=fileName
 			task = parseHOBOFile.delay(params)
+			result["task_id"] = task.id
+			result["err_msg"] = None
+
+		elif stationType_str == "Otro-Otro":
+			fileName = saveFile(file_ptr)
+			params = {}
+			params["fileName"]=fileName
+			task = parseGenericFile.delay(params)
 			result["task_id"] = task.id
 			result["err_msg"] = None
 		else:
@@ -287,23 +294,25 @@ def get_measurements_csv(variable,station,
 					   None,None)
 	if error:
 		return None,error
-
-	f = open(fileName,'w')
+	f = open(fileName.encode('utf-8').strip(),'wb')
 	header_variable = "Variable:%s,Unit:%s\n"%(variable.name,variable.unit)
-	header_variable=header_variable.encode("utf-8")
-	f.write(header_variable)
+	#header_variable=header_variable.encode("utf-8")
+	f.write(bytearray(header_variable,encoding='utf-8'))
 	
 	station_attr = (station.serialNum,station.location.x,station.location.y)
 	header_station = "Station:%s,lon:%s,lat%s\n"%station_attr
-	header_station = header_station.encode("utf-8")
-	f.write(header_station)
+	#header_station = header_station.encode("utf-8")
+	f.write(bytearray(header_station,encoding='utf-8'))
 	
 	columns = "timestamp UTC-0\tvalue\n"
-	f.write(columns)
+	#columns = bytes(columns, encoding='utf-8')
+	f.write(bytearray(columns,encoding='utf-8'))
 
 	for row in rows:
 		line = "%s\t%s\n"%(row[1],row[0])
-		f.write(line)
+		#line = bytearray(line, encoding='utf-8')
+
+		f.write(bytearray(line,encoding='utf-8'))
 
 
 """
@@ -381,7 +390,7 @@ def download_measurements(request):
 	# se elimina la carpeta temporal
 	shutil.rmtree(dst_dir)
 	# se lee el zip y se lo envia al usuario
-	zip_file = open(zip_dst,"r")
+	zip_file = open(zip_dst,"rb")
 
 	f = FileWrapper(zip_file)
 	response = HttpResponse(f, content_type="application/zip")
@@ -391,3 +400,23 @@ def download_measurements(request):
 	
 	return response
 
+"""
+Vista para mostrar la forma de 
+crear archivos para subir otro
+tipo de estaciones
+"""
+def others_stations(request):
+		return render(request, 'other_station.html', {})
+
+
+"""
+Vista para la descarga del archivo
+de muestra para datos de otras
+estaciones
+"""
+def samplefile(request):
+	with open('../data/stations/other_station_format.csv', 'rb') as sample:
+		response = HttpResponse(sample.read())
+		response = HttpResponse(content_type='text/csv')
+		response['Content-Disposition'] = 'attachment;filename=other_station_format.csv'
+		return response

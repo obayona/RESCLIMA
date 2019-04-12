@@ -9,5 +9,7 @@ urlpatterns = [
 	url(r'^variable/info/(?P<variable_id>\w+)/$',get_variable_info,name="get_variable_info"),
 	url(r'^measurements/$', get_measurements, name="ts_measurements"),
 	url(r'^measurements/download/$', download_measurements, name="ts_download_measurements"),
+	url(r'^otherstation/$',others_stations, name="others"),
+	url(r'^otherstation/samplefile/$',samplefile, name="sample"),
 ]
 

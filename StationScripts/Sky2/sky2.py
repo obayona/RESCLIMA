@@ -1,26 +1,31 @@
 #!/usr/bin/python
 # -*- encoding: utf-8 -*-
 import time
-import urllib2 
+from urllib.request import urlopen,Request
 import json
 import time
 from datetime import datetime
 import psycopg2
 import logging
 from threading import Condition, Thread
-from Queue import Queue
+from queue import Queue
 import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+import importlib
+importlib.reload(sys)
 
 # Script que descarga los datos
 # de las estaciones SKY2 y las guarda en 
 # la base de datos
 
 # archivos de configuracion, log y backup
+'''
 configFileName = "/home/manager/RESCLIMA/dbparams.json";
 logFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/log.txt"
 backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt";
+'''
+configFileName = "/home/belen/github/RESCLIMA/dbparams.json";
+logFileName = "/home/belen/github/RESCLIMA/StationScripts/Sky2/log.txt"
+backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt"
 
 # variable de condicion
 # para dormir el main
@@ -42,6 +47,7 @@ def getVariablesByNames(dbParams,variable_names):
 	variables = []
 	conn = None
 	try:
+		
 		# se recuperan todas las variables de la base de datos
 		conn = psycopg2.connect(host=dbParams["host"],
 								port=dbParams["port"],
@@ -55,10 +61,12 @@ def getVariablesByNames(dbParams,variable_names):
 	            FROM "timeSeries_variable" as v
 	            """;
 		cursor.execute(query)
+
 		variables_db = cursor.fetchall()
 
 		for v in variables_db:
-			name = v[1].decode('utf-8')
+			print(v)
+			name = v[1]
 			if v[1] in variable_names:
 				variable = {}
 				variable["id"] = v[0];
@@ -68,11 +76,12 @@ def getVariablesByNames(dbParams,variable_names):
 
 	except Exception as e:
 		error_str = "Fallo la base de datos" + str(e);
+		print(error_str)
 		return None,error_str;
 	finally:
 		if conn:
 			conn.close()
-
+	
 	return variables,None 
 
 def getStations(dbParams):
@@ -87,7 +96,7 @@ def getStations(dbParams):
 		cursor = conn.cursor()
 
 		query = """
-				SELECT s.id,s.token,s.frequency
+				SELECT s.id,s.token,s.frequency,"s"."serialNum"
                 FROM "timeSeries_station" as s,   
                 "timeSeries_stationtype" as st 
                 WHERE st.brand='BloomSky' and st.model='SKY2' 
@@ -101,6 +110,7 @@ def getStations(dbParams):
 			station["id"] = row[0];
 			station["token"] = row[1];
 			station["frequency"] = row[2];
+			station["serialNum"] = row[3]
 			stations.append(station);
 
 	except Exception as e:
@@ -115,34 +125,41 @@ def getStations(dbParams):
 def getSKY2Data(token):
 	try:
 		url = 'https://api.bloomsky.com/api/skydata/.?unit=intl'
-		request = urllib2.Request(url)
+		request = Request(url)
 		request.add_header('Authorization', token)
-		response = urllib2.urlopen(request).read()
+		response = urlopen(request).read()
 		return response,None
 	except Exception as e:
 		error_str = "Error al descargar datos " + str(e)
 		return None,error_str
 
-def parseMeasurements(idStation,data,variables):
-	source = json.loads(data)[0]
-	readings = source['Data']
-	timestamp = readings['TS']
-	dt = datetime.utcfromtimestamp(timestamp)	
-	timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
+def parseMeasurements(serialNum,idStation,data,variables):
+	'''Format of json response is in https://drive.google.com/open?id=1d26v5604KrCHvKlRUOpTEf5FMh84Aw6C'''
+	''' http://weatherlution.com/bloomsky-api/?doing_wp_cron=1554744072.9384839534759521484375'''
+
+	source = json.loads(data)
+	#get the data of the specific station id
+	for station in source:
+		if(station["DeviceID"] == serialNum):
+			print(station["DeviceID"])
+			readings = station['Data']
+			timestamp = readings['TS']
+			dt = datetime.utcfromtimestamp(timestamp)	
+			timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
-	result = {}
-	for variable in variables:
-		idVariable = variable["id"];
-		alias = variable["alias"];
-		result[idVariable] = readings[alias];
+			result = {}
+			for variable in variables:
+				idVariable = variable["id"];
+				alias = variable["alias"];
+				result[idVariable] = readings[alias];
 
-	values = json.dumps(result);
-	measurement = {}
-	measurement["idStation"]=idStation
-	measurement["datetime"]=timestamp_str
-	measurement["values"]=values
-	return measurement, None
+			values = json.dumps(result);
+			measurement = {}
+			measurement["idStation"]=idStation
+			measurement["datetime"]=timestamp_str
+			measurement["values"]=values
+			return measurement, None
 
 def insertMeasures(dbParams,measurements):
 	conn = None
@@ -170,8 +187,11 @@ def insertMeasures(dbParams,measurements):
 
 def dataExtraction_thread(dbParams,station,variables):
 	idStation = station["id"]
+	print("ID ESTACION "+ str(idStation))
 	token = station["token"]
 	frequency = station["frequency"]
+	serialNum = station["serialNum"]
+	print(serialNum)
 	seconds = frequency*60
 	while(True):
 		time.sleep(seconds)
@@ -179,7 +199,7 @@ def dataExtraction_thread(dbParams,station,variables):
 		if(error):
 			logging.error(error)
 			continue
-		measurements,error = parseMeasurements(idStation,data,variables)
+		measurements,error = parseMeasurements(serialNum,idStation,data,variables)
 		if(error):
 			logging.error(error)
 			continue
@@ -225,7 +245,6 @@ if __name__ == "__main__":
 	variables_alias[u"Detección de lluvia"]=u"Rain"
 	variables_alias[u"Presión"]=u"Pressure"
 	variables_alias[u"Indice UV"]=u"UVIndex"
-
 
 	for variable in variables:
 		name = variable["name"]

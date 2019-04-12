@@ -10,6 +10,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="stylesheet" href="{% static 'main/css/materialize.css' %}" type="text/css">
+	<link rel="stylesheet" href="{% static 'main/css/materialize_corrections.css' %}" type="text/css">
 	<link rel="stylesheet" href="{% static 'main/css/style.css' %}" type="text/css">
 	<link rel="stylesheet" href="{% static 'main/css/style-horizontal.min.css' %}" type="text/css">
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -93,7 +94,7 @@
 							</a>
 						</li>
 						<li>
-							<a href="#" class="grey-text text-darken-1"><i class="material-icons">live_help</i>Ayuda</a>
+							<a href="{% url 'help' %}" class="grey-text text-darken-1"><i class="material-icons">live_help</i>Ayuda</a>
 						</li>
 						<li class="divider"></li>
 						<li>

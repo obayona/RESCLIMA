@@ -17,7 +17,6 @@ from os.path import join
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/vectorLayers"))
 import vectorLayers.importer as importer
 import vectorLayers.exporter as exporter
 

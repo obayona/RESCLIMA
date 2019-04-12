@@ -157,7 +157,7 @@ def set_ogr_feature_attribute(attr, value, feature, encoding):
 			floats.append(eval(s))
 		feature.SetFieldDoubleList(attr_name, floats)
 	elif attr.type == ogr.OFTString:
-		feature.SetField(attr_name, value.encode(encoding))
+		feature.SetField(attr_name, value.encode(encoding).decode(encoding='utf-8', errors='strict') )
 	elif attr.type == ogr.OFTStringList:
 		strings = []
 		for s in eval(value):
