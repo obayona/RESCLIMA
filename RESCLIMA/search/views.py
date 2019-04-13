@@ -7,15 +7,10 @@ from django.db import connection
 from django.core.paginator import Paginator
 from search.models import Category
 import json
-<<<<<<< HEAD
-from search import layer_searcher
-from search import series_searcher
-=======
 import sys 
 import os
 import search.layer_searcher as layer_searcher
 import search.series_searcher as series_searcher
->>>>>>> be0ad8deb10a36207f108827ca108b2b14215762
 
 
 def categories_json(request):
@@ -50,7 +45,6 @@ def search_layer(request):
 			layer["selected"] = False
 			full_count = row[5]
 			layers.append(layer)
-	print(layers)
 	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):
