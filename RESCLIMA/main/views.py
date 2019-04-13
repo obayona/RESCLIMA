@@ -25,16 +25,16 @@ def login(request):
 			return render(request,'main/login.html', {'error':True})
 	else:
 		return render(request, 'main/login.html', {})
-"""
+
 def logout(request):
 	auth_logout(request)
-	return render(request, 'main/home.html', {})"""
+	return render(request, 'main/home.html', {})
 
 def noAccess(request):
 	return render(request, 'main/noAccess.html', {})
 
 def home(request):
-    	return render(request,"main/home.html")
+	return render(request,"main/home.html")
 
 @login_required(login_url='noAccess')
 def profile(request):

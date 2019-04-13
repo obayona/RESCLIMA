@@ -34,3 +34,7 @@ body {
 	position: relative;
 }
 
+.right_div {
+	margin-left:auto; 
+	margin-right:0;
+}

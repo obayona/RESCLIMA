@@ -1,18 +1,25 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-import mapnik
+from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from os.path import join
 from rasterLayers.models import RasterLayer
 from style.models import Style
 from style.utils import getColorMap
 import traceback
 import math
-
+import tifffile as tiff
+from skimage.transform import resize
+from skimage import img_as_ubyte
+import numpy as np
+from io import BytesIO
+from PIL import Image
 
 MAX_ZOOM_LEVEL = 20
 TILE_WIDTH     = 256
 TILE_HEIGHT    = 256
+R_EARTH_X = 20026376.39 #radio de la tierra en x
+R_EARTH_Y = 20048966.10 #radio de la tierra en y
 
 def root(request):
 	try:
@@ -52,7 +59,6 @@ def service(request, version):
 		traceback.print_exc()
 	return HttpResponse("Error")
 
-
 def tileMap(request, version, rasterlayer_id):
 
 	if version != "1.0":
@@ -87,90 +93,244 @@ def tileMap(request, version, rasterlayer_id):
 		traceback.print_exc()
 		return HttpResponse("Error")
 
+def applyStyleRaster(img,colorMap):
+	h,w = img.shape
+	raster = np.zeros((h,w,4),dtype="uint8")
+	
+	entry = colorMap[0]
+	color = entry["color"]
+	color = color.replace("#","")
+	rgb = list(int(color[i:i+2], 16) for i in (0, 2 ,4))
+	rgb.append(255)
+	quantity = entry["quantity"]
+	raster[img<=quantity]=rgb
 
-def _unitsPerPixel(zoomLevel):
-    # ancho del mundo = 20026376.39 + 20048966.10 = 40075342.49
-    # 40075342.49/256=156544.3066
-    return 156544.3066/math.pow(2,zoomLevel)
+	for i,entry in enumerate(colorMap[1:-1]):
+		color = entry["color"]
+		color = color.replace("#","")
+		rgb = list(int(color[i:i+2], 16) for i in (0, 2 ,4))
+		rgb.append(255)
+		quantity = entry["quantity"]
+		quantity0 = colorMap[i-1]["quantity"]
+		a = img>quantity0
+		b = img<=quantity
+		raster[np.logical_and(a,b)]= rgb
 
+
+	entry = colorMap[-1]
+	color = entry["color"]
+	color = color.replace("#","")
+	rgb = list(int(color[i:i+2], 16) for i in (0, 2 ,4))
+	rgb.append(255)
+	quantity = entry["quantity"]
+	raster[img>quantity]=rgb
+
+	return raster
+
+def scaleImage(img):
+	img=img_as_ubyte(img)
+	h,w = img.shape
+	result = np.zeros((h,w,4),dtype="uint")
+	result[:,:,0]=img
+	result[:,:,1]=img
+	result[:,:,2]=img
+	result[:,:,3].fill(255)
+	return result
+
+
+def getBBox(rasterlayer):
+	bbox=rasterlayer.bbox
+	coord4326 = SpatialReference(4326)
+	coord3857 = SpatialReference(3857)
+	trans = CoordTransform(coord4326, coord3857)
+	bbox.transform(trans)
+	coords = bbox.coords[0]
+	minX = coords[0][0]
+	maxX = coords[2][0]
+	minY = coords[0][1]
+	maxY = coords[2][1]
+	return (minX,maxX,minY,maxY)
+
+def createImage(img):
+	resize_flag = False
+
+	if (img.shape[0]!=TILE_HEIGHT or img.shape[1]!=TILE_WIDTH):
+		resize_flag = True
+
+	file = BytesIO()
+	image = Image.fromarray(img)
+	if(resize_flag):
+		image = image.resize((TILE_WIDTH,TILE_HEIGHT))
+	image.save(file, 'png')
+	file.name = 'test.png'
+	file.seek(0)
+	return file
+
+def intersectRanges(a1,a2,b1,b2):
+	if(a2 <= a1):
+		raise Exception("Invalid range %f, %f"%(a1,a2))
+	if(b2 <= b1):
+		raise Exception("Invalid range %f, %f"%(b1,b2))
+
+	if(b2<a1 or b1>a2):
+		return None,None
+	if(b1>=a1):
+		c1 = b1
+	else:
+		c1 = a1
+	if(b2<=a2):
+		c2 = b2
+	else:
+		c2 = a2
+	return c1,c2
+
+def calculateCropCoord(a1,a2,Length,tileLength):
+	dif = a2 -a1
+	if (a1>0 and a2<Length):
+		return 0,dif
+	if (a1==0):
+		return tileLength-dif,tileLength
+	if (a2==Length):
+		return 0,dif
+
+def createBlankTile(W,H):
+	tile = np.zeros((W,H,4),dtype='uint8')
+	return tile
+
+#Calcula la longitud del tile dependiendo del
+#nivel de zoom
+def getTileLength(zoomLevel):
+    # ancho del mundo = R_EARTH_X + R_EARTH_Y
+    # el numero de tiles es 2^zoomLevel
+    return (R_EARTH_X + R_EARTH_X)/math.pow(2,zoomLevel)
+
+
+def normalizeCoord(coord,normX,normY):
+	x1,x2,y1,y2 = coord
+	return x1+normX,x2+normX,y1+normY,y2+normY
 
 def tile(request, version, rasterlayer_id, zoom, x, y):
 	try:
+		#TODO: validar si existe la capa
 		rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
 
 		if version != "1.0":
 			raise Http404
 		
-		zoom = int(zoom)
-		x    = int(x)
-		y    = int(y)
-
+		zoom = int(zoom);x = int(x);y = int(y)
 
 		if zoom < 0 or zoom > MAX_ZOOM_LEVEL:
 			raise Http404
 
-		xExtent = _unitsPerPixel(zoom) * TILE_WIDTH
-		yExtent = _unitsPerPixel(zoom) * TILE_HEIGHT
-
-
-		minLong = x * xExtent -20026376.39
-		minLat = y * yExtent - 20026376.39  
-		maxLong = minLong + xExtent
-		maxLat = minLat + yExtent
-
-		map = mapnik.Map(TILE_WIDTH, TILE_HEIGHT, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +units=m +k=1.0 +nadgrids=@null +no_defs")
-		map.background = mapnik.Color("#00000000")
-		raster = mapnik.Layer("raster");
-		raster.srs = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +no_defs +over"
-
 		# se carga el archivo
 		file_path = rasterlayer.file_path
 		file_name = rasterlayer.file_name
-		file_format = rasterlayer.file_format
-		ext = file_format
+		ext = rasterlayer.file_format
 		file_name = file_name.replace(ext,"-proj"+ext)
 		fullName = join(file_path,file_name)
-		numBands = rasterlayer.numBands
-
+		print(fullName)
+		img = tiff.imread(fullName)
 		# se obtiene el estilo
 		layer_styles = Style.objects.filter(layers__id=rasterlayer.id)
-		if numBands == 1 and layer_styles.count()==1:
-			raster.datasource = mapnik.Gdal(file=fullName,band=1)
-		else:
-			raster.datasource = mapnik.Gdal(file=fullName)
-
-		style = mapnik.Style()
-		rule = mapnik.Rule()
-
-		symbol = mapnik.RasterSymbolizer()
-
 		# agregar estilo si existe
 		if layer_styles.count()==1:
 			layer_style = layer_styles[0]
 			colorMap = getColorMap(layer_style)	
-			c = mapnik.RasterColorizer(mapnik.COLORIZER_LINEAR,mapnik.Color(0,0,0,0))
+			raster = applyStyleRaster(img,colorMap)
+		else:
+			raster = scaleImage(img)
+			tiff.imsave("imagen.tif",raster)
 
-			for entry in colorMap:
-				color = entry["color"]
-				quantity = entry["quantity"]
-				c.add_stop(quantity,mapnik.Color(color))
+		#calculos
+		tileLength = getTileLength(zoom)
 
-			symbol.colorizer = c
+		minLong = x*tileLength - R_EARTH_X 
+		maxLong = minLong + tileLength
+		minLat = y*tileLength  - R_EARTH_Y
+		maxLat = minLat + tileLength
+		print("Hasta aqui todo belleza")
+		print("TMS box",minLong,maxLong,minLat,maxLat)
+		
+
+		# se obtiene el bbox de la capa
+		minX,maxX,minY,maxY = getBBox(rasterlayer)
+		print("Layer BBox:",minX,maxX,minY,maxY)
+		print("---------------------------")
+		print("Empiezan las transformaciones")
+		#calculos
+		
+		#Encerando coordenadas
+		print("Encerando coordenadas")
+		minX,maxX,minY,maxY = normalizeCoord((minX,maxX,minY,maxY),R_EARTH_X,R_EARTH_Y)
+		minLong,maxLong,minLat,maxLat = normalizeCoord((minLong,maxLong,minLat,maxLat),R_EARTH_X,R_EARTH_Y)
+
+		print("TMS box",minLong,maxLong,minLat,maxLat)
+		print("Layer box",minX,maxX,minY,maxY)
+
+		print("Haciendo las coordenadas relativas a la imagen")
+		minLong,maxLong,minLat,maxLat = normalizeCoord((minLong,maxLong,minLat,maxLat),-minX,-minY)
+		minX,maxX,minY,maxY = normalizeCoord((minX,maxX,minY,maxY),-minX,-minY)
+		
+
+		print("TMS box",minLong,maxLong,minLat,maxLat)
+		print("Layer box",minX,maxX,minY,maxY)
+		print("---------------------------")
+		# se obtiene la relacion entre el raster y el BBOX 
+		pixelsHeight,pixelsWidth,_ = raster.shape
+		print("H,W",pixelsHeight,pixelsWidth)
+		fX = pixelsWidth/maxX
+		fY = pixelsHeight/maxY
+		print("fX",fX,"fY",fY)
+		# se obtiene el tamanio del tile en pixeles
+		tW = int((maxLong - minLong)*fX)
+		tH = int((maxLat - minLat)*fY)
+		print(tW,tH)
+		if(tH > pixelsHeight or tW> pixelsWidth):
+			tile = createBlankTile(TILE_WIDTH,TILE_HEIGHT)
+			imageData = createImage(tile)
+			return HttpResponse(imageData, content_type="image/png")
 
 
-		rule.symbols.append(symbol)
-		style.rules.append(rule)
-		map.append_style("estilo",style)
-		raster.styles.append("estilo")
-		map.layers.append(raster)
+		# se crea un tile vacio
+		tile = createBlankTile(tW,tH)
+
+		print("Calculando area de recorte")
+		tx1,tx2=intersectRanges(minX,maxX,minLong,maxLong)
+		ty1,ty2=intersectRanges(minY,maxY,minLat,maxLat)
+		# si no hay interseccion
+		if tx1==None or tx2==None or ty1==None or ty2==None:
+			# se envia el tile vacio
+			imageData = createImage(tile)
+			return HttpResponse(imageData, content_type="image/png")
 
 
-		map.zoom_to_box(mapnik.Box2d(minLong, minLat, maxLong, maxLat))
-		image = mapnik.Image(TILE_WIDTH, TILE_HEIGHT)
-		mapnik.render(map, image)
+		print("Area de recorte",tx1,tx2,ty1,ty2)
+		# se calcula el area de recorte en pixeles
+		tx1 = int(tx1*fX);tx2 = int(tx2*fX);ty1 = int(ty1*fY);ty2 = int(ty2*fY)
+		print("Area de recorte en pixeles")
+		print(tx1,tx2,ty1,ty2)
 
-		imageData = image.tostring('png')
+		print("Area del tile en coordenadas de imagen")
+		# se intercambia el eje vertical
+		ty2 = pixelsHeight-ty2
+		ty1 = pixelsHeight-ty1
+		ty2,ty1 = ty1,ty2
+		print(ty1,ty2,tx1,tx2)
+		# se realiza el recorte en la imagen
+		crop = raster[ty1:ty2,tx1:tx2,:]
+		print(crop.shape)
+
+		# se debe pegar en el tile el area recortada
+		sx1,sx2=calculateCropCoord(tx1,tx2,pixelsWidth,tW)
+		sy1,sy2=calculateCropCoord(ty1,ty2,pixelsHeight,tH)
+		print(sy1,sy2,sx1,sx2)
+		print(tile.shape)
+		print(tile[sy1:sy2,sx1:sx2,:].shape)
+		tile[sy1:sy2,sx1:sx2,:]=crop
+		imageData = createImage(tile)
+
 		return HttpResponse(imageData, content_type="image/png")
+
 	except:
 		traceback.print_exc()
 		return HttpResponse("Error")

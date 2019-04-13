@@ -1,9 +1,28 @@
 Vue.component("currentlayer_component",{
 	template: `
-		<div id="currentlayer_component">
-			<div class="gradient-45deg-light-blue-cyan" style="padding:10px;color:white">Capa actual</div>
-			<div style="padding:10px;">
-				<div v-if="shared.currentLayer">
+		<!-- Contenedor corredizo, se abre cuando open es true -->
+		<div id="currentlayer_component"
+		 v-bind:style="[open?{'right':'0px'}:{'right':'-250px'}]">
+			
+			<!-- Boton que abre y cierra el contenedor-->
+			<div id="leyendContainerOpen"
+			class="gradient-45deg-light-blue-cyan"
+			 v-on:click.prevent="open=!open">
+				<!-- Dependiendo del valor de open se muestra un icono diferente-->
+				<i v-if="open" class="material-icons">keyboard_arrow_up</i>
+				<i v-else class="material-icons">keyboard_arrow_down</i>
+				Capa
+				<!-- Dependiendo del valor de open se muestra un icono diferente-->
+				<i v-if="open" class="material-icons">keyboard_arrow_up</i>
+				<i v-else class="material-icons">keyboard_arrow_down</i>
+			</div>
+
+			<!-- Wrapper -->
+			<div class="boxWrapper">
+				<!-- Contenedor con la leyenda -->
+				<div class="gradient-45deg-light-blue-cyan" style="padding:10px;color:white">Capa actual</div>
+				<div style="padding:10px;">
+					<div v-if="shared.currentLayer">
 					<div v-if="shared.currentLayer.state=='uninitialized'">
 						<div style="width:230px;height:20px;margin:10px;" class="animated-background"></div>
 						<div style="width:230px;height:60px;margin:10px;" class="animated-background"></div>
@@ -40,6 +59,7 @@ Vue.component("currentlayer_component",{
 						</div>
 					</div>
 				</div>
+				</div>
 			</div>
 		</div>
 	`,
@@ -49,6 +69,7 @@ Vue.component("currentlayer_component",{
 	data(){
 		return {
 			shared:store,
+			open:true,
 		}
 	},
 	methods:{
