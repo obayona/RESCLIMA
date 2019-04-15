@@ -25,6 +25,7 @@
 
 					<div class="row">
 						<form enctype="multipart/form-data" method="post" action="import" id="shapefileForm" class="col s12">
+							{% csrf_token %}
 							<!-- File chooser --> 
 							<div class="row">
 								<label for="id_import_files">Importar archivos shapefile</label>

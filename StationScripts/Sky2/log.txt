@@ -549,3 +549,32 @@
 2018-10-03 15:04:37,120 Error al descargar datos HTTP Error 401: UNAUTHORIZED
 2018-10-03 15:04:37,250 Error al descargar datos HTTP Error 401: UNAUTHORIZED
 2018-10-03 15:04:38,540 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 20:35:15,264 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 21:14:02,235 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 21:14:02,236 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 21:14:02,236 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 21:14:02,236 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-08 21:14:02,741 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:02:45,220 Fallo la base de datos column s.serialnum does not exist
+LINE 2:     SELECT s.id,s.token,s.frequency,s.serialNum
+                                            ^
+HINT:  Perhaps you meant to reference the column "s.serialNum".
+
+2019-04-09 00:24:05,513 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:39:05,329 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:39:05,332 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:39:05,339 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:39:05,340 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:39:06,167 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 00:54:16,156 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:09:10,229 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:09:10,231 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:09:10,232 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:09:10,233 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:09:19,553 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:24:22,743 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:39:11,075 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:39:11,075 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:39:11,076 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:39:11,076 Error al descargar datos HTTP Error 401: UNAUTHORIZED
+2019-04-09 01:39:23,665 Error al descargar datos HTTP Error 401: UNAUTHORIZED

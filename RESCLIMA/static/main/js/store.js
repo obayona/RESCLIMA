@@ -16,6 +16,7 @@ var store = {
 	search_option:'layers',
 	layers:[],
 	series:[],
+	token:'',
 	// retorna el modelo como un diccionario, 
 	// cuyas claves seran los parametros de un query string 
 	// de un URL y cuyos valores seran los valores del query string 
@@ -107,7 +108,19 @@ var store = {
 			selected_series_str+="&end_date="+this.end_date;
 		}
 		return selected_series_str;
-	}
+	},
+	getCookie: function(key) {
+            var value = decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(key).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null
+
+            if(value && value.substring(0,1) === "{" && value.substring(value.length-1,value.length) === "}") {
+                try {
+                    value = JSON.parse(value)
+                }catch (e) {
+                    return value;
+                }
+            }
+            return value;
+     }
 	
 }
 

@@ -45,7 +45,6 @@ def search_layer(request):
 			layer["selected"] = False
 			full_count = row[5]
 			layers.append(layer)
-	print(layers)
 	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):

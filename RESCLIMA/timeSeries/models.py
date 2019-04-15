@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models
-from jsonfield import JSONField
+from django.contrib.postgres.fields import JSONField
 from django.utils import timezone
 from search.models import FilterSearchTable
 
@@ -41,7 +41,7 @@ class Station(models.Model):
 	active = models.BooleanField()
 	stationType = models.ForeignKey(StationType, on_delete=models.CASCADE)
 	frequency = models.FloatField(blank=True,null=True)
-	token = models.CharField(max_length=30, blank=True, null=True)
+	token = models.CharField(max_length=60, blank=True, null=True)
 
 	def __unicode__(self):
 		return "%s %s %s %s" % (self.serialNum,self.location,self.active,self.stationType)

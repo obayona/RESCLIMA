@@ -1,0 +1,26 @@
+[
+	{
+		"serialNum": "442C0595627B",
+		"location":"-2.1771,-79.8434",
+		"active":true,
+		"stationType":"BloomSky",
+		"frequency":5,
+		"token":"wda-ptbetdWqmOGigafL6tbPh93JvpWdrA=="
+	},
+	{
+		"serialNum": "442C05BC7610 ",
+		"location":"-2.1639,-79.8322",
+		"active":true,
+		"stationType":"BloomSky",
+		"frequency":6,
+		"token":"wda-ptbetdWqmOGigafL6tbPh93JvpWdrA=="
+	},
+	{
+		"serialNum": "442C05BC73C2",
+		"location":"-2.181700,-79.815300",
+		"active":true,
+		"stationType":"BloomSky",
+		"frequency":7,
+		"token":"wda-ptbetdWqmOGigafL6tbPh93JvpWdrA=="
+	}
+]
