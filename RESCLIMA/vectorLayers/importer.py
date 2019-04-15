@@ -2,6 +2,9 @@
 import os
 import time, datetime
 import shutil
+import zipfile as zipfile
+import io
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from vectorLayers.tasks import import_vector_layer
 from RESCLIMA import settings
 
@@ -13,6 +16,12 @@ def createTempFolder():
 	fullName = os.path.join(settings.TEMPORARY_FILES_PATH,folderName)
 	os.mkdir(fullName)
 	return fullName
+
+def deleteTempFolder(fullName):
+	try:
+		shutil.rmtree(fullName, ignore_errors=True)
+	except OSError as e:  ## if failed, report it back to the user ##
+		print ("Error: %s - %s." % (e.filename, e.strerror))
 
 ''' 
 Funcion para importar los datos de
@@ -151,4 +160,143 @@ def import_data(request):
 	result["task_id"] = task.id;
 
 	return result;
+
+"""
+Funcion que permite la subida de 
+shapefiles en archivos comprimidos
+.rar o .zip, recibe un 
+(django.http.request.HttpRequest).
+Valida y abre los archivos y los envia
+a la funcion import data para que ejecute
+la task de cellery y suba los archivos a
+la base de datos
+Actually looking for a way to make a method
+with less wasting of resources because the 
+current one requires to create again 
+InMemoryUploadedFile objects and send them
+back to import_data(request)
+"""
+def import_compress_data(request):
+	'''
+	django.http.request.HttpRequest={}: 
+	Request con el mismo formato que recibe 
+	la funcion import_data
+	'''
+	list_files = request.FILES.getlist("import_files")
+	result = {}
+	'''
+	Verificando que sea zip file
+	'''
+	required_extensions = [".zip"]
+	shipfiles_extensions = [".shp", ".shx", ".dbf", ".prj"]
+	has_extension = {}
+	
+	# se obtienen las variables del POST
+	list_files = request.FILES.getlist("import_files")
+	encoding  = request.POST["encoding"]
+	title = request.POST["title"]
+	abstract = request.POST["abstract"]
+	date_str = request.POST["data_date"]
+	categories_string = request.POST["categories_string"]
+	
+	# el id del researcher
+	owner = request.user.researcher.id
+
+	for extension in required_extensions:
+		has_extension[extension] = False
+	file_request_list = []
+	filename = None
+	
+	if len(list_files) != 1:
+		return import_data(request)
+
+	for ftemp in list_files:
+		
+		if(filename==None):
+			filename = fname
+		elif(filename!=fname):
+			result["error"] = "Todos los archivos deben tener el mismo nombre"
+			return result
+	
+	for ftemp in list_files:
+		if(os.path.splitext(ftemp.name)[1]=='.zip'):
+			temp_dir = createTempFolder()
+			ftemp_path = ""
+			# nueva ubicacion del archivo
+			ftemp_path_dst = os.path.join(temp_dir,ftemp.name)
+			# se codifica a utf-8 el nombre del archivo
+			ftemp_path_dst = ftemp_path_dst.encode('utf-8')
+			if (hasattr(ftemp,'temporary_file_path')):
+				# el archivo ya esta en disco
+				ftemp_path = ftemp.temporary_file_path()
+				# mueve el archivo
+				with zipfile.ZipFile(ftemp_path,"r") as zip_ref:
+					zip_ref.extractall()
+					listOffiles = zip_ref.namelist()
+					for files in listOffiles:
+						extension_file = os.path.splitext(ftemp.name)[1]
+						if extension_file in shipfiles_extensions:
+							zip_ref.extract(files,temp_dir)
+							file_request_list.append(os.path.join(temp_dir,files))
+
+				request.FILES.setlist(file_request_list)
+
+				result = import_data(request)
+			else:
+				# el archivo esta en memoria
+
+				# se crea un archivo en el directorio temporal
+				#file_object = io.BytesIO(ftemp)
+				f = open(ftemp_path_dst, 'wb+')
+
+				# se guardan los datos en el archivo
+				for chunk in ftemp.chunks():
+					f.write(chunk)
+				f.close()
+
+				with zipfile.ZipFile(ftemp_path_dst.decode(),"r") as zip_ref:
+					zip_ref.extractall()
+					listOffiles = zip_ref.namelist()
+				#	for files in listOffiles:
+				#		extension_file = os.path.splitext(files)[1]
+				#		if extension_file in shipfiles_extensions:
+				#			zip_ref.extract(files,temp_dir)
+				#			path = os.path.join(temp_dir,files)
+				#			#file_request_list.append(os.path.join(temp_dir,files))
+				#			with open(path) as f:
+				#				f = InMemoryUploadedFile(f, 'file', files, "application/"+extension_file[1::],os.path.getsize(path), None)
+				#				file_request_list.append(f)
+				
+				request.FILES.setlist("import_files",file_request_list)
+				os.remove(ftemp_path_dst.decode())
+
+				vectorlayer_params = {}
+				vectorlayer_params["temp_dir"] = temp_dir
+				vectorlayer_params["vectorlayer_name"] = vectorlayer_name
+				vectorlayer_params["encoding"] = encoding
+				vectorlayer_params["title"] = title
+				vectorlayer_params["abstract"] = abstract
+				vectorlayer_params["date_str"] = date_str
+				vectorlayer_params["categories_string"] = categories_string
+				vectorlayer_params["owner"] = owner
+
+				task = import_vector_layer.delay(vectorlayer_params)
+				# se retorna que no hay error y el id del task
+				result["error"] = None
+				result["task_id"] = task.id;
+
+				return result
+				#result = import_data(request)
+		else:
+			result = import_data(request)
+	
+	return result
+
+	
+	
+		
+
+		
+
+
 

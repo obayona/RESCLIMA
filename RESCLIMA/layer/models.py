@@ -11,4 +11,5 @@ class Layer(FilterSearchTable):
 	upload_date = models.DateTimeField(auto_now_add=True)
 	srs_wkt = models.TextField(max_length= 500)
 	bbox = models.PolygonField(srid=4326,null=True)
+	author = models.CharField(max_length=50, null=True)
 	owner = models.ForeignKey(Researcher, null=True)

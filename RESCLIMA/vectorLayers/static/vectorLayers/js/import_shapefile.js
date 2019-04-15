@@ -137,7 +137,10 @@ function checkFiles(){
 	var list_files = file_input.files;
 
 	var required_extensions = ["shp", "shx", "dbf", "prj"];
+	var zip_extension = ["zip"]
 	var has_extension = {};
+	var has_zip_extension = {};
+	has_zip_extension["zip"] = false;
 	for(var i=0; i<required_extensions.length; i++){
 		var extension = required_extensions[i];
 		has_extension[extension] = false
@@ -163,17 +166,24 @@ function checkFiles(){
 		if (required_extensions.includes(extension)){
 			has_extension[extension] = true;
 		}
+		else if (zip_extension.includes("zip")){
+			has_zip_extension["zip"] = true;
+			console.log("ff")
+		}
 		else{
 			return "No se admite archivo con extension " + extension;
 		}
 	}
 	// se valida que los archivos requeridos existan
-	for(var i=0; i<required_extensions.length; i++){
-		var extension = required_extensions[i];
-		if(!has_extension[extension]){
-			return "Archivo perdido requerido ."+extension
+	if(!has_zip_extension["zip"]){
+		for(var i=0; i<required_extensions.length; i++){
+			var extension = required_extensions[i];
+			if(!has_extension[extension]){
+				return "Archivo perdido requerido ."+extension
+			}
 		}
 	}
+
 	return null;
 
 }
