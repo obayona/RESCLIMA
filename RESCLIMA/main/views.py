@@ -10,6 +10,8 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from celery.result import AsyncResult
 import json
+from django.core import serializers 
+from dash.models import DashboardWorkspace
 
 #METODOS DE ACCESO
 def login(request):
@@ -40,6 +42,15 @@ def home(request):
 def profile(request):
 	researcher = request.user.researcher
 	return render(request, 'main/profile.html', {'researcher': researcher, })
+
+#Redirecciona a la página de productos, según el rol se redireccionan a distintas páginas
+def products(request):
+	created_by={}
+	products = DashboardWorkspace.objects.all()
+	for x in products:
+		created_by[x.user.username] = x.name
+	return render(request, 'main/products.html', {'investigadores':created_by})
+
 
 #Redirecciona a la página de ayuda y faqs
 def helpfaq(request):

@@ -12,6 +12,7 @@ import os
 import search.layer_searcher as layer_searcher
 import search.series_searcher as series_searcher
 
+
 def categories_json(request):
 	categories = Category.objects.all()
 	result = []
@@ -44,7 +45,6 @@ def search_layer(request):
 			layer["selected"] = False
 			full_count = row[5]
 			layers.append(layer)
-	print(layers)
 	return JsonResponse({"layers":layers,"full_count":full_count})
 
 def search_series(request):

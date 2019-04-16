@@ -25,6 +25,7 @@
 
 					<div class="row">
 						<form enctype="multipart/form-data" method="post" action="import" id="shapefileForm" class="col s12">
+							{% csrf_token %}
 							<!-- File chooser --> 
 							<div class="row">
 								<label for="id_import_files">Importar archivos shapefile</label>
@@ -34,7 +35,7 @@
 										<input type="file" name="import_files" required="" multiple="" id="id_import_files">
 									</div>
 									<div class="file-path-wrapper">
-										<input class="file-path validate" type="text" placeholder="Seleccione archivos: .shp, .shx, .dbf, .prj">
+										<input class="file-path validate" type="text" placeholder="Seleccione archivos: .shp, .shx, .dbf, .prj o .zip">
 									</div>
 								</div>
 							</div>

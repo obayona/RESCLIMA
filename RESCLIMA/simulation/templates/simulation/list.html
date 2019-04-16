@@ -1,0 +1,48 @@
+{% extends 'simulation/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA| SIMULACIONES{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="section">
+		<p class="resclima-header">Mis Simulaciones</p>
+		<!-- <h4 class="header">Mis Simulaciones</h4> -->
+		<div class="card-action">
+			<button class="btn waves-effect waves-light green accent-6" type="button" onClick="window.location='/simulation/create';"><i class="material-icons left">add_circle</i>Agregar Simulacion</button>
+		</div>
+		{% if object_list %}
+		<table class="bordered">
+			<tbody>
+				<tr>
+				{% for simulation in object_list %}
+						{% if simulation.user.id == request.user.id	%}
+							<td class="td-resclima-user" style="font-family:monospace">{{ simulation.id }}</td>
+							<td class="td-resclima-user-type" style="font-family:monospace">{{ simulation.name }}</td>
+							<td class="td-resclima-view" style="font-family:monospace">
+									<a href="{% url 'simulation_run' simulation.id %}" style="color: green;"><i class="material-icons left">play_circle_outline</i>Run</a>
+							</td>
+							<td class="td-resclima-action" style="font-family:monospace">
+									<a href="{% url 'simulation_update' simulation.id %}"><i class="material-icons left">edit</i>Editar</a>
+							</td>
+							<td class="td-resclima-action" style="font-family:monospace">
+									<a href="{% url 'simulation_delete' simulation.id %}" style="color: #FF5252;" ><i class="material-icons left">delete_forever</i>Eliminar</a>
+							</td>
+						{% endif %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<div class="wrapper">
+			<div class="container">
+				<p class="no-data">No hay simulaciones para mostrar</p>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+	<div style="height:100px;"></div>
+
+
+{% endblock content %}

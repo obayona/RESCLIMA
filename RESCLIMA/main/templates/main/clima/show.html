@@ -1,0 +1,53 @@
+{% extends 'main/clima/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | DATOS{% endblock %}
+
+{% block content %}
+<div class="section">
+	<div class="row">
+		<div class="col s12 m12 l6">
+			<div class="card-panel">
+				<div class="row">
+					<!-- User Form -->
+					<div class="row">
+						<!-- HEADER -->
+						<div class="input-field col s12 m12 l12">
+							<p class="resclima-header">Información general</p>
+							<!-- <h4 class="header">Información general</h4> -->
+						</div>
+            <!-- TMIN -->
+            <div class="input-field col s12 m6 l6">
+              <label for="{{ form.tmin.id_for_label }}">TMIN</label>
+              <input type="text" value="{{ object.tmin }}" readonly>
+            </div>
+						<!-- TMAX -->
+						<div class="input-field col s12 m6 l6">
+							<label for="{{ form.tmax.id_for_label }}">TMAX</label>
+							<input type="text" value="{{ object.tmax }}" readonly>
+						</div>
+            <!-- RR -->
+						<div class="input-field col s12 m6 l6">
+							<label for="{{ form.rr.id_for_label }}">RR</label>
+							<input type="text" value="{{ object.rr }}" readonly>
+						</div>
+            <!-- Tipo de Movimiento -->
+						<div class="input-field col s12 m6 l6">
+							<label for="{{ form.oni.id_for_label }}">ONI</label>
+							<input type="text" value="{{ object.oni }}" readonly>
+						</div>
+						<!-- Fecha -->
+						<div class="input-field col s12 m6 l6">
+							<label for="{{ form.date.id_for_label }}">Fecha</label>
+							<input type="text" value="{{ object.date }}" readonly>
+						</div>
+					</div>
+					<!-- End User Form -->
+					<button class="btn waves-effect waves-light" type="button" onClick="window.history.back();"><i class="material-icons left">keyboard_backspace</i>Atrás</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock content %}

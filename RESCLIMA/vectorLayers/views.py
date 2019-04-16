@@ -45,7 +45,7 @@ def import_shapefile(request):
 		result = {}
 		try:
 			# se ejecuta la tarea de Celery
-			result = importer.import_data(request)
+			result = importer.import_compress_data(request)
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);
