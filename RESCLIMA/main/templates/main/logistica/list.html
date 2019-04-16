@@ -1,0 +1,86 @@
+{% extends 'main/logistica/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | DATOS{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="section">
+		<p class="resclima-header">Importar archivo CSV</p>
+		<!-- <h4 class="header">Importar archivo CSV</h4> -->
+		<div class="card-action">
+	    <button class="btn waves-effect waves-light green accent-6" type="button" onClick="window.location='/data/create';"><i class="material-icons left">cloud_upload</i>Importar archivos</button>
+	  </div>
+		{% if object_list %}
+		<table class="mt-2 bordered table table-hover bordered">
+			<thead>
+				<tr>
+				<th class="bg-primary"><br>ID AFORO				</br></th>
+				<th class="bg-primary"><br>PERIODO		</br></th>
+				<th class="bg-primary"><br>VALOR			</br></th>
+				<th class="bg-primary"><br>TIPO DE MOVIMIENTO</br></th>
+				<th class="bg-primary"><br>TIPO DE VEHICULO</br></th>
+				<th class="bg-primary"><br>FECHA</br></th>
+				<th class="bg-primary" colspan="3"><br>ACCIONES</br></th>	
+				</tr>
+			</thead>
+			<tbody id='PaginatedTable'>
+				<tr>
+				{% for data in object_list %}
+						{% if data.user.id == request.user.id	%}
+						<td>{{ data.id_gauging }}</td>
+						<td>{{ data.id_term }}</td>
+						<td>{{ data.value }}</td>
+						<td>{{ data.movement }}</td>
+						<td>{{ data.vehicle_type }}</td>
+						<td>{{ data.date }}</td>
+						<td class="td-resclima-view" style="font-family:monospace">
+								<a href="{% url 'logistica_show' data.id %}" style="color: #5c5f68;"><i class="material-icons left">visibility</i>Ver</a>
+						</td>
+						<td class="td-resclima-action" style="font-family:monospace">
+								<a href="{% url 'logistica_update' data.id %}"><i class="material-icons left">edit</i>Editar</a>
+						</td>
+						<td class="td-resclima-action" style="font-family:monospace">
+								<a href="{% url 'logistica_delete' data.id %}" style="color: #FF5252;" ><i class="material-icons left">delete_forever</i>Eliminar</a>
+						</td>
+						{% endif %}
+				</tr>
+				
+				{% endfor %}
+			</tbody>
+		</table>
+		<div class="col-md-12 center text-center">
+			<span class="left" id="total_reg"></span>
+      	<ul class="pagination pager" id="myPager"></ul>
+    </div>
+    {% else %}
+		<div class="wrapper">
+			<div class="container">
+				<p class="no-data">No hay datos para mostrar</p>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+	<div style="height:135px;"></div>
+
+
+{% endblock content %}
+
+{% block scripts_body %}
+<script src="{% static "main/js/pagination.js" %}" type= "text/javascript"></script>
+<script>
+	$(document).ready(function(){
+  	$('#PaginatedTable').pageMe({
+    	pagerSelector:'#myPager',
+    	activeColor: 'blue',
+    	prevText:'Anterior',
+    	nextText:'Siguiente',
+    	showPrevNext:true,
+    	hidePageNumbers:false,
+    	perPage:10
+  	});
+	});
+	
+	</script>
+{% endblock scripts_body %}

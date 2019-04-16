@@ -168,7 +168,6 @@ function checkFiles(){
 		}
 		else if (zip_extension.includes("zip")){
 			has_zip_extension["zip"] = true;
-			console.log("ff")
 		}
 		else{
 			return "No se admite archivo con extension " + extension;

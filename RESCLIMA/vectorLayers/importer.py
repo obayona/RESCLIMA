@@ -164,17 +164,13 @@ def import_data(request):
 """
 Funcion que permite la subida de 
 shapefiles en archivos comprimidos
-.rar o .zip, recibe un 
+en .zip, recibe un 
 (django.http.request.HttpRequest).
 Valida y abre los archivos y los envia
-a la funcion import data para que ejecute
+a la funcion import data en caso de no
+ser zip files para que ejecute
 la task de cellery y suba los archivos a
 la base de datos
-Actually looking for a way to make a method
-with less wasting of resources because the 
-current one requires to create again 
-InMemoryUploadedFile objects and send them
-back to import_data(request)
 """
 def import_compress_data(request):
 	'''
@@ -204,6 +200,7 @@ def import_compress_data(request):
 
 	for extension in required_extensions:
 		has_extension[extension] = False
+
 	file_request_list = []
 	filename = None
 	
@@ -211,7 +208,10 @@ def import_compress_data(request):
 		return import_data(request)
 
 	for ftemp in list_files:
-		
+		parts = os.path.splitext(ftemp.name)
+		fname = parts[0]
+		extension = parts[1]
+
 		if(filename==None):
 			filename = fname
 		elif(filename!=fname):
@@ -221,27 +221,27 @@ def import_compress_data(request):
 	for ftemp in list_files:
 		if(os.path.splitext(ftemp.name)[1]=='.zip'):
 			temp_dir = createTempFolder()
+			vectorlayer_name = filename + ".shp" # nombre del archivo shapefile
 			ftemp_path = ""
 			# nueva ubicacion del archivo
 			ftemp_path_dst = os.path.join(temp_dir,ftemp.name)
 			# se codifica a utf-8 el nombre del archivo
 			ftemp_path_dst = ftemp_path_dst.encode('utf-8')
-			if (hasattr(ftemp,'temporary_file_path')):
-				# el archivo ya esta en disco
+
+			if (hasattr(ftemp,'temporary_file_path')):				# el archivo ya esta en disco
+				
 				ftemp_path = ftemp.temporary_file_path()
 				# mueve el archivo
 				with zipfile.ZipFile(ftemp_path,"r") as zip_ref:
 					zip_ref.extractall()
 					listOffiles = zip_ref.namelist()
 					for files in listOffiles:
-						extension_file = os.path.splitext(ftemp.name)[1]
+						extension_file = os.path.splitext(files)[1]
 						if extension_file in shipfiles_extensions:
-							zip_ref.extract(files,temp_dir)
-							file_request_list.append(os.path.join(temp_dir,files))
+							new_path = zip_ref.extract(files,temp_dir)
+							# mueve el archivo
+							shutil.move(ftemp_path,new_path)
 
-				request.FILES.setlist(file_request_list)
-
-				result = import_data(request)
 			else:
 				# el archivo esta en memoria
 
@@ -257,36 +257,28 @@ def import_compress_data(request):
 				with zipfile.ZipFile(ftemp_path_dst.decode(),"r") as zip_ref:
 					zip_ref.extractall()
 					listOffiles = zip_ref.namelist()
-				#	for files in listOffiles:
-				#		extension_file = os.path.splitext(files)[1]
-				#		if extension_file in shipfiles_extensions:
-				#			zip_ref.extract(files,temp_dir)
-				#			path = os.path.join(temp_dir,files)
-				#			#file_request_list.append(os.path.join(temp_dir,files))
-				#			with open(path) as f:
-				#				f = InMemoryUploadedFile(f, 'file', files, "application/"+extension_file[1::],os.path.getsize(path), None)
-				#				file_request_list.append(f)
-				
-				request.FILES.setlist("import_files",file_request_list)
+					for files in listOffiles:
+						extension_file = os.path.splitext(files)[1]
+						if extension_file in shipfiles_extensions:			#solo se extraen los archivos .sbx. shx, .dbf, .prj
+							zip_ref.extract(files,temp_dir)
+
+				#removiendo el .zip file
 				os.remove(ftemp_path_dst.decode())
 
-				vectorlayer_params = {}
-				vectorlayer_params["temp_dir"] = temp_dir
-				vectorlayer_params["vectorlayer_name"] = vectorlayer_name
-				vectorlayer_params["encoding"] = encoding
-				vectorlayer_params["title"] = title
-				vectorlayer_params["abstract"] = abstract
-				vectorlayer_params["date_str"] = date_str
-				vectorlayer_params["categories_string"] = categories_string
-				vectorlayer_params["owner"] = owner
-
-				task = import_vector_layer.delay(vectorlayer_params)
-				# se retorna que no hay error y el id del task
-				result["error"] = None
-				result["task_id"] = task.id;
-
-				return result
-				#result = import_data(request)
+			vectorlayer_params = {}
+			vectorlayer_params["temp_dir"] = temp_dir
+			vectorlayer_params["vectorlayer_name"] = vectorlayer_name
+			vectorlayer_params["encoding"] = encoding
+			vectorlayer_params["title"] = title
+			vectorlayer_params["abstract"] = abstract
+			vectorlayer_params["date_str"] = date_str
+			vectorlayer_params["categories_string"] = categories_string
+			vectorlayer_params["owner"] = owner
+			task = import_vector_layer.delay(vectorlayer_params)
+			# se retorna que no hay error y el id del task
+			result["error"] = None
+			result["task_id"] = task.id;
+			return result
 		else:
 			result = import_data(request)
 	

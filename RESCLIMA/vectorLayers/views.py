@@ -42,7 +42,6 @@ def import_shapefile(request):
 		categories = Category.objects.all();
 		return render(request, "import_shapefile.html",{'categories':categories});
 	elif request.method == "POST":
-		print("adfasdfa")
 		result = {}
 		try:
 			# se ejecuta la tarea de Celery
