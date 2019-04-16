@@ -30,8 +30,8 @@ function checkDate(start_date, end_date) {
 }
 
 function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + source + "/" + sid; }
+	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + source + "/" + sid; }
 }
 
 

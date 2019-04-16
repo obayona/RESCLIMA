@@ -30,7 +30,7 @@ function checkDate(start_date, end_date) {
 }
 
 function setSource(source, start_date, end_date) {
-	return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date; 
+	return " /api/" + source + "/" + start_date + "/" + end_date; 
 	
 }
 

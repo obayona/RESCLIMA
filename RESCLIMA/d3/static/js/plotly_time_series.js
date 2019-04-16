@@ -35,7 +35,7 @@ function getChartPluginSize(str) {
         data_dates = [];
   
     // Define URL for JSON
-    SOURCE_URL = "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
     
     var barDiv = document.getElementById(container);
     
