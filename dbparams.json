@@ -1,6 +1,6 @@
 {
 	"dbname": "resclima",
-	"user":"resclima",
+	"user":"postgres",
 	"password":"wssee8*&|{}wqssrgt86",
 	"host": "192.168.3.246",
 	"port":5433

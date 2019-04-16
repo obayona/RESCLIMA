@@ -19,7 +19,7 @@ class Bootstrap2FluidMainPlaceholder(BaseDashboardPlaceholder):
     """Main placeholder."""
 
     uid = 'main'
-    cols = 12
+    cols = 22
     rows = 38
     cell_width = 70
     cell_height = 42
