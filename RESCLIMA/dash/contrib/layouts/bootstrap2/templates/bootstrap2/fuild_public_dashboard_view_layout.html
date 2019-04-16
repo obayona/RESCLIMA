@@ -1,0 +1,108 @@
+{% extends "bootstrap2/fluid_view_layout.html" %}
+{% load static%}
+{% load i18n %}
+
+{% block content-before %}
+<!-- SidebarNavigation -->
+<header id="header" class="page-topbar">
+  <nav class="navbar-fixed-top navbar-inverse sidebarNavigation navbar-color gradient-45deg-light-blue-cyan" data-sidebarClass="navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle left-navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">RESCLIMA</a>
+      </div>
+		<!-- login/profile -->
+		<ul class="right hide-on-med-and-down">
+			{% if user.is_authenticated %}
+			<li>
+			    <div class="dropdown">
+			    	<a href="javascript:void(0);"  class="waves-effect waves-block waves-light profile-button" data-activates="profile-dropdown">
+			    	<span class="avatar-status avatar-online" id="dLabel">
+			    		<img src="{% static 'main/images/profile.png' %}"   alt="avatar"/>
+			    		<ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			    			<li><a href="{% url 'profile' %}" tabindex="-1" class="dropdown-item grey-text text-darken-1"><i class="material-icons">face</i> Perfil - {{user.username}}
+			    			</a></li>
+			    			<li><a href="{% url 'help' %}" tabindex="-1" class="dropdown-item grey-text text-darken-1"><i class="material-icons">live_help</i>Ayuda</a></li>
+			    			<li class="divider"></li>
+			    			<li><a href="{% url 'logout' %}?next=/" tabindex="-1" class="dropdown-item grey-text text-darken-1"><i class="material-icons">keyboard_tab</i> Cerrar Sesi&oacute;n</a></li>
+			    		</ul>
+			    		<i></i>
+			    	</span>
+			    	</a>
+			    </div>
+			</li>
+			{% else %}
+			<li>
+				<a href="{% url 'login' %}">Iniciar Sesi&oacute;n |</a>
+			</li>
+			{% endif %}
+		</ul>
+		<!-- profile-dropdown -->
+    </div>
+  </nav>
+</header>
+
+<div class="container-fluid">
+{% endblock content-before %}
+
+{% block bootstrap2_sidebar_wrapper %}
+<div class="span3">
+    <div class="well sidebar-nav">
+        <ul class="nav nav-list">
+            <li class="nav-header">{% trans "Productos" %}</li>
+            <li class="{% if not current_workspace %} active{% endif %}">
+                <a href="{% url 'dash.public_dashboard' user.username %}" title="{% trans 'Predeterminado' %}">
+                    {% trans 'Predeterminado' %}
+                </a>
+            </li>
+
+            {% if workspaces %}
+                {% for ws in workspaces %}
+                <li class="{% if ws == current_workspace %} active{% endif %}">
+                    <a href="{% url 'dash.public_dashboard' user.username ws.slug %}" title="{{ ws.name }}">
+                        {{ ws.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="well sidebar-nav">
+        <ul class="nav nav-list">
+            <li class="nav-header">{% trans "Acerca del Propietario" %}</li>
+            <li>
+                <a href="#" title="{% trans 'Propietario' %}">
+                    {% trans user.first_name %}
+                    {% trans user.last_name %} <br> {% trans user.institution %}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+{% endblock bootstrap2_sidebar_wrapper %}
+
+{% block bootstrap2_settings %}
+    {% if current_workspace.is_clonable %}
+                {% if 'dash.add_dashboardworkspace' in perms and 'dash.add_dashboardentry' in perms %}
+            <li class="nav-header">{% trans "Opciones" %}</li>
+            <li class="sub-menu-item">
+                <a href="{% url 'dash.clone_dashboard_workspace' current_workspace.pk %}" class="menu-dashboard-clone-workspace" title="{% trans 'Clonar Producto' %}">
+                  <!-- <span class="iconic icon-copy"></span> -->
+                  <span class="glyphicon glyphicon-copy"></span> &nbsp
+                    <span class="textonic">{% trans "Clonar Producto" %}</span>
+                </a>
+            </li>
+                {% endif %}
+    {% endif %}
+{% endblock bootstrap2_settings %}
+
+{% block bootstrap2_public_dashboard_url %}
+{% endblock bootstrap2_public_dashboard_url %}
+
+{% block bootstrap2_auth_url %}
+{% endblock bootstrap2_auth_url %}

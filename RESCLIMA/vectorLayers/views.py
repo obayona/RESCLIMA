@@ -42,11 +42,10 @@ def import_shapefile(request):
 		categories = Category.objects.all();
 		return render(request, "import_shapefile.html",{'categories':categories});
 	elif request.method == "POST":
-		print("adfasdfa")
 		result = {}
 		try:
 			# se ejecuta la tarea de Celery
-			result = importer.import_data(request)
+			result = importer.import_compress_data(request)
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);

@@ -1,0 +1,26 @@
+.tooltip {
+	background: rgba(0, 0, 0, 0.8) !important;
+	box-shadow: 0 0 5px #999999;
+	color: rgb(185, 185, 185);
+  border-radius: 2px;
+	font-size: 16px !important;
+	left: 130px;
+	padding: 8px !important;
+	position: absolute;
+	text-align: center;
+	top: 95px;
+	width: 80px;
+	z-index: 10;
+	display: block;
+	opacity: 0;
+}
+rect {
+	cursor: pointer;                                              /* NEW */
+	stroke-width: 2;
+}
+rect.disabled {                                                 /* NEW */
+	fill: transparent !important;                                 /* NEW */
+}
+.tooltip > .count, .tooltip > .percent {
+	color: white !important;
+}

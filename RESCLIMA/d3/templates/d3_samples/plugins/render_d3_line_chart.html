@@ -1,0 +1,38 @@
+
+<p>
+    <strong>{{ plugin.data.title }}</strong>
+    <span id="chart-{{ plugin.html_id }}" ></span>
+
+    <script type="text/javascript">
+        // *****************************************************************
+        // ************************* Initialisation ************************
+        // *****************************************************************
+        $(document).ready(function(){
+
+            //d3LineChartSample(
+            plotlyLineChart(
+                'chart-{{ plugin.html_id }}',
+                '{{ plugin.data.start_date }}',
+                '{{ plugin.data.end_date }}',
+                '{{ plugin.data.source }}',
+                '{{ plugin.data.origin }}',
+                '{{ plugin.data.domainLabel }}',
+                '{{ plugin.data.rangeLabel }}',
+                '{{ plugin.uid }}',
+                '{{ plugin.data.simulation}}',
+                '{{ plugin.data.color }}',
+                '{{ plugin.data.hover }}',
+            );
+
+        });
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip()
+            $('.datepicker').datepicker()
+        });
+    </script>
+    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
+        <i class='mt-2 material-icons center waves-effect waves-light teal lighten-2 left' data-toggle="tooltip" data-placement="right" data-html="true" title="Descripcion: <p>{{ plugin.data.description }}</p>" >info</i>
+        <input id="lineTime-{{ plugin.html_id }}" placeholder="init date" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
+        <input id="linelastTime-{{ plugin.html_id }}" placeholder="last date" type= "text" class=" col s5 datepicker center"  data-date-format='yyyy-mm-dd'  > 
+    </div>
+</p>

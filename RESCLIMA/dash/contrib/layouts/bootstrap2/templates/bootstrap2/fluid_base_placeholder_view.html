@@ -1,0 +1,12 @@
+{% load dash_tags %}
+
+{% for entry in dashboard_entries %}
+    {% get_dash_plugin entry as plugin %}
+
+        <div id="{{ plugin.html_id }}" class="plugin {{ plugin.html_class }} row">
+            <div class="plugin-content-wrapper col-{{ plugin.cell_units }} col-sm-12">
+                {{ plugin.render }}
+            </div>
+        </div>
+
+{% endfor %}

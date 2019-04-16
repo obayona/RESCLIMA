@@ -1,0 +1,26 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA| DASHBOARDS LOGISTICA{% endblock %}
+
+{% block content %}
+<div class="section">
+    <div id='mainViews'>
+        <logistica_component><logistica_component/>
+
+    <div>
+    <button class="mt-2 btn waves-effect waves-light" type="button" onClick="window.history.back();"><i class="material-icons left">keyboard_backspace</i>Atrás</button>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+	<script src="{% static 'main/js/vue.min.js' %}"></script>
+	<script src="{% static 'main/js/vue-router.min.js' %}"></script>
+    <script type= "text/javascript" src="{% static 'js/main_dash_router.js' %}"></script>
+    <script type= "text/javascript" src="{% static 'js/plotly-latest.min.js'%}" ></script>
+    <script type= "text/javascript" src="{% static 'js/plotly_pie_chart.js'%}" ></script>
+    <script type= "text/javascript" src="{% static 'js/plotly_line_chart.js'%}" ></script>
+    <script src="{% static 'js/clima_component.js'%}"></script>
+    <script src="{% static 'js/logistica_component.js'%}"></script>
+{% endblock scripts %}

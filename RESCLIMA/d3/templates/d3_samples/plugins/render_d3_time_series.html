@@ -1,0 +1,29 @@
+
+<p>
+    <strong>{{ plugin.data.title }}</strong>
+    <span id="chart-{{ plugin.html_id }}" ></span>
+    <script type="text/javascript">
+        // *****************************************************************
+        // ************************* Initialisation ************************
+        // *****************************************************************
+        $(document).ready(function(){
+
+            //d3TimeSeriesSample(
+            plotlyTimeSeries(
+                'chart-{{ plugin.html_id }}',
+                '{{ plugin.uid }}',
+                '{{ plugin.data.source }}',
+                '{{ plugin.data.rangeLabel }}',
+                '{{ plugin.data.start_date }}',
+                '{{ plugin.data.end_date }}'
+            );
+
+        });
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+    </script>
+    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
+        <i class='material-icons center waves-effect waves-light teal lighten-2 left' data-toggle="tooltip" data-placement="right" data-html="true" title="Descripcion: <p>{{ plugin.data.description }}</p>" >info</i>
+    </div>
+</p>
