@@ -1079,3 +1079,39 @@ class Analfabetismo(viewsets.ViewSet):
 			# Si el Query retorna None
 			content = {}
 		return Response(content)
+
+"""
+Descripcion: Datos sobre vivienda por el tiempo
+el censo.
+Response format:
+	{
+		year: 2015 {
+					housing: 45875,
+				},
+	}
+
+"""
+class Housing(viewsets.ViewSet):
+	renderer_classes = (JSONRenderer, )
+
+	def list(self, request, start_date=None, end_date=None):
+		try:
+			# Obtener la informacion de la BD
+			if start_date == "null" or end_date == "null":
+				# qs no debe incluir fechas
+				qs = main_models.Censo.objects.raw('''SELECT * FROM main_censo''');
+			else:
+				qs = main_models.Censo.objects.raw('''SELECT * FROM main_censo WHERE year = %s ''', [start_date[:4]]);
+			
+			d = list(qs)
+			dict = {}	
+			for i in range(len(d)):
+				dict[d[i].year] = {"housing": d[i].housing}
+			# Crear JSON dinamico
+			content = [{"value": v, "key": k } for k, v in dict.items()]
+
+		except:
+			# Si el Query retorna None
+			content = {}
+		return Response(content)
+

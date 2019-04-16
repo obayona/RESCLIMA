@@ -61,3 +61,4 @@ router.register(r'd3_grouped_bar_chart/(?P<start_date>[-\w]+)/(?P<end_date>[-\w]
 #Grafico de tree map para los investigadores de movilidad
 router.register(r'd3_tree_map_chart_logistica/(?P<start_date>[-\w]+)/(?P<end_date>[-\w]+)', api_views.MovVehiculos, base_name='d3_tree_map_chart') #OK
 router.register(r'd3_pie_censo_alf/(?P<start_date>[-\w]+)/(?P<end_date>[-\w]+)', api_views.Analfabetismo, base_name='d3_pie_chart_alf') #OK
+router.register(r'd3_pie_censo_hou/(?P<start_date>[-\w]+)/(?P<end_date>[-\w]+)', api_views.Housing, base_name='d3_pie_chart_hou') #OK
