@@ -190,3 +190,55 @@ function plotly_ALF_line_chart(container, start_date, end_date, source, domainLa
   })
 
 }
+
+
+function plotly_Housing_line_chart(container, start_date, end_date, source, domainLabel="años", rangeLabel="Viviendas", size, sid){
+  SOURCE_URL = setSource(sid, source, start_date, end_date);
+  var myDiv = document.getElementById(container);
+  years = []
+  lhousing = []
+
+  Plotly.d3.json(SOURCE_URL, function(error, data) {
+    data.forEach(function(item){
+          lhousing.push(item.value.housing)
+          years.push(item.key)
+      });
+      var trace1 = {
+        //          name : domainLabel,
+        x: years,
+        y: lhousing,
+        fill: 'tozeroy',
+        type: 'scatter',
+        mode: 'none',
+        fillcolor : "#BA68C8",
+        name : "viviendas"
+      };
+      
+
+      var two_sizes = getLineChartViewBox(getChartPluginSize(size));
+      var layout = {
+        xaxis: {
+          title: domainLabel,
+        },
+        yaxis: {
+          title: rangeLabel,
+          zeroline: false,
+        },
+        width: two_sizes.sizew,
+        height: two_sizes.sizeh,    
+        margin: {
+            l: 60,
+            r: 10,
+            b: 30,
+            t: 30,
+            pad: 2
+          },
+
+      };
+      
+      var data = [trace1];
+      
+      Plotly.newPlot(myDiv, data, layout);
+      
+  })
+}
