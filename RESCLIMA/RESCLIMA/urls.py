@@ -20,7 +20,8 @@ from django.contrib.auth.views import logout
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from .api import router
 from main import logistica, censo, clima
-
+from django.conf.urls.static import static
+from django.conf import settings
 urlpatterns = [
     #URLS DE INCIO/CIERRE/PERMISOS
 	url(r'^$', home, name="home"),
@@ -64,4 +65,4 @@ urlpatterns = [
     url(r'^censo/show/(?P<pk>\d+)/$', login_required(censo.CensoShow.as_view(), login_url='noAccess'), name='censo_show'),
 ]
 
-urlpatterns += staticfiles_urlpatterns()
+urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
