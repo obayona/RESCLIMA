@@ -21,13 +21,13 @@ function getChartViewBox(size) {
 }
 
 function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + source + "/" + sid; }
+	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + source + "/" + sid; }
 }
 
 function setOrigin(sid, origin, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + origin + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + origin + "/" + sid; }
+	if (!sid) { return " /api/" + origin + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + origin + "/" + sid; }
 }
 
 function isEmpty(str) {
@@ -72,10 +72,10 @@ var logisticAPIS = (source, start_date, end_date,sid) => {
 	
 
 	if(!sid){
-		var u =  "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date;
-		var values = endAPIS.map(v => "http://127.0.0.1:8000/api/" + "_chart_"+source +v+ "/" + start_date + "/" + end_date )
+		var u =  " /api/" + source + "/" + start_date + "/" + end_date;
+		var values = endAPIS.map(v => " /api/" + "_chart_"+source +v+ "/" + start_date + "/" + end_date )
 	}else{
-		var values = sidAPIS.map(v => "http://127.0.0.1:8000/api/" + "_chart_"+ source +v +"/" + sid; )
+		var values = sidAPIS.map(v => " /api/" + "_chart_"+ source +v +"/" + sid; )
 	}
 	return values;
 }

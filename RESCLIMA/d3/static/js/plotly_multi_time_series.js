@@ -37,9 +37,9 @@ function getChartPluginSize(str) {
       start_date = null;
       end_date = null;
     }
-    SOURCE_URL = "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/";
-    ORIGIN_URL = "http://127.0.0.1:8000/api/" + origin + "/" + start_date + "/" + end_date + "/";
-    OUTSET_URL = "http://127.0.0.1:8000/api/" + outset + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
+    ORIGIN_URL = " /api/" + origin + "/" + start_date + "/" + end_date + "/";
+    OUTSET_URL = " /api/" + outset + "/" + start_date + "/" + end_date + "/";
     var barDiv = document.getElementById(container);
 
     var min_data = [],

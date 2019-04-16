@@ -27,13 +27,13 @@ function setLegend(str) {
   }
 
 function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + source + "/" + sid; }
+	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + source + "/" + sid; }
 }
 
 function setOrigin(sid, origin, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + origin + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + origin + "/" + sid; }
+	if (!sid) { return " /api/" + origin + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + origin + "/" + sid; }
 }
 
 function isEmpty(str) {

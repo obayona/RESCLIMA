@@ -35,8 +35,8 @@ function checkDate(start_date, end_date) {
 }
 
 function setSourcePieChart(sid, source, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date; }
-	else { return "http://127.0.0.1:8000/api/" + source + "/" + sid; }
+	if (!sid) { return "/api/" + source + "/" + start_date + "/" + end_date; }
+	else { return "/api/" + source + "/" + sid; }
 }
 
 
@@ -205,9 +205,9 @@ function applyInteractivity(source, selected_path){
     // another chart below the current ones according to the data that is presented
     var fuente = source.split("chart_")[1]
     if(fuente=="censo"){
-      window.location.replace("http://127.0.0.1:8000/plot/poblacion/dashboard/");
+      window.location.replace("/plot/poblacion/dashboard/");
     }else if(fuente.startsWith("composition")){
-      window.location.replace("http://127.0.0.1:8000/plot/logistica/dashboard/")
+      window.location.replace("/plot/logistica/dashboard/")
     }
     
     

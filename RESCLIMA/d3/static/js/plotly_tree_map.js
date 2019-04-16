@@ -30,8 +30,8 @@ function checkDate(start_date, end_date) {
 }
 
 function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return "http://127.0.0.1:8000/api/" + source + "/" + sid; }
+	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
+	else { return " /api/" + source + "/" + sid; }
 }
 
 function getDivId(container, htmltag){
@@ -133,7 +133,7 @@ function plotlyTreeMap(container, source, start_date, end_date, size) {
       start_date = null;
       end_date = null;
     }
-    SOURCE_URL = "http://127.0.0.1:8000/api/" + source + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
     var barDiv = document.getElementById(container);
 
     var movements = [],
