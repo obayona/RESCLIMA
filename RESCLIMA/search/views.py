@@ -53,6 +53,8 @@ def search_series(request):
 	qs,params = series_searcher.getTsTextQuery(query_dict)
 	series = []
 	full_count = 0;
+	print(qs)
+	print(params)
 	with connection.cursor() as cursor:
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()

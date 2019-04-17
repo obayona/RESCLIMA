@@ -216,9 +216,10 @@ def query_measurements(variable_id,station_id,
 	# se recuperan los measurements de la estacion 
 	# cuyo readings contenga el id de la variable (variable_id)
 	# readings={"variable_id":valor_variable}
-	where_stm = 'WHERE "idStation_id"=%s and readings like \'%%"'+variable_id+'":%%\''
+	#where_stm = 'WHERE "idStation_id"=%s and readings like \'%%"'+variable_id+'":%%\''
+	where_stm = 'WHERE "idStation_id"=%s AND readings::jsonb ? %s'	
 	# parametros de los placeholders query
-	params = [variable_id,station_id]
+	params = [variable_id,station_id,variable_id]
 
 	#si hay rango de fechas se agrega al where_stm
 	if(ini_date):
@@ -240,6 +241,8 @@ def query_measurements(variable_id,station_id,
 		params.append(offset)
 
 	with connection.cursor() as cursor:
+		print(qs)
+		print(params)
 		cursor.execute(qs, params)
 		rows = cursor.fetchall()
 		return rows,None
@@ -273,7 +276,7 @@ def get_measurements_dict(variable_id,station_id,
 		m["ts"] = row[1]
 		measurements.append(m)
 		full_count = row[2]
-
+	print(full_count)
 	return {"measurements":measurements,"full_count":full_count},None
 
 

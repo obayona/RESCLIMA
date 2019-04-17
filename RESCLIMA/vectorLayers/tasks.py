@@ -154,6 +154,7 @@ def import_vector_layer(vectorlayer_params):
 		# se guardan los valores de los atributos
 		for attr in attributes:
 			success,value = utils.getOGRFeatureAttribute(attr, src_feature,encoding)
+			print(value,"***")
 			if not success:
 				# si hay un error en un valor se cancela todo
 				vectorlayer.delete()

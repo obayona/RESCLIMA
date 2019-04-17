@@ -235,10 +235,14 @@ Vue.component("serie_component",{
 				// se actualiza
 				var full_count = response["full_count"];
 				self.max_offset = full_count - self.limit;
-				
-				self.assingMeasurements(station,measurements);
+				if(full_count>0){
+					self.assingMeasurements(station,measurements);
+                                	// dibuja el plot
+                                	self.addTrace(variable,station);
+				}
+				//self.assingMeasurements(station,measurements);
 				// dibuja el plot
-				self.addTrace(variable,station);
+				//self.addTrace(variable,station);
 			});
 			request.fail(function(response){
 				station["state"]="failed";

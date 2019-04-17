@@ -83,6 +83,7 @@ def getOGRFeatureAttribute(attr, feature, encoding):
 			str_values.append("%*.*f" % (attr.width,attr.precision,value))
 		value = repr(str_Values)
 	elif attr.type == ogr.OFTString:
+		print(attr_name)
 		value = feature.GetFieldAsString(attr_name)
 		needs_encoding = True
 	elif attr.type == ogr.OFTStringList:
