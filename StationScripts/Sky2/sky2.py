@@ -18,14 +18,9 @@ importlib.reload(sys)
 # la base de datos
 
 # archivos de configuracion, log y backup
-'''
 configFileName = "/home/manager/RESCLIMA/dbparams.json";
 logFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/log.txt"
 backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt";
-'''
-configFileName = "/home/belen/github/RESCLIMA/dbparams.json";
-logFileName = "/home/belen/github/RESCLIMA/StationScripts/Sky2/log.txt"
-backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt"
 
 # variable de condicion
 # para dormir el main

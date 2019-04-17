@@ -169,32 +169,7 @@ Vue.component("series_component",{
 		    .catch(e => {
 		    	self.state = "fail";
 		    })
-			/*request.done(function(response){
-				var  results = response["series"];
-				// se determina el maximo offset
-				var full_count = response["full_count"];
-				var max_offset = full_count - self.limit;
-
-				if(max_offset>0){
-					self.max_offset = max_offset;
-				}else{
-					self.max_offset = 0;
-				}
-
-				// se copian los resultados en el
-				// array layers
-				var series = self.shared.series;
-				series.splice(0, series.length);
-				for (var i=0;i< results.length; i++){
-					series.push(results[i]);
-				}
-				// se cambia el estado
-				self.state = "searched";
-			});
-			request.fail(function(error){
-				self.state = "fail";	
-			});*/
-
+			
 		},
 		selectSerie(serie){
 			serie.selected = !serie.selected;

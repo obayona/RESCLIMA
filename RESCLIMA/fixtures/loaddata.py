@@ -214,11 +214,11 @@ if __name__ == "__main__":
 
 	print ("Los parametros de la base de datos: %s",dbParams)
 	print ("Guardando categorias...")
-	saveCategories(dbParams)
+	#saveCategories(dbParams)
 	print ("Guardando Variables...")
-	saveVariables(dbParams)
+	#saveVariables(dbParams)
 	print ("Guardando Tipos de estaciones...")
-	saveStationTypes(dbParams)
+	#saveStationTypes(dbParams)
 	print ("Guardando Estaciones ...")
 	saveStations(dbParams)
 
