@@ -75,7 +75,7 @@ var logisticAPIS = (source, start_date, end_date,sid) => {
 		var u =  " /api/" + source + "/" + start_date + "/" + end_date;
 		var values = endAPIS.map(v => " /api/" + "_chart_"+source +v+ "/" + start_date + "/" + end_date )
 	}else{
-		var values = sidAPIS.map(v => " /api/" + "_chart_"+ source +v +"/" + sid; )
+		var values = sidAPIS.map(v => " /api/" + "_chart_"+ source +v +"/" + sid )
 	}
 	return values;
 }
