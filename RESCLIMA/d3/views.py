@@ -48,15 +48,15 @@ def test(request):
 	print(series)
 	return JsonResponse({"series":series,"full_count":full_count})
 
-@login_required(login_url='noAccess')
+
 def logistica(request):
 		return render(request,"logistica_dash.html")
 
 
-@login_required(login_url='noAccess')
+
 def clima(request):
 		return render(request,"clima_dash.html")
 
-@login_required(login_url='noAccess')
+
 def poblacion(request):
 		return render(request,"poblacion_dash.html")
