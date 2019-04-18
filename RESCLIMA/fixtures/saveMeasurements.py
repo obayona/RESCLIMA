@@ -162,6 +162,9 @@ def saveTimeSeriesDynamic(stations,stationTypes, dbParams):
 		stationtype_id = station["stationType_id"]
 		stationType_brand = None
 		station_id = station["id"]
+		#solo quiero guardar datos de las estaciones 28 y 29
+		if(station_id!=28 and station_id!=29):
+			continue
 		variables= None
 		for stationType in stationTypes:
 			if(stationType["id"]==stationtype_id):

@@ -5,7 +5,7 @@ StartLimitIntervalSec=0
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /home/manager/RESCLIMA/StationScripts/Sky2/sky2.py
+ExecStart=/usr/bin/python3.6 /home/manager/RESCLIMA/StationScripts/Sky2/sky2.py
 StandardOutput=null
 Restart=always
 RestartSec=10

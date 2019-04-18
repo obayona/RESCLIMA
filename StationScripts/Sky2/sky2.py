@@ -135,9 +135,11 @@ def parseMeasurements(serialNum,idStation,data,variables):
 	source = json.loads(data)
 	#get the data of the specific station id
 	for station in source:
+		print("DENTRO DEL FOR")
 		if(station["DeviceID"] == serialNum):
-			print(station["DeviceID"])
+			print("ADENTRO DEL IF")
 			readings = station['Data']
+			print(readings)
 			timestamp = readings['TS']
 			dt = datetime.utcfromtimestamp(timestamp)	
 			timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -182,11 +184,11 @@ def insertMeasures(dbParams,measurements):
 
 def dataExtraction_thread(dbParams,station,variables):
 	idStation = station["id"]
-	print("ID ESTACION "+ str(idStation))
 	token = station["token"]
 	frequency = station["frequency"]
+	#frequency = 5
 	serialNum = station["serialNum"]
-	print(serialNum)
+	print("SERIAL "+serialNum)
 	seconds = frequency*60
 	while(True):
 		time.sleep(seconds)
