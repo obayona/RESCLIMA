@@ -16,13 +16,13 @@ from django.conf import settings
 @shared_task(bind=True)
 def simulation_task(self, params):
 	# PATH sumocfg, Step de la simulacion
-	SUMO_HOME = "/usr/share/sumo"
+	#SUMO_HOME = "/usr/share/sumo"
 	progress_recorder = ProgressRecorder(self)
-	sumo_parameters = '/home/manuel/Desktop/DATACITY/RESCLIMA/simulation/sumoparams.json'
+	sumo_parameters = 'simulation/sumoparams.json'
 	sumoParams = None
 	with open(sumo_parameters) as data_file:
 		sumoParams = json.load(data_file)
-
+	SUMO_HOME = sumoParams["sumo_path"]
 	try:
 		#os.environ["SUMO_HOME"] = "/home/fernando/sumo-git"
 		os.environ["SUMO_HOME"] = SUMO_HOME
