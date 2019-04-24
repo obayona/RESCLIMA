@@ -30,6 +30,7 @@ urlpatterns = [
 	url(r'^noAccess/$', noAccess, name="noAccess"),
 	url(r'^get-task-info/',get_task_info,name="taskInfo"),
     url(r'^api/', include(router.urls)),
+    url(r'^celery-progress/', include('celery_progress.urls')),
 	url(r'^profile/$', profile, name="profile"),
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^search/',include("search.urls")),

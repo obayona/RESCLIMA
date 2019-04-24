@@ -29,11 +29,6 @@ function checkDate(start_date, end_date) {
   else { return false; }
 }
 
-function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return " /api/" + source + "/" + sid; }
-}
-
 function getDivId(container, htmltag){
 	var idtxt =  container.slice(6,container.length)
 	return htmltag+"-"+idtxt;
@@ -43,7 +38,6 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 	var shapes = [];
 	var annotations = [];
 	var counter = 0;
-
 	// For Hover Text
 	var x_trace = [];
 	var y_trace = [];
@@ -72,7 +66,8 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 							x: (rectangles[i][0] + rectangles[i][2]) / 2,
 							y: (rectangles[i][1] + rectangles[i][3]) / 2,
 							text: String(values[counter]),
-							showarrow: false
+							showarrow: false,
+							livianos:livianos[counter]
 				};
 		annotations.push(annotation);
 			
@@ -81,7 +76,7 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 		y_trace.push((rectangles[i][1] + rectangles[i][3]) / 2);
 		text.push(String("livianos:"+livianos[counter]+"\n"+
 		"pesados:"+pesados[counter]));
-			
+		pesados.push(pesados[counter])
 		// Incrementing Counter		
 		counter++;
 	}
@@ -92,7 +87,9 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 				y: y_trace,
 				text: text,
 				mode: 'text',
-				type: 'scatter'
+				type: 'scatter',
+				livianos: livianos,
+				pesados: pesados,
 			};
 	var two_sizes = getChartViewBox(getChartPluginSize(size));
 	
@@ -107,6 +104,7 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 					pad: 2
 				},
 				shapes: shapes,
+				paper_bgcolor: "rgba(0,0,0,0)",
 				hovermode: 'closest',
 				annotations: annotations,
 				xaxis: {
@@ -123,7 +121,25 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 				data: [trace0]
 	};
 	Plotly.newPlot(barDiv, [trace0], layout);
+	
+	var no_clicked = true;
 
+	barDiv.on('plotly_click', function(data){
+
+		window.location.replace("/plot/logistica/dashboard/");
+		if(no_clicked){
+			index = data.points[0].pointIndex
+			livianos_new = [livianos[index]]
+			pesados_new = [pesados[index]]
+			values_new = [values[index]]
+			movements_new = [livianos_new+pesados_new]
+			transform_back_to_tree(movements,livianos_new,pesados_new, values_new,barDiv,size)
+		}
+		else{
+			transform_back_to_tree(movements,livianos,pesados, values,barDiv,size)
+		}
+		no_clicked=!no_clicked;
+		})
 }
 
 
@@ -133,7 +149,7 @@ function plotlyTreeMap(container, source, start_date, end_date, size) {
       start_date = null;
       end_date = null;
     }
-    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = "/api/" + source + "/" + start_date + "/" + end_date + "/";
     var barDiv = document.getElementById(container);
 
     var movements = [],
@@ -157,7 +173,6 @@ function plotlyTreeMap(container, source, start_date, end_date, size) {
 }
 
 function changeButton(movements, livianos, pesados,values,container,baseDiv,size){
-	
 	var barDiv = document.getElementById(getDivId(baseDiv.id,'i'));
 	var treeDiv = document.getElementById(getDivId(baseDiv.id,"itree"));
 	barDiv.addEventListener('click',function(){
@@ -213,6 +228,7 @@ function transform_to_bars(movements, livianos, pesados,values, barDiv,size){
 	var two_sizes = getChartViewBox(getChartPluginSize(size));
 	
 	var layout = {
+		paper_bgcolor: "rgba(0,0,0,0)",
 		height: two_sizes.sizeh,
 		width: two_sizes.sizew,
 		margin: {
@@ -242,25 +258,15 @@ function transform_to_bars(movements, livianos, pesados,values, barDiv,size){
 }
 
 
-function interactivityTreeMap(baseDiv, shapes, values){
-	var barDiv = document.getElementById(getDivId(baseDiv,'div'));
-	var counter = 0;
-	values.forEach(function(error,data){
-		var shape = shapes[counter];
-		console.log(shape.fillcolor)
-		shape.fillcolor='rgb(251,154,153)'
-		$('<i/>', {
-			'class':'waves-effect waves-light material-icons right',
-			'data-toggle':'tooltip',
-			'data-placement':'top',
-			'title':data,
-			'text':'insert_chart',
-		}).hover(function(){
-			var shape = shapes[counter];
-			console.log(shape.fillcolor())
-		}).appendTo(barDiv);
-		
-		counter++;
-	});
 
+function changeMapedOnDate(id_first_date,id_last_date,container, source, size){
+	value = $("#"+id_first_date).val();
+	value_new = $("#"+id_last_date).val()
+  start_date = value == ""? null: new Date(value).toISOString().slice(0,10) 
+  end_date = value_new == "" ? null : new Date(value_new).toISOString().slice(0,10)   
+	console.log(start_date)
+	if(start_date!==null && end_date!==null){
+		plotlyTreeMap(container, source, start_date, end_date, size)
+	}
 }
+

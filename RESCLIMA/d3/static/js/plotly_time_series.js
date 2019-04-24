@@ -35,7 +35,7 @@ function getChartPluginSize(str) {
         data_dates = [];
   
     // Define URL for JSON
-    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = "/api/" + source + "/" + start_date + "/" + end_date + "/";
     
     var barDiv = document.getElementById(container);
     
@@ -92,7 +92,9 @@ function getChartPluginSize(str) {
               type: 'linear'
             },
             width: two_sizes.sizew,
-            height: two_sizes.sizeh,    
+            height: two_sizes.sizeh,  
+            paper_bgcolor:'rgba(0,0,0,0)',
+            plot_bgcolor:'rgba(0,0,0,0)',  
             margin: {
                 l: 40,
                 r: 0,

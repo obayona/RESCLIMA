@@ -8,6 +8,8 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from timeSeries.models import Measurement
+from main.models import Censo, Clima, Logistica
+from simulation.models import Output, Simulation
 
 import json
 
@@ -50,7 +52,11 @@ def test(request):
 
 
 def logistica(request):
-		return render(request,"logistica_dash.html")
+	logistica = Output.objects.all()
+	result = []
+	for log in logistica:
+		result.append({	"sid":log.simulation_id})
+	return render(request,"logistica_dash.html")
 
 
 
