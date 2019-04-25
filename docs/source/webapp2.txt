@@ -1,0 +1,49 @@
+Aplicación web Django (parte 2)
+===============================
+
+En este documento se continuan describiendo las apps
+
+timeSeries
+----------
+
+En esta app se define todo lo necesario para administrar series de tiempo. La siguiente figura muestra los modelos utilizados.
+
+.. image:: _static/timeSeries.png
+
+
+Cómo se observa, se define la tabla **Variable** que sirven para almacenar las variables que miden las estaciones, por ejemplo temperatura, humedad relativa, etc. Además esta tabla hereda de **FilterSearchTable** para que sea buscable por texto y categorías, es decir, cuando se busca series de tiempo, se buscan variables. 
+
+También se define la tabla **StationType** para almacenar los tipos de estaciones que se soportan. Actualmente se soportan 2 tipos: HOBO MX2300 y BloomSKy SKY2. Las estaciones HOBO son manuales por lo que para recuperar las mediciones un operador debe extraer un archivo csv directamente de la estación, entonces ese archivo es subido a la plataforma. Las estaciones SKY2 son automáticas, ellas suben sus mediciones a la nube y mediante un API se descargan los datos y son guardados en la base de datos. Existe una relación muchos a muchos entre **StationType** y **Variable** para modelar que una estación puede medir varias variables y que una variable puede ser medida por varias estaciones.
+
+La tabla **Station** sirve para guardar la información de una estación meteoroloógica. En **location** se guarda la ubicación usando un tipo de dato POINT de postgis. **SerialNum** es el numero serial de la estación, en el caso de las estaciones HOBO, en el archivo csv que se genera se encuentra el número serial y con eso se identifica a qué estación pertenecen esas mediciones. En el caso de que la estación sea automática (SKY2) en **frequency** se guarda la fecuencia con la que se piden los datos en minutos, y en **token** se guarda el token de autenticación del API para descargar los datos.
+
+En **Measurement** se guardan las mediciones. Es un **HyperTable** de **timeScaleDB**. **timeScaleDB** es una extensión de postgis para administrar series de tiempo. Un **HyperTable** es una abtracción, internamente está formada por varias tablas normales de postgres, pero para el usuario final se comporta como una tabla normal por lo que se puede usar SQL para trabajar con un **HyperTable**. La ventaja de un **HyperTable** es que los datos se distribuyen en varias tablas por lo que las consultas son más veloces y hay menos riesgo de que la tabla se quede bloqueada.
+
+**Measurement** tiene un primary key compuesto por un número incremental (**id_m**) y el timestamp de la medición (**ts**). En **idStation** se guarda una referencia a la estación de donde provienen los datos. En **idProvider** se guarda una referencia a **Provider**, la idea es que se pueda almacenar series de tiempo que vengan de terceros y no sólo de las estaciones meteorológicas, pero esto no está completamente desarrollado y no se ha utilizado. En **readings** se guardan las mediciones de la estación. **readings** es un JSON que tiene la siguiente estructura::
+
+  readings:{
+    id_variable_1: medicion1,
+    id_variable_2: medicion2,
+    id_variable_3: medicion3,
+    ....
+  }
+
+En esta app hay metodos para realizar las insersiones y consultas a estas tablas. Además hay **views** que permiten a los clientes web dibujar las series de tiempo en un plot. En **RESCLIMA/timeSeries/tasks.py** se encuentra una tarea de celery que sirve para importar un archivo csv para las estaciones HOBO. En **StationScripts/Sky2/sky2.py** hay un script que se encarga de descargar los datos de las estaciones SKY2 y de guardar las mediciones en la base de la manera correcta.
+
+Para obtener por ejemplo la **temperatura** de la estación **14** se debe filtrar la tabla **Measurements** por **idStation**, luego recuperar el id de la variable **temperatura** de la tabla Variables, recuperar del diccionario **readings** los values (mediciones) cuya clave (id variable) sea igual al id de la variable **temperatura**. Todas las consultas SQL referentes a extraer mediciones ya está implementadas.
+
+
+tms
+---
+
+Esta app implementa un protocolo llamado **Tile Map Service** que sirve para dibujar mapas en la web. Este protocolo se usa para dibujar las capas raster en el cliente web. El cliente web utiliza la librería **OpenLayers** que permite crear mapas multicapas y soporta varios protocolos incluyendo TMS.
+
+Dependiendo del nivel de zoom del mapa, se divide la tierra en cuadrantes o TILES. Cuando el zoom es 0, el más lejano, sólo hay 2 tiles. Mientras más zoom, se tienen más tiles para más resolución. **Openlayers** se encarga de pedir al servidor los tiles de las capas raster para poder dibujarlo. OpenLayers realiza una peticion por tile al url **/tms/id_capa/nivel_zoom/x/y.png** donde nivel_zoom es el zoom del mapa, y x,y representan la coordenada del TILE.
+
+En la app **tms** básicamente se lee el geotiff y el SLD si se define un estilo, se utilizan los parametros nivel_zoom x,y para recortar y escalar la imagen y retorna una imagen png al cliente, que será usada para dibujar la capa.
+
+Cabe mencionar que se está utilizando el sistema de referencia EPSG:3857 ya que las imagenes geotiff fueron proyectadas a ese **SRC** para mostrarlos en la web.  
+
+
+
+

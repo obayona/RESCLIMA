@@ -26,7 +26,8 @@ def emission_parser(path):
 	data = []
 	vehicle_list = []
 	for step in step_list:
-		vehicle_list.append(step['vehicle'])
+		if('vehicle' in step):
+			vehicle_list.append(step['vehicle'])
 	for v in vehicle_list:
 		for x in v:
 			# Obtengo cada linea de vehiculo del timestep
@@ -52,7 +53,8 @@ def trace_parser(path):
 	data = []
 	vehicle_list = []
 	for step in step_list:
-		vehicle_list.append(step['vehicle'])
+		if('vehicle' in step):
+			vehicle_list.append(step['vehicle'])
 	for v in vehicle_list:
 		for x in v:
 			# Obtengo cada linea de vehiculo del timestep
@@ -62,7 +64,7 @@ def trace_parser(path):
 	return AVG_TRACE_DICT
 
 def summary_parser(path):
-	with open(path) as fd:
+	with open(path, "r") as fd:
 	    doc = xmltodict.parse(fd.read())
 	# JSON Parser
 	json_string=json.dumps(doc)

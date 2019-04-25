@@ -35,7 +35,3 @@ Arquitectura del proyecto
 El siguiente gráfico muestra la arquitectura del proyecto
 
 .. image:: _static/arquitectura.png
-
-
-
-
