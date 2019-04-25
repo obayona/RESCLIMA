@@ -8,22 +8,43 @@ Dependencias
 ------------
 Lo primero es instalar las dependencias que son:
 
-+ Django 1.11 
++ Django 1.11.6
++ djangorestframework
++ Django-dash + dependencias
 + GeoDjango + dependencias (geos, proj4)
 + gdal
++ image
 + PostgreSQL 10
 + Postgis
 + TimescaleDB
 + mapnik
 + lxml
 + Celery + RabbitMQ
++ celery_progress
++ scikit-image
++ xmltodict
 
-
-Django 1.11
-###########
+Django 1.11.6
+#############
 Instalación::
 
-	$ pip install Django== 1.11
+	$ pip install Django== 1.11.6
+
+djangorestframework
+###################
+Instalación::
+
+	$ pip install djangorestframework
+
+Django-dash + dependencias
+##########################
+Instalación::
+
+	$ pip install django-dash
+	$ pip install django-autoslug
+	$ pip install django-cleanup
+	$ pip install django-boostrap-components
+	$ pip install easy-thumbnails
 
 GeoDjango + dependencias
 ########################
@@ -234,7 +255,8 @@ Celery
 En paralelo se debe tener ejecutando el proceso de celery. Hay dos formas de hacerlo.
 En modo desarrollo, ejecutar el siguiente comando en otra consola::
 
-	$ celery hfhfhff
+	// ejecutar en el directorio del proyecto
+	$ celery -A RESCLIMA worker --loglevel=info
 
 Para modo producción, se creó un **unit file** para **systemd**. Systemd es el arrancador de linux,
 se encarga de abrir procesos cuando se enciende el equipo.
@@ -299,6 +321,20 @@ Para comprobar el estado del proceso::
 
 El estado debe ser **running**. Con estos pasos celery queda ejecutandose siempre, como un proceso demonio. Si se cambia el codigo de los **tasks** se debe reiniciar celery.
 
+Celery_progress
+###############
+
+	$ pip install celery-progress
+
+Scikit-image
+############
+
+	$ pip install scikit-image
+
+Xmltodict
+#########
+
+	$ pip install xmltodict
 
 Scripts de estaciones meteorológicas
 ####################################
