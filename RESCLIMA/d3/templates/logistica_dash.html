@@ -31,8 +31,11 @@
                             </h5>
                         </div>
                         <div class="col s7 center" id="pobInit">
-                            <span id="chart-pob1Graf"><span>
-                            <input id="Time-chart-pob1Graf" placeholder="año de censo" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
+                            <span id="chart-log1Graf"></span>
+                            <input id="Time-chart-log1Graf" placeholder="init_date" type= "date" class="ml-3 col s5 center"  >
+                            <input id="Time-chart-log1Graf" placeholder="last_date" type= "date" class="ml-3 col s5 center"  >
+                            <i id="itree-log1Graf" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="TreeMap" >domain</i>
+                            <i id="i-log1Graf" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="BarChart" >insert_chart</i>
                         </div>
                     </div>
     
@@ -42,13 +45,29 @@
                         <div class="col s5">
                         <h4>Descripci&oacute;n</h4>
                         <h5>
-                            Datos referentes al aforo del movimiento vehicular
+                            Datos referentes al movimiento vehicular en simulaciones
                         </h5>
                         </div>
                         <div class="col s7 center" id="pobInit">
-                            <span id="chart-pob2Graf"><span>
-                            <input id="Time-chart-pob2Graf" placeholder="init date" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
-                            <input id="lastTime-chart-pob2Graf" placeholder="last date" type= "text" class=" col s5 datepicker center"  data-date-format='yyyy-mm-dd'  > 
+                            <span id="chart-log2Graf"><span>
+                            <div class='col s-6'>
+                                <select id="vehiculos1" onchange='turn()'>
+                                   <option value="d3_bar_chart_L_"> Vehiculos Livianos</option>
+                                   <option value="d3_bar_chart_W_"> Vehiculos Pesados</option>
+                                </select>
+                                <label>Sentido</label>
+                            </div>
+                            <div class='col s-6'>
+                                <select id="direcciones" onchange='turn()'>
+                                   <option value="EN">Sentido Este-Norte </option>
+                                   <option value="EO">Sentido Este-Oeste </option>
+                                   <option value="NO">Sentido Norte-Oeste</option>
+                                   <option value="ON">Sentido Oeste-Norte</option>
+                                   <option value="OE">Sentido Oeste-Este </option>
+                                   <option value="NE">Sentido Norte-Este </option>
+                                </select>
+                                <label>Sentido</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -62,9 +81,22 @@
                         </h5>
                         </div>
                         <div class="col s7 center" id="pobInit">
-                            <span id="chart-pob3Graf"><span>
-                            <input id="pieTime-chart-pob3Graf" placeholder="init date" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
-                            <input id="pielastTime-chart-pob3Graf" placeholder="last date" type= "text" class=" col s5 datepicker center"  data-date-format='yyyy-mm-dd'  > 
+                            <span id="chart-log3Graf"><span>
+                            <div class='col s-6'>
+                                <select id="vehiculos" onchange='run()'>
+                                   <option value="d3_pie_chart_LE"> Vehiculos Livianos</option>
+                                   <option value="d3_pie_chart_WE"> Vehiculos Pesados</option>
+                                </select>
+                                <label>Vehiculos</label>
+                            </div>
+                            <div class='col s-6'>
+                                <select id="simulaciones" onchange='run()'>
+                                {% for i in simulaciones %}
+                                    <option value= {{ i.sid }}>Simulacion {{ i.sid }}</option>
+                                {% endfor %}                            
+                                </select>
+                                <label>Simulaciones</label>
+                            </div>
                         </div>
                     </div>            
                 </div>
@@ -78,14 +110,31 @@
 {% endblock content %}
 
 {% block scripts %}
-	<script src="{% static 'main/js/vue.min.js' %}"></script>
-	<script src="{% static 'main/js/vue-router.min.js' %}"></script>
-    <script type= "text/javascript" src="{% static 'js/main_dash_router.js' %}"></script>
     <script type= "text/javascript" src="{% static 'js/plotly-latest.min.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly_pie_chart.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly_line_chart.js'%}" ></script>
+    <script type= "text/javascript" src="{% static 'js/plotly_tree_map.js'%}" ></script>
+    <script type= "text/javascript" src="{% static 'js/treemap-squared-0.5.min.js'%}" ></script>
+
 <script>
 
+    $(document).ready(function(){
+        plotlyTreeMap("chart-log1Graf", "d3_tree_map_chart_logistica",null, null, "d3_tree_map_chart_7x7")
+        plotlyPieChartSample("chart-log3Graf", "d3_pie_chart_LE",null,null, "d3_pie_chart_7x7", "6","Movimiento de autos")
+        plotlyPieChartSample("chart-log2Graf","d3_pie_chart_composition_EN",null,null, "d3_pie_chart_7x7", null,"Sentidos");
+    })
+
+    function run(){
+        var value_vehiculo =document.getElementById("vehiculos").value
+        var value_simulacion =document.getElementById("simulaciones").value
+        plotlyPieChartSample("chart-log3Graf",value_vehiculo,null,null, "d3_pie_chart_7x7", (value_simulacion),"Emisiones de autos");
+    }
+    function turn(){
+        var value_vehiculo =document.getElementById("vehiculos1").value
+        var value_simulacion =document.getElementById("direcciones").value
+        var direccion = value_vehiculo+value_simulacion    
+        plotlyPieChartSample("chart-log2Graf",direccion,null,null, "d3_pie_chart_7x7", null,"Sentidos");
+    }
 </script>
 
 {% endblock scripts %}

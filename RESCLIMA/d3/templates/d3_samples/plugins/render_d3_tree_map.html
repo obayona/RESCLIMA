@@ -2,6 +2,13 @@
 <p>
     <strong>{{ plugin.data.title }}</strong>
     <span class="col-12" id="chart-{{ plugin.html_id }}" ></span>
+        <i class='mt-2 material-icons center waves-effect waves-light teal lighten-2 left' data-toggle="tooltip" data-placement="right" data-html="true" title="Descripcion: <p>{{ plugin.data.description }}</p>" >info</i>        
+        <input id="treeTime-{{ plugin.html_id }}" placeholder="init date" type= "date" class="ml-3 col s5 center"  data-date-format='yyyy-mm-dd'  >
+        <input id="treelastTime-{{ plugin.html_id }}" placeholder="last date" type= "date" class=" col s5 center"  data-date-format='yyyy-mm-dd'  > 
+    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
+        <i id="itree-{{ plugin.html_id }}" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="TreeMap" >domain</i>
+        <i id="i-{{ plugin.html_id }}" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="BarChart" >insert_chart</i>
+    </div>
     <script type="text/javascript">
         // *****************************************************************
         // ************************* Initialisation ************************
@@ -20,9 +27,22 @@
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip()
         });
+        $('#treeTime-{{ plugin.html_id }}').change().focus().blur(function(){
+            
+            changeMapedOnDate("treeTime-{{ plugin.html_id }}",
+                            "treelastTime-{{ plugin.html_id }}",
+                            'chart-{{ plugin.html_id }}',
+                            '{{ plugin.data.source }}',
+                            '{{ plugin.uid }}');
+        })
+        $('#treelastTime-{{ plugin.html_id }}').change().focus().blur(function(){
+            
+            changeMapedOnDate("treeTime-{{ plugin.html_id }}",
+                            "treelastTime-{{ plugin.html_id }}",
+                            'chart-{{ plugin.html_id }}',
+                            '{{ plugin.data.source }}',
+                            '{{ plugin.uid }}');
+        })
     </script>
-    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
-        <i id="itree-{{ plugin.html_id }}" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="TreeMap" >domain</i>
-        <i id="i-{{ plugin.html_id }}" class=" waves-effect waves-light material-icons center" data-toggle="tooltip" data-placement="top" title="BarChart" >insert_chart</i>
-    </div>
+
 </p>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
-from timeSeries import models
+from timeSeries import models as time_models  
 from simulation import models as simulation_models
 from main import models as main_models
 from . import serializers
@@ -12,6 +12,7 @@ from rest_framework.response import Response
 import json
 import collections
 
+
 # Grafico de barras para los investigadores de ESPOL
 # Response format: {key, value}
 class Medicion(viewsets.ViewSet):
@@ -19,7 +20,7 @@ class Medicion(viewsets.ViewSet):
 
 	def list(self, request, start_date=None, end_date=None):
 		# Obtener el diccionario para las variables
-		qs = models.Variable.objects.all()
+		qs = time_models.Variable.objects.all()
 		dict = {}
 		v = list(qs)
 		for i in range(len(v)):
@@ -28,23 +29,33 @@ class Medicion(viewsets.ViewSet):
 		try:
 			if start_date == "null" or end_date == "null":
 				# qs no debe incluir fechas
-				qs = models.Measurement.objects.raw('''SELECT * FROM \"timeSeries_measurement\"''');
+				qs = time_models.Measurement.objects.raw('''SELECT * FROM "timeSeries_measurement"''')
 			else:
-				qs = models.Measurement.objects.raw('''SELECT * FROM \"timeSeries_measurement\" WHERE ts <= %s::DATE AND ts >= %s::DATE''', [end_date, start_date]);
+				qs = time_models.Measurement.objects.raw('''SELECT * FROM "timeSeries_measurement" WHERE ts <= %s::DATE AND ts >= %s::DATE''', [end_date, start_date]);
 			ms = list(qs)
 			avg = [0] * 9
 			# Agrupo por id de variable.
 			for i in range(len(ms)):
-				r = json.loads(ms[i].readings)
-				avg[0] = avg[0] + r["1"] # Temperatura
-				avg[1] = avg[1] + r["2"] # Humedad Relativa
-				avg[2] = avg[2] + r["3"] # Lluvia
-				avg[3] = avg[3] + r["4"] # Direccion del viento
-				avg[4] = avg[4] + r["5"] # Velocidad del viento
-				avg[5] = avg[5] + r["6"] # Velocidad de rafagas
-				avg[6] = avg[6] + r["7"] # Luminancia
-				avg[7] = avg[7] + r["10"] # Presión
-				avg[8] = avg[8] + r["11"] # Indice UV
+				r = json.dumps(ms[i].readings)
+				r = json.loads(r)
+				if("1" in r):
+					avg[0] = avg[0] + r["1"] # Temperatura
+				if("2" in r):
+					avg[1] = avg[1] + r["2"] # Humedad Relativa
+				if("3" in r):
+					avg[2] = avg[2] + r["3"] # Lluvia
+				if("4" in r):
+					avg[3] = avg[3] + r["4"] # Direccion del viento
+				if("5" in r):
+					avg[4] = avg[4] + r["5"] # Velocidad del viento
+				if("6" in r):
+					avg[5] = avg[5] + r["6"] # Velocidad de rafagas
+				if("7" in r):
+					avg[6] = avg[6] + r["7"] # Luminancia
+				if("10" in r):
+					avg[7] = avg[7] + r["10"] # Presión
+				if("11" in r):
+					avg[8] = avg[8] + r["11"] # Indice UV
 			# Aplico el promedio
 			for i in range(len(avg)):
 				avg[i] = avg[i] / len(ms)
@@ -59,8 +70,9 @@ class Medicion(viewsets.ViewSet):
 					   {"value":avg[7], "key":dict[9]},
 					   {"value":avg[8], "key":dict[10]},
 					  ]
-		except:
+		except Exception as e:
 			# Si el Query retorna None
+			print(traceback.format_exc())
 			content = {}
 
 		return Response(content)
@@ -204,10 +216,9 @@ class LEN(viewsets.ViewSet):
 			# Obtener la informacion de la BD
 			if start_date == "null" or end_date == "null":
 				# qs no debe incluir fechas
-				qs = main_models.Logistica.objects.raw('''SELECT * FROM main_logistica WHERE vehicle_type = 1 AND movement = 1''', [end_date, start_date])
+				qs = main_models.Logistica.objects.all()
 			else:
-				qs = main_models.Logistica.objects.raw('''SELECT * FROM main_logistica WHERE date >= %s AND date <= %s AND vehicle_type = 1 AND movement = 1''', [end_date, start_date])
-
+				qs = main_models.Logistica.objects.filter(date__range =[start_date,end_date])
 			d = list(qs)
 			dict = {}
 			for i in range(len(d)):
@@ -1021,7 +1032,8 @@ class MovVehiculos(viewsets.ViewSet):
 				# qs no debe incluir fechas
 				qs = main_models.Logistica.objects.all()
 			else:
-				qs = main_models.Logistica.objects.filter(date__gte = datetime.datetime.strptime(start_date, '%Y-%m-%d'),date__lte= datetime.datetime.strptime(end_date, '%Y-%m-%d'))
+				qs = main_models.Logistica.objects.filter(date__range =[start_date,end_date])
+			
 			dict = {}
 			sentidos = ['sentido E-N','sentido E-O','sentido N-O','Sentido O-N','sentido O-E','sentido N-E']
 			for i in range(1,7):
@@ -1063,12 +1075,13 @@ class Analfabetismo(viewsets.ViewSet):
 			# Obtener la informacion de la BD
 			if start_date == "null" or end_date == "null":
 				# qs no debe incluir fechas
-				qs = main_models.Censo.objects.raw('''SELECT * FROM main_censo''');
+				qs = main_models.Censo.objects.all()
 			else:
-				qs = main_models.Censo.objects.raw('''SELECT * FROM main_censo WHERE year = %s ''', [start_date[:4]]);
+				qs = main_models.Censo.objects.filter(year__gte = datetime.datetime.strptime(start_date, '%Y'),year__lte= datetime.datetime.strptime(end_date, '%Y'))
 			
 			d = list(qs)
-			dict = {}	
+			dict = {}
+
 			for i in range(len(d)):
 				dict[d[i].year] = {"lettered": d[i].lettered,
 									"unlettered": d[i].unlettered}
@@ -1079,6 +1092,118 @@ class Analfabetismo(viewsets.ViewSet):
 			# Si el Query retorna None
 			content = {}
 		return Response(content)
+
+"""
+Endpoint que retorna las mediciones de las
+estaciones climaticas segun la zona
+y fechas
+formato de json file
+[
+	{
+		value: {
+			id_station: 444585,
+			date:2012-04-04,
+			medida1: 44444,
+			medida2: 44445,
+			.
+			.
+			medidan : 44446,
+		},
+		value: id_station_2:{
+			date:
+		}
+	}
+]
+"""
+class TimeSeriesAllOutGraph(viewsets.ViewSet):
+	renderer_classes = (JSONRenderer)
+
+	def list(self, request, start_date=None, end_date=None, latitude=None, longitud=None, around=None):
+		try:
+			stations = models.Station.objects.all()
+			#Part that gets the Stations around a certain location
+			if(around=="null"):
+				around=30000
+
+			if(latitude != "null" and longitud!="null" ):
+				pnt = fromstr('POINT('+latitude+' '+longitud+'), srid=4326')
+				stations.filter(point__distance_lte=(pnt, around)) #meters are assumedin the distance around
+
+			st = list(stations)
+			dict= {}
+			list_ids = []
+			for i in range(len(st)):
+				list_ids.append(dict_st[st[i].id])
+
+			# Obtener la informacion de la BD
+			if start_date == "null" or end_date == "null":
+				# qs no debe incluir fechas
+				qs = models.Measurement.objects.all()
+			else:
+				qs = models.Measurement.objects.filter(date__range =[start_date,end_date], id__in=list_ids) #realia el filtro 
+																											#segun la fecha y las ids de las estaciones localizadas en el area
+			qs = models.Variable.objects.all()
+			dict = {}
+			v = list(qs)
+			for i in range(len(v)):
+				dict[i] = v[i].name
+
+			d = list(qs)
+
+			for i in range(len(qs)):
+				r = json.dumps(qs[i].readings)
+				r = json.loads(r)
+				avg[0] = avg[0] + r["1"] # Temperatura
+				avg[1] = avg[1] + r["2"] # Humedad Relativa
+				avg[2] = avg[2] + r["3"] # Lluvia
+				avg[3] = avg[3] + r["4"] # Direccion del viento
+				avg[4] = avg[4] + r["5"] # Velocidad del viento
+				avg[5] = avg[5] + r["6"] # Velocidad de rafagas
+				avg[6] = avg[6] + r["7"] # Luminancia
+				avg[7] = avg[7] + r["10"] # Presión
+				avg[8] = avg[8] + r["11"] # Indice UV
+			
+			for i in range(len(stations)):
+				
+				dict[d[i].id_term] = {"": d[i].lettered,
+								   "": d[i].unlettered}
+			# Crear JSON dinamico
+			content = [{"value": v, "key": k } for k, v in dict.items()]
+
+		except:
+			# Si el Query retorna None
+			content = {}
+		return Response(content)
+
+
+"""
+"""
+class Aforo(viewsets.ViewSet):
+	renderer_classes = (JSONRenderer)
+
+	def list(self, request, start_date=None, end_date=None):
+		try:
+			# Obtener la informacion de la BD
+			if start_date == "null" or end_date == "null":
+				# qs no debe incluir fechas
+				qs = main_models.Logistica.objects.all()
+			else:
+				qs = main_models.Logistica.objects.filter(year__gte = datetime.datetime.strptime(start_date, '%Y'),year__lte= datetime.datetime.strptime(end_date, '%Y'))
+			
+			d = list(qs)
+			dict = {}
+
+			for i in range(len(d)):
+				dict[d[i].id_term] = d[i].value
+
+			# Crear JSON dinamico
+			content = [{"value": v, "key": k } for k, v in dict.items()]
+
+		except:
+			# Si el Query retorna None
+			content = {}
+		return Response(content)
+
 
 """
 Descripcion: Datos sobre vivienda por el tiempo

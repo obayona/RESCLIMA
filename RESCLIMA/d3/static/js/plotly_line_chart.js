@@ -13,7 +13,6 @@ function getChartPluginSize(str) {
 }
 
 function getLineChartViewBox(size) {
-  console.log(1)
 	if (size == 4) { return { sizew : 320, sizeh : 200} }
 	else if (size == 5) { return { sizew : 400, sizeh : 280} }
 	else if (size == 6) { return { sizew : 500, sizeh : 310} }
@@ -26,14 +25,14 @@ function setLegend(str) {
     else {return "Undefined"}
   }
 
-function setSource(sid, source, start_date, end_date) {
-	if (!sid) { return " /api/" + source + "/" + start_date + "/" + end_date + "/"; }
-	else { return " /api/" + source + "/" + sid; }
+function setLineSource(sid, source, start_date, end_date) {
+	if (!sid) { return "/api/" + source + "/" + start_date + "/" + end_date + "/"; }
+	else { return "/api/" + source + "/" + sid; }
 }
 
-function setOrigin(sid, origin, start_date, end_date) {
-	if (!sid) { return " /api/" + origin + "/" + start_date + "/" + end_date + "/"; }
-	else { return " /api/" + origin + "/" + sid; }
+function setLineOrigin(sid, origin, start_date, end_date) {
+	if (!sid) { return "/api/" + origin + "/" + start_date + "/" + end_date + "/"; }
+	else { return "/api/" + origin + "/" + sid; }
 }
 
 function isEmpty(str) {
@@ -56,8 +55,8 @@ function plotlyLineChart(container, start_date, end_date, source, origin, domain
       start_date = null;
       end_date = null;
     }
-    SOURCE_URL = setSource(sid, source, start_date, end_date);
-    ORIGIN_URL = setOrigin(sid, origin, start_date, end_date);
+    SOURCE_URL = setLineSource(sid, source, start_date, end_date);
+    ORIGIN_URL = setLineOrigin(sid, origin, start_date, end_date);
     var myDiv = document.getElementById(container);
     var sourx = []
     var soury = []
@@ -129,7 +128,7 @@ function plotlyLineChart(container, start_date, end_date, source, origin, domain
 
 function plotly_ALF_line_chart(container, start_date, end_date, source, domainLabel="años", rangeLabel="Personas", size, sid){
 
-  SOURCE_URL = setSource(sid, source, start_date, end_date);
+  SOURCE_URL = setLineSource(sid, source, start_date, end_date);
   var myDiv = document.getElementById(container);
   years = []
   llettered = []
@@ -172,7 +171,9 @@ function plotly_ALF_line_chart(container, start_date, end_date, source, domainLa
           zeroline: false,
         },
         width: two_sizes.sizew,
-        height: two_sizes.sizeh,    
+        height: two_sizes.sizeh,
+        paper_bgcolor:'rgba(0,0,0,0)',
+        plot_bgcolor:'rgba(0,0,0,0)',    
         margin: {
             l: 60,
             r: 10,
@@ -186,14 +187,26 @@ function plotly_ALF_line_chart(container, start_date, end_date, source, domainLa
       var data = [trace1, trace2];
       
       Plotly.newPlot(myDiv, data, layout);
-      
+      myDiv.on('plotly_click', function(data){
+        console.log(data)
+      });      
   })
 
 }
 
 
+function changeLineDate(id_first_date,id_last_date, container, source, origin, domainLabel, rangeLabel, size, sid, color, hover){
+  value = $("#"+id_first_date).val();
+  value_new = $("#"+id_last_date).val()
+  start_date = value == ""? null: new Date(value).toISOString().slice(0,10) 
+  end_date = value_new == "" ? null : new Date(value_new).toISOString().slice(0,10)   
+  if(start_date!==null && end_date!==null){
+    plotlyLineChart(container, start_date, end_date, source, origin, domainLabel, rangeLabel, size, sid, color, hover);
+  }
+}
+
 function plotly_Housing_line_chart(container, start_date, end_date, source, domainLabel="años", rangeLabel="Viviendas", size, sid){
-  SOURCE_URL = setSource(sid, source, start_date, end_date);
+  SOURCE_URL = setLineSource(sid, source, start_date, end_date);
   var myDiv = document.getElementById(container);
   years = []
   lhousing = []
@@ -233,6 +246,8 @@ function plotly_Housing_line_chart(container, start_date, end_date, source, doma
             t: 30,
             pad: 2
           },
+          paper_bgcolor:'rgba(0,0,0,0)',
+          plot_bgcolor:'rgba(0,0,0,0)',
 
       };
       
@@ -242,3 +257,4 @@ function plotly_Housing_line_chart(container, start_date, end_date, source, doma
       
   })
 }
+

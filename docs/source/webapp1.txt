@@ -1,0 +1,181 @@
+Aplicación web Django (parte 1)
+===============================
+
+En la carpeta **RESCLIMA/** se encuentra el código fuente de la aplicación web desarrollada en Django.
+Dentro se encuantran las apps del proyecto que son:
+
++ layer
++ main
++ rasterLayers
++ RESCLIMA
++ search
++ style
++ timeSeries
++ tms
++ vectorLayers 
++ dash
++ d3
+
+A continuación se detalla brevemente cada app:
+
+layer
+-----
+En esta app se implementa un modelo **Layer** del cual heredarán los otros tipos de capas más específicos (vectorial y raster). Además se implementan métodos comunes a las capas.
+
+Modelo **Layer** definido en **models.py**::
+
+	class Layer(FilterSearchTable):
+		title = models.CharField(max_length=50,null=True)
+		abstract = models.TextField(max_length=500,null=True)
+		type = models.CharField(max_length=10)
+		data_date = models.DateField(blank=True,null=True)
+		upload_date = models.DateTimeField(auto_now_add=True)
+		srs_wkt = models.TextField(max_length= 500)
+		bbox = models.PolygonField(srid=4326,null=True)
+		owner = models.ForeignKey(Researcher)
+
+Esta clase hereda de **FilterSearchTable** que es un modelo definido en la app **search** y que sirve para que las capas puedan ser buscadas por texto.
+
+..  list-table:: Atributos del modelo Layer
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - title
+      - Es el título de la capa, el usuario ingresa el título, en el formulario de subida de capas
+    * - abstract
+      - Es una descripción del contenido de la capa. El usuario escribe el abstract en el formulario de subida.
+    * - type
+      - Es el tipo de capa, sus valores pueden ser: **"vector"**, **"raster"**
+    * - data_date
+      - Es la fecha de los datos de la capa, el usuario deberá ingresarla en el formulario de subida de capas
+    * - upload_date
+      - Es la fecha en la que se subió la capa. El sistema la calcula (Tiene seteado el flag auto_now_add=True)
+    * - srs_wkt
+      - Es un string de 500 caracteres que contiene la descripción del sistema de referencia de la capa (srs). Y está representado en well-known-text (wkt) 
+    * - bbox
+      - Es un rectángulo que contiene a la capa, su bounding-box. Se guarda como un **Polygon** en Django, que por debajo se transforma en un **Geometry** (tipo de dato de Postgis), se usa srid = 4326. 
+    * - owner
+      - Es una referencia al **Researcher** que subió la capa.
+
+A continuación se explican algunos conceptos sobre capas geoespaciales:
+
+Una capa es un tipo de archivo que almacena datos geoespaciales. Una capa se puede observar en un mapa. Un mapa puede estar formado de varias capas.
+
+Existen dos tipos de capas, vectorial y raster. Las capas vectoriales almacenan datos como vectores (más detalles en app **vectorLayers**), se usan comumente para representar datos tabulares, como los resultados de un censo. Las capas raster son imágenes, se usan más para representar datos continuos, como la temperatura de una región del océano (Más información en app **rasterLayers**).
+
+Para representar las posiciones de la tierra se han desarrollado muchos modelos matemáticos que aproximan la forma de la tierra (geoide) a un elipsoide. Esos modelos definen diferentes valores de diámetro en cada eje del elipsoide. Dependiendo del elipsoide, ciertas zonas del planeta se aproximan mejor que otras. Es por eso que se usan varios modelos dependiendo del lugar de estudio, aunque existen modelos que son globales porque en promedio se ajusta bien a todo el planeta.
+
+Entonces, dado un elipsoide se puede definir un sistema de referencia **srs** que permite localizar cada punto de la tierra. Los **srs** están estandarizados, para definir un srs, ciertos parametros deben estar seteados (diametros del elipsoide, datumm, centro del elipsoide, etc). Por lo tanto, un srs puede estar definido en **well-known-text** que es una sintaxis para describir datos espaciales (hay otros formatos, aparte de wkt como ewkt). Por lo que una capa, debe tener un **srs** para saber en dónde está ubicada. Dependiendo del **srs** un punto del espacio se puede ubicar en diferentes lugares.
+
+Algunos **srs** están bien estandarizados, y algunos sistemas como Postgis no necesitan el wkt del srs, solo necesitan un id que lo identifique, este id se denomina **srid**. El srs con srid 4326 se llama WGS-84, y sirve para localizar puntos de todo el planeta. WGS-84 define una posición usando dos ángulos, longitud y latitud. Este sistema de referencia es el que utiliza el GPS.
+
+
+En la plataforma, se pueden buscar capas mediante un filtro espacial que es una opción, que tiene el usuario que permite dibujar en un mapa un rectángulo y la plataforma retornará todas las capas que estén dentro de ese rectángulo. Para implementar esta característica, se necesita obtener el bounding-box (bbox) de cada capa subida al sistema. Entonces, el filtro espacial funciona, recuperando las capas cuyo bbox se intersecta con el rectángulo que envió el usuario. El bbox se calcula cuando el usuario sube la capa y se guarda en el atributo **bbox**.
+
+Un bbox, consiste de 4 parámetros: minX, minY, maxX y maxY que definen el rectángulo. En Postgis no hay tipo de dato BBOX, así que se usó un Geomtry, que en geodjango se llama Polygon. Este tipo de datos sirve para guardar una geometría, ya sea un punto, una línea, un polígono, etc. Para guardar el bbox, se usa un polígono de 4 lados (rectángulo). En postgis para definir un Geometry, hay que enviar una lista de puntos. Por lo tanto, el Geometry de un bbox es: ((minX,minY),(minX,maxY),(maxX,maxY),(maxX,minY),(minX,minY)). El último punto es igual al primero, para cerrar la figura. Además de la lista de puntos, Postgis necesita el srid de esos puntos, en la plataforma está seteado como srid=4326.
+
+A todas las capas, idependientemente de su srid, se les calcula el bbox y es transformado a srid=4326 para guardarlo en Postgis. Además de esa forma, los bbox son comparables. 
+
+
+main
+----
+
+Es la app dónde se implementan funcionalidades globales del proyecto, como la pagina de Log-In, Página de acceso no autorizado y un view para revisar el progreso de un **task** en celery.
+
+rasterLayers
+------------
+
+Se define el modelo **RasterLayer** para representar una capa raster. Actualmente se soporta el tipo de archivo **geotiff**. Este modelo hereda de **Layer** y en la siguiente tabla se detallan sus atributos.
+
+..  list-table:: Atributos del modelo RasterLayer
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - file_path
+      - Es la ruta dónde se guarda el archivo raster (geotiff)
+    * - file_name
+      - Es el nombre del archivo
+    * - file_format
+      - Es el tipo de archivo, la extensión.
+    * - numBands
+      - Es el número de bandas que tiene la imagen. Si la imagen es monocromática, tiene una banda. Si es a color (RGB), tiene tres bandas. Si se tienen más bandas es una imagen multiespectral.
+
+En esta app, se definen views y templates que permiten al usuario subir, editar y eliminar una capa raster.
+Importar implica guardar el geotiff en el directorio definido por la variable **RASTER_FILES_PATH**, insertar un registro en la base de datos, para lo cuál se determinan el bbox, la fecha de subida, el titulo, el abtract, etc. Además, se proyecta la capa a EPSG:3857 (srid=3857) para poder visualizarlo en un mapa web (Open Street Map). La importación se lo realiza como una tarea de Celery.
+
+Editar incluye cambiar el titulo, abstract, fecha, y agregar estilo a la capa. Los estilos se revisarán más adelante.
+
+Para visualizar una capa raster, se implementó el protocolo Tile Map Service (**TMS**) que se revisará en la sección de la app **tms**.
+
+RESCLIMA
+--------
+
+Es la app principal que crea django, ahí se encuentra el archivo **url.py** que conecta todas la urls con todos los views del proyecto. También se encuentra el archivo **settings.py** que contiene parametros de configuración. Además se tiene el archivo **celery.py** que configura Celery y registra todos los task.
+
+search
+------
+
+Permite realizar la búsqueda de capas y series de tiempo. El usuario puede definir tres filtros en la búsqueda.
+
+  + Búsqueda por texto: Permite al usuario ingresar texto y seleccionar categorias. Se compara el texto y categorias ingresados con el abtract, titulo de la capa y con la descripción de la variable en el caso de serie de tiempo.
+  + Búsqueda espacial: Permite al usuario dibujar un bbox. Se recuperan las capas cuyo bbox se interseque con el bbox ingresado. En el caso de series de tiempo, se recuperan aquellas, cuya estación meteorológica esté dentro del bbox ingresado.
+  + Búsqueda por tiempo: Permite al usuario ingresar una fecha incial y final. Se recuperan las capas cuya fecha de los datos esté dentro de ese rango. Y se recuperan las series de tiempo que tengan datos en ese rango de tiempo.
+
+Estos tres filtros se intersecan (se utiliza un operador **and**) y se recupera una lista de resultados.
+Se tienen rutinas para generar consultas sql dinámicas dependiendo de los filtros que ingresó el usuario. Básicamente, crea un string sql dependiendo de si se busca capas o series y de acuerdo a los filtros. Este query string es evaluado y se retornan los resultados. Se intentó que la búsqueda sea lo más dinámica posible por lo que cualquier combinación de filtros es permitida, pero se requiere que se ingrese al menos un filtro.
+
+Para la búsqueda por texto se utiliza la funcionalidad de postgres **full-text search** el cual define un tipo de dato **ts_vector** para representar un string "buscable" y también define un **ts_query** para representar una consulta. Además se tiene un operador **@@** para realizar el match entre el ts_vector y el ts_query. Entonces el texto y las categorías ingresadas por el usuario se transforman en un ts_query y se realiza una consulta con el operador de match para encontrar coincidencias con el ts_vector de la capa o variable en el caso de serie de tiempo.
+
+Para la búsqueda espacial, el usuario define un bbox con 4 números: **top**, **bottom**, **left**, **right**. Con estos números se crea un polígono de postgis. Y utilizando la función **ST_Intersect** de postgis se realiza el query.
+
+Para la búqueda por tiempo simplemente se comparan las fechas. 
+
+En esta app se define el modelo **Category** que sirve para  mejorar la búsqueda. La idea es que un recurso de la plataforma, sea una capa o una serie de tiempo, tengan una o más categorías. 
+
+En **search** también se define el modelo **FilterSearchTable** que permite que los recursos que hereden de él tengan categorías y sean "buscables" por texto.
+
+..  list-table:: Atributos del modelo FilterSearchTable
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - ts_index
+      - Su tipo de dato es **ts_vector** en postgres, y es un arreglo con palabras (tokens) que permiten buscar por texto. En el caso de las capas, se crea un ts_vector con las palabras del título, abstract y las categorias (categories_string)
+    * - categories_string
+      - Es un string que concatena todas las categorias de la capa. Si al subir una capa el usuario escoge las categorias: "clima", "islas de calor" y "deslizamientos", categories_string será "clima islas de calor deslizamientos"
+
+Un modelo al heredar de FilterSearchTable ya tendrá un ts_index que incluye las categorias y esto permite que el usuario encuentre un recurso (capa o serie de tiempo) ingresando un texto que será comparado con el ts_index. 
+
+En **/RESCLIMA/scripts.sql** se encuentra un trigger **tsvector_update_layer** que se encarga de actualizar el ts_index cuando se crea o edita la capa.
+
+style
+-----
+
+Define un estilo para las capas. Básicamente el usuario sube un estilo como un archivo SLD (Style Layer Descriptor). Los archivos SLD son XML y se pueden generar con plugins de QGIS. El modelo **Style** se detalla en la siguiente tabla.
+
+..  list-table:: Atributos del modelo Style
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - file_path
+      - Es la ruta dónde se guarda el archivo SLD. Esta ruta se lo obtiene de la variable **STYLE_FILES_PATH** de settings.py
+    * - file_name
+      - Es el nombre del archivo.
+    * - title
+      - Título descriptivo del estilo.
+    * - type
+      - Puede ser "vector" o "raster"
+    * - layers
+      - Define una relacion muchos a muchos con un Layer.
+    * - owner
+      - Referencia al usuario que subió el estilo.
+
+Se tiene una relación muchos a muchos entre un estilo y una capa. Pero, en la práctica una capa vectorial puede tener muchos estilos, pero un estilo no puede estar ligado con varias capas vectoriales. En el caso de raster es lo contrario, es decir, una estilo puede estar ligado con varias capas raster. Pero una capa raster solo esta ligada con un estilo.
+

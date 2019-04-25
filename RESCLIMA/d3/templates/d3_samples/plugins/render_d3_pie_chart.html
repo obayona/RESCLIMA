@@ -2,6 +2,11 @@
 <p>
     <strong>{{ plugin.data.title }}</strong>
     <span class="text-center" id="chart-{{ plugin.html_id }}" ></span>
+    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
+        <i class='mt-2 material-icons center waves-effect waves-light teal lighten-2 left' data-toggle="tooltip" data-placement="right" data-html="true" title="Descripcion: <p>{{ plugin.data.description }}</p>" >info</i>
+        <input id="pieTime-{{ plugin.html_id }}" placeholder="init date" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
+        <input id="pielastTime-{{ plugin.html_id }}" placeholder="last date" type= "text" class=" col s5 datepicker center"  data-date-format='yyyy-mm-dd'  > 
+    </div>
     <div>
     {% if plugin.data.description|length > 0 %}
     {% endif %}
@@ -28,10 +33,27 @@
             $('[data-toggle="tooltip"]').tooltip()
             $('.datepicker').datepicker()
         });
+        $('#pieTime-{{ plugin.html_id }}').change(function(){
+            
+            changePieDate("pieTime-{{ plugin.html_id }}",
+                         "pielastTime-{{ plugin.html_id }}",
+                          'chart-{{ plugin.html_id }}',
+                          '{{ plugin.data.source }}',
+                          '{{ plugin.uid }}',
+                          '{{ plugin.data.simulation }}',
+                          '{{ plugin.data.description }}');
+        })
+        $('#pielastTime-{{ plugin.html_id }}').change(function(){
+            
+            changePieDate("pieTime-{{ plugin.html_id }}",
+                         "pielastTime-{{ plugin.html_id }}",
+                          'chart-{{ plugin.html_id }}',
+                          '{{ plugin.data.source }}',
+                          '{{ plugin.uid }}',
+                          '{{ plugin.data.simulation }}',
+                          '{{ plugin.data.description }}');
+        })
+
 </script>
-    <div class = "row text-center teal lighten-2" id='div-{{ plugin.html_id }}'>
-        <i class='mt-2 material-icons center waves-effect waves-light teal lighten-2 left' data-toggle="tooltip" data-placement="right" data-html="true" title="Descripcion: <p>{{ plugin.data.description }}</p>" >info</i>
-        <input id="pieTime-{{ plugin.html_id }}" placeholder="init date" type= "text" class="ml-3 col s5 datepicker center"  data-date-format='yyyy-mm-dd'  >
-        <input id="pielastTime-{{ plugin.html_id }}" placeholder="last date" type= "text" class=" col s5 datepicker center"  data-date-format='yyyy-mm-dd'  > 
-    </div>
+
 </p>
