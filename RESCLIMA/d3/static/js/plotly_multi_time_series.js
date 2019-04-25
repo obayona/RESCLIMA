@@ -37,9 +37,9 @@ function getChartPluginSize(str) {
       start_date = null;
       end_date = null;
     }
-    SOURCE_URL = " /api/" + source + "/" + start_date + "/" + end_date + "/";
-    ORIGIN_URL = " /api/" + origin + "/" + start_date + "/" + end_date + "/";
-    OUTSET_URL = " /api/" + outset + "/" + start_date + "/" + end_date + "/";
+    SOURCE_URL = "/api/" + source + "/" + start_date + "/" + end_date + "/";
+    ORIGIN_URL = "/api/" + origin + "/" + start_date + "/" + end_date + "/";
+    OUTSET_URL = "/api/" + outset + "/" + start_date + "/" + end_date + "/";
     var barDiv = document.getElementById(container);
 
     var min_data = [],
@@ -131,7 +131,9 @@ function getChartPluginSize(str) {
                   type: 'linear'
                 },
                 width: two_sizes.sizew,
-                height: two_sizes.sizeh,    
+                height: two_sizes.sizeh,  
+                paper_bgcolor:'rgba(0,0,0,0)',
+                plot_bgcolor:'rgba(0,0,0,0)',  
                 margin: {
                     l: 40,
                     r: 0,
@@ -142,6 +144,9 @@ function getChartPluginSize(str) {
               };
               
               Plotly.newPlot(barDiv, data, layout);
+              barDiv.on('plotly_click', function(data){
+                window.location.replace("/plot/climatica/dashboard/")
+              });
         }
     })
 

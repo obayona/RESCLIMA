@@ -1,0 +1,62 @@
+Aplicación web Django (parte 3)
+===============================
+
+En este documento se continuan describiendo las apps
+
+dash
+----
+
+En esta app se elabora la opción para crear y dar acceso a visualizar DashBoards, con el uso de los datos obtenidos de RESCLIMA.
+
+Los datos usados para hacer los gráficos estadísticos son respecto a:
+
++ clima
++ logística y transporte
++ población
+
+..  list-table:: Modelos de app Dash
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - DashBoardEntry
+      - Guarda los valores respecto al usuario que lo creó, los plugins agregados, junto con su posición y valores de los cuadros estadísticos
+    * - DashboardPlugin
+      - El id de los plugins
+    * - DashBoardPlugin_Groups
+      - Asigna los plugins con grupos
+    * - DashBoardPlugin_Users
+      - Relaciona los plugins con distintos usuarios
+    * - DashBoardSettings
+      - Configuración del Dashboard.
+    * - DashBoardWorkspace
+      - Guarda la configuración de cada producto creado en el dashboard.
+
+Los dashboards se crearán como un producto, al cual se le pueden agregar las opciones:
+
++ público
++ clonable
+
+.. image:: _static/crearProducto.png
+
+Los dashboards se pueden ver como:
+
+.. image:: _static/dashboard.png
+
+d3
+--
+
+En esta app se elaboran los gráficos estadísticos que se crean en los dashboards
+
+Incluye las configuraciones para los plugins de cuadros estadísticos y su interactividad
+
+Los tipos de cuadros estadísticos soportados son:
+
++ Gráfico de barras
++ Gráfico de barras agrupadas
++ Gráfico de líneas
++ Treemap
++ Gráfico Circular
++ Series de Tiempo
++ Series de Tiempo múltiples

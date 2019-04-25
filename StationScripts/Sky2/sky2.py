@@ -18,9 +18,11 @@ importlib.reload(sys)
 # la base de datos
 
 # archivos de configuracion, log y backup
+
 configFileName = "/home/manager/RESCLIMA/dbparams.json";
 logFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/log.txt"
 backupFileName = "/home/manager/RESCLIMA/StationScripts/Sky2/backup.txt";
+
 
 # variable de condicion
 # para dormir el main
@@ -137,9 +139,7 @@ def parseMeasurements(serialNum,idStation,data,variables):
 	for station in source:
 		print("DENTRO DEL FOR")
 		if(station["DeviceID"] == serialNum):
-			print("ADENTRO DEL IF")
 			readings = station['Data']
-			print(readings)
 			timestamp = readings['TS']
 			dt = datetime.utcfromtimestamp(timestamp)	
 			timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -150,6 +150,8 @@ def parseMeasurements(serialNum,idStation,data,variables):
 				idVariable = variable["id"];
 				alias = variable["alias"];
 				result[idVariable] = readings[alias];
+				print(alias)
+				print(readings[alias])
 
 			values = json.dumps(result);
 			measurement = {}
@@ -185,8 +187,8 @@ def insertMeasures(dbParams,measurements):
 def dataExtraction_thread(dbParams,station,variables):
 	idStation = station["id"]
 	token = station["token"]
-	frequency = station["frequency"]
-	#frequency = 5
+	#frequency = station["frequency"]
+	frequency = 5
 	serialNum = station["serialNum"]
 	print("SERIAL "+serialNum)
 	seconds = frequency*60
@@ -230,7 +232,8 @@ if __name__ == "__main__":
 					  u"Imagen SKY2",
 					  u"Detección de lluvia",
 					  u"Presión",
-					  u"Indice UV"]
+					  u"Indice UV",
+					  u"Humedad relativa"]
 
 
 	variables,error = getVariablesByNames(dbParams,variable_names);
@@ -242,6 +245,9 @@ if __name__ == "__main__":
 	variables_alias[u"Detección de lluvia"]=u"Rain"
 	variables_alias[u"Presión"]=u"Pressure"
 	variables_alias[u"Indice UV"]=u"UVIndex"
+	variables_alias[u"Humedad relativa"]=u"Humidity"
+
+
 
 	for variable in variables:
 		name = variable["name"]

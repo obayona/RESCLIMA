@@ -23,25 +23,26 @@ def get_average_emission(data):
 	avg = [0] * 19
 	for i in range(len(data)):
 		v = data[i]['vehicle']
-		avg[0] = avg[0] + float(v["@noise"])
-		# avg[1] = avg[1] + v["@lane"]
-		avg[2] = avg[2] + float(v["@CO2"])
-		avg[3] = avg[3] + float(v["@CO"])
-		avg[4] = avg[4] + float(v["@angle"])
-		# avg[5] = avg[5] + v["@id"]
-		avg[6] = avg[6] + float(v["@pos"])
-		avg[7] = avg[7] + float(v["@PMx"])
-		avg[8] = avg[8] + float(v["@waiting"])
-		avg[9] = avg[9] + float(v["@electricity"])
-		avg[10] = avg[10] + float(v["@NOx"])
-		# avg[11] = avg[11] + v["@route"]
-		avg[12] = avg[12] + float(v["@HC"])
-		avg[13] = avg[13] + float(v["@fuel"])
-		avg[14] = avg[14] + float(v["@x"])
-		avg[15] = avg[15] + float(v["@y"])
-		# avg[16] = avg[16] + v["@eclass"]
-		# avg[17] = avg[17] + v["@type"]
-		avg[18] = avg[18] + float(v["@speed"])
+		if(type(v)==type({})):
+			avg[0] = avg[0] + float(v["@noise"])
+			# avg[1] = avg[1] + v["@lane"]
+			avg[2] = avg[2] + float(v["@CO2"])
+			avg[3] = avg[3] + float(v["@CO"])
+			avg[4] = avg[4] + float(v["@angle"])
+			# avg[5] = avg[5] + v["@id"]
+			avg[6] = avg[6] + float(v["@pos"])
+			avg[7] = avg[7] + float(v["@PMx"])
+			avg[8] = avg[8] + float(v["@waiting"])
+			avg[9] = avg[9] + float(v["@electricity"])
+			avg[10] = avg[10] + float(v["@NOx"])
+			# avg[11] = avg[11] + v["@route"]
+			avg[12] = avg[12] + float(v["@HC"])
+			avg[13] = avg[13] + float(v["@fuel"])
+			avg[14] = avg[14] + float(v["@x"])
+			avg[15] = avg[15] + float(v["@y"])
+			# avg[16] = avg[16] + v["@eclass"]
+			# avg[17] = avg[17] + v["@type"]
+			avg[18] = avg[18] + float(v["@speed"])
 	# Calcular el promedio
 	for i in range(len(avg)):
 		avg[i] = avg[i] / len(data)
@@ -73,48 +74,49 @@ def get_average_emission_by_type(data):
 	sum = [0] * 19
 	for i in range(len(data)):
 		v = data[i]['vehicle']
-		if v["@type"] == "bus_bus":
-			# Vehiculo Pesado
-			avg[0] = avg[0] + float(v["@noise"])
-			# avg[1] = avg[1] + v["@lane"]
-			avg[2] = avg[2] + float(v["@CO2"])
-			avg[3] = avg[3] + float(v["@CO"])
-			avg[4] = avg[4] + float(v["@angle"])
-			# avg[5] = avg[5] + v["@id"]
-			avg[6] = avg[6] + float(v["@pos"])
-			avg[7] = avg[7] + float(v["@PMx"])
-			avg[8] = avg[8] + float(v["@waiting"])
-			avg[9] = avg[9] + float(v["@electricity"])
-			avg[10] = avg[10] + float(v["@NOx"])
-			# avg[11] = avg[11] + v["@route"]
-			avg[12] = avg[12] + float(v["@HC"])
-			avg[13] = avg[13] + float(v["@fuel"])
-			avg[14] = avg[14] + float(v["@x"])
-			avg[15] = avg[15] + float(v["@y"])
-			# avg[16] = avg[16] + v["@eclass"]
-			# avg[17] = avg[17] + v["@type"]
-			avg[18] = avg[18] + float(v["@speed"])
-		else:
-			# Vehiculo Liviano
-			sum[0] = sum[0] + float(v["@noise"])
-			# sum[1] = sum[1] + v["@lane"]
-			sum[2] = sum[2] + float(v["@CO2"])
-			sum[3] = sum[3] + float(v["@CO"])
-			sum[4] = sum[4] + float(v["@angle"])
-			# sum[5] = sum[5] + v["@id"]
-			sum[6] = sum[6] + float(v["@pos"])
-			sum[7] = sum[7] + float(v["@PMx"])
-			sum[8] = sum[8] + float(v["@waiting"])
-			sum[9] = sum[9] + float(v["@electricity"])
-			sum[10] = sum[10] + float(v["@NOx"])
-			# sum[11] = sum[11] + v["@route"]
-			sum[12] = sum[12] + float(v["@HC"])
-			sum[13] = sum[13] + float(v["@fuel"])
-			sum[14] = sum[14] + float(v["@x"])
-			sum[15] = sum[15] + float(v["@y"])
-			# sum[16] = sum[16] + v["@eclass"]
-			# sum[17] = sum[17] + v["@type"]
-			sum[18] = sum[18] + float(v["@speed"])
+		if type(v)==type({}):
+			if  v["@type"] == "bus_bus":
+				# Vehiculo Pesado
+				avg[0] = avg[0] + float(v["@noise"])
+				# avg[1] = avg[1] + v["@lane"]
+				avg[2] = avg[2] + float(v["@CO2"])
+				avg[3] = avg[3] + float(v["@CO"])
+				avg[4] = avg[4] + float(v["@angle"])
+				# avg[5] = avg[5] + v["@id"]
+				avg[6] = avg[6] + float(v["@pos"])
+				avg[7] = avg[7] + float(v["@PMx"])
+				avg[8] = avg[8] + float(v["@waiting"])
+				avg[9] = avg[9] + float(v["@electricity"])
+				avg[10] = avg[10] + float(v["@NOx"])
+				# avg[11] = avg[11] + v["@route"]
+				avg[12] = avg[12] + float(v["@HC"])
+				avg[13] = avg[13] + float(v["@fuel"])
+				avg[14] = avg[14] + float(v["@x"])
+				avg[15] = avg[15] + float(v["@y"])
+				# avg[16] = avg[16] + v["@eclass"]
+				# avg[17] = avg[17] + v["@type"]
+				avg[18] = avg[18] + float(v["@speed"])
+			else:
+				# Vehiculo Liviano
+				sum[0] = sum[0] + float(v["@noise"])
+				# sum[1] = sum[1] + v["@lane"]
+				sum[2] = sum[2] + float(v["@CO2"])
+				sum[3] = sum[3] + float(v["@CO"])
+				sum[4] = sum[4] + float(v["@angle"])
+				# sum[5] = sum[5] + v["@id"]
+				sum[6] = sum[6] + float(v["@pos"])
+				sum[7] = sum[7] + float(v["@PMx"])
+				sum[8] = sum[8] + float(v["@waiting"])
+				sum[9] = sum[9] + float(v["@electricity"])
+				sum[10] = sum[10] + float(v["@NOx"])
+				# sum[11] = sum[11] + v["@route"]
+				sum[12] = sum[12] + float(v["@HC"])
+				sum[13] = sum[13] + float(v["@fuel"])
+				sum[14] = sum[14] + float(v["@x"])
+				sum[15] = sum[15] + float(v["@y"])
+				# sum[16] = sum[16] + v["@eclass"]
+				# sum[17] = sum[17] + v["@type"]
+				sum[18] = sum[18] + float(v["@speed"])
 
 	# Calcular el promedio de vehiculos pesados
 	for i in range(len(avg)):
@@ -173,30 +175,35 @@ def get_average_trace(data):
 	contador_pesado=0
 	for i in range(len(data)):
 		v = data[i]['vehicle']
-		if v["@type"] =="bus_bus":
-			# avg[0] = avg[0] + float(v["@id"])
-			avg[1] = avg[1] + float(v["@x"])
-			avg[2] = avg[2] + float(v["@y"])
-			avg[3] = avg[3] + float(v["@angle"])
-			# avg[4] = avg[4] + float(v["@type"])
-			avg[5] = avg[5] + float(v["@speed"])
-			avg[6] = avg[6] + float(v["@pos"])
-			# avg[7] = avg[7] + float(v["@lane"])
-			avg[8] = avg[8] + float(v["@slope"])
-			contador_pesado+=1
-		else:
-			# avg[0] = avg[0] + float(v["@id"])
-			liviano[1] = liviano[1] + float(v["@x"])
-			liviano[2] = liviano[2] + float(v["@y"])
-			liviano[3] = liviano[3] + float(v["@angle"])
-			# avg[4] = avg[4] + float(v["@type"])
-			liviano[5] = liviano[5] + float(v["@speed"])
-			liviano[6] = liviano[6] + float(v["@pos"])
-			# avg[7] = avg[7] + float(v["@lane"])
-			liviano[8] = liviano[8] + float(v["@slope"])
-			contador_liviano+=1
+		if(type(v)==type({})):
+			if v["@type"] =="bus_bus":
+				# avg[0] = avg[0] + float(v["@id"])
+				avg[1] = avg[1] + float(v["@x"])
+				avg[2] = avg[2] + float(v["@y"])
+				avg[3] = avg[3] + float(v["@angle"])
+				# avg[4] = avg[4] + float(v["@type"])
+				avg[5] = avg[5] + float(v["@speed"])
+				avg[6] = avg[6] + float(v["@pos"])
+				# avg[7] = avg[7] + float(v["@lane"])
+				avg[8] = avg[8] + float(v["@slope"])
+				contador_pesado+=1
+			else:
+				# avg[0] = avg[0] + float(v["@id"])
+				liviano[1] = liviano[1] + float(v["@x"])
+				liviano[2] = liviano[2] + float(v["@y"])
+				liviano[3] = liviano[3] + float(v["@angle"])
+				# avg[4] = avg[4] + float(v["@type"])
+				liviano[5] = liviano[5] + float(v["@speed"])
+				liviano[6] = liviano[6] + float(v["@pos"])
+				# avg[7] = avg[7] + float(v["@lane"])
+				liviano[8] = liviano[8] + float(v["@slope"])
+				contador_liviano+=1
 
 	# Calcular el promedio
+	if(contador_pesado==0):
+		contador_pesado=1
+	if(contador_liviano==0):
+		contador_liviano=1
 	for i in range(len(avg)):
 		avg[i] = avg[i] / contador_pesado
 		liviano[i] = liviano[i] / contador_liviano
@@ -281,7 +288,10 @@ def get_key_value_speed_by_type(data):
 		TOTAL_WEIGHT = 0
 		TOTAL_LIGHT = 0
 		for i in range(len(data[x])):
-			v = data[x][i]
+			if(type(data[x])==list):
+				v = data[x][i]
+			else:
+				v = data[x]
 			if v["@type"] == "bus_bus":
 				# Vehiculo pesado
 				WEIGHT = WEIGHT + float(v["@speed"])
@@ -318,7 +328,10 @@ def get_key_value_waiting_by_type(data):
 		TOTAL_WEIGHT = 0
 		TOTAL_LIGHT = 0
 		for i in range(len(data[x])):
-			v = data[x][i]
+			if(type(data[x])==list):
+				v = data[x][i]
+			else:
+				v = data[x]
 			if v["@type"] == "bus_bus":
 				# Vehiculo pesado
 				WEIGHT = WEIGHT + int(float(v["@waiting"]))

@@ -36,7 +36,6 @@ class BaseBarChartWidget(BaseChartWidget):
 
     media_js = (
         'js/d3.v3.min.js',  # Main D3 script
-#        'js/d3_bar_chart.js',  # Helper script
         'js/plotly-latest.min.js', #plotly new Script
         'js/plotly_bar_chart.js',
     )
@@ -52,7 +51,8 @@ class BaseGroupedBarChartWidget(BaseChartWidget):
 
     media_js = (
         'js/plotly-latest.min.js', #plotly new Script
-        'js/plotly_grouped_bar_chart.js'
+        'js/plotly_grouped_bar_chart.js',
+        'js/interactiveRedirecting.js',
     )
 
     media_css = (
@@ -114,9 +114,9 @@ class BaseLineChartWidget(BaseChartWidget):
     media_js = (
         'js/d3.v3.min.js',  # Main D3 script
         'js/d3.queue.min.js', # D3 Queue
-       # 'js/d3_line_chart.js',  # Helper script
         'js/plotly-latest.min.js', #plotly new Script
-        'js/plotly_line_chart.js'
+        'js/plotly_line_chart.js',
+        'js/interactiveRedirecting.js',
     )
 
     media_css = (

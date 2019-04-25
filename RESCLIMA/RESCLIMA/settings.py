@@ -39,7 +39,7 @@ INSTALLED_APPS = (
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
 	'django.contrib.gis',
-	'django.contrib.postgres',
+	#'django.contrib.postgres',
 	'layer',
 	'search',
 	'style',
@@ -68,7 +68,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
 	'django.contrib.sessions.middleware.SessionMiddleware',
 	'django.middleware.common.CommonMiddleware',
-	#'django.middleware.csrf.CsrfViewMiddleware',
+	'django.middleware.csrf.CsrfViewMiddleware',
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
@@ -99,11 +99,12 @@ WSGI_APPLICATION = 'RESCLIMA.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-DB_PARAMS = "/home/manager/RESCLIMA/dbparams.json"
+DB_PARAMS = "/home/belen/github/RESCLIMA/dbparams.json"
 
 dbParams = None
 with open(DB_PARAMS) as data_file:
         dbParams = json.load(data_file)
+
 DATABASES = {
 	'default': {
 		'ENGINE': 'django.contrib.gis.db.backends.postgis',
@@ -145,6 +146,12 @@ CELERY_RESULT_BACKEND = 'amqp://resclima:resclima@localhost:5672/resclima'
 CELERY_RESULT_SERIALIZER = 'json'
 
 # paths for user data
+'''
 STYLE_FILES_PATH = "/home/manager/styles/"
 RASTER_FILES_PATH = "/home/manager/rasters/"
 TEMPORARY_FILES_PATH = "/home/manager/tmp/"
+'''
+
+STYLE_FILES_PATH = "/home/belen/github/styles/"
+RASTER_FILES_PATH = "/home/belen/github/rasters/"
+TEMPORARY_FILES_PATH = "/home/belen/github/tmp/"
