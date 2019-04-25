@@ -176,5 +176,5 @@ migrations/
 migrations/*
 *settings.py
 RESCLIMA/static/*
-
+RESCLIMA/media/
 .Rhistory

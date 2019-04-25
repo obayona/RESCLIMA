@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -67,5 +65,4 @@ def search_series(request):
 			full_count=row[3]
 			series.append(serie);
 	return JsonResponse({"series":series,"full_count":full_count})
-
 

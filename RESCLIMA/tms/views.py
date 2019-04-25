@@ -9,11 +9,13 @@ from style.utils import getColorMap
 import traceback
 import math
 import tifffile as tiff
-from skimage.transform import resize
 from skimage import img_as_ubyte
 import numpy as np
 from io import BytesIO
 from PIL import Image
+from pygeotile.tile import Tile
+from osgeo import ogr, osr
+
 
 MAX_ZOOM_LEVEL = 20
 TILE_WIDTH     = 256
@@ -93,6 +95,34 @@ def tileMap(request, version, rasterlayer_id):
 		traceback.print_exc()
 		return HttpResponse("Error")
 
+def pointTo3857(longitude,latitude):
+	point = ogr.Geometry(ogr.wkbPoint)
+	point.AddPoint(longitude, latitude)
+	inSpatialRef = osr.SpatialReference()
+	inSpatialRef.ImportFromEPSG(4326)
+
+	outSpatialRef = osr.SpatialReference()
+	outSpatialRef.ImportFromEPSG(3857)
+
+	coordTransform = osr.CoordinateTransformation(inSpatialRef, outSpatialRef)
+	point.Transform(coordTransform)
+
+	return point.GetX(), point.GetY()
+
+def tmsTo3857(x,y,zoom):
+	tile = Tile.from_tms(tms_x=x, tms_y=y, zoom=zoom)
+	bounds = tile.bounds
+	minLong = bounds[0].longitude
+	minLat = bounds[0].latitude
+	maxLong = bounds[1].longitude
+	maxLat = bounds[1].latitude
+
+	minLong,minLat = pointTo3857(minLong,minLat)
+	maxLong,maxLat = pointTo3857(maxLong,maxLat)
+	return minLong,maxLong,minLat,maxLat
+
+
+
 def applyStyleRaster(img,colorMap):
 	h,w = img.shape
 	raster = np.zeros((h,w,4),dtype="uint8")
@@ -130,7 +160,7 @@ def applyStyleRaster(img,colorMap):
 def scaleImage(img):
 	img=img_as_ubyte(img)
 	h,w = img.shape
-	result = np.zeros((h,w,4),dtype="uint")
+	result = np.zeros((h,w,4),dtype="uint8")
 	result[:,:,0]=img
 	result[:,:,1]=img
 	result[:,:,2]=img
@@ -152,19 +182,22 @@ def getBBox(rasterlayer):
 	return (minX,maxX,minY,maxY)
 
 def createImage(img):
-	resize_flag = False
-
 	if (img.shape[0]!=TILE_HEIGHT or img.shape[1]!=TILE_WIDTH):
 		resize_flag = True
 
 	file = BytesIO()
 	image = Image.fromarray(img)
-	if(resize_flag):
-		image = image.resize((TILE_WIDTH,TILE_HEIGHT))
 	image.save(file, 'png')
-	file.name = 'test.png'
+	#file.name = 'tile.png'
 	file.seek(0)
 	return file
+
+def resize(img,width,height):
+	image = Image.fromarray(img)
+	image = image.resize((width,height))
+	return np.array(image)
+
+
 
 def intersectRanges(a1,a2,b1,b2):
 	if(a2 <= a1):
@@ -172,42 +205,45 @@ def intersectRanges(a1,a2,b1,b2):
 	if(b2 <= b1):
 		raise Exception("Invalid range %f, %f"%(b1,b2))
 
-	if(b2<a1 or b1>a2):
+	c1 = max(a1,b1)
+	c2 = min(a2,b2)
+	if(c1>c2):
 		return None,None
-	if(b1>=a1):
-		c1 = b1
-	else:
-		c1 = a1
-	if(b2<=a2):
-		c2 = b2
-	else:
-		c2 = a2
 	return c1,c2
 
+def createBlankTile(W,H):
+	tile = np.zeros((H,W,4),dtype='uint8')
+	return tile
+
+#Calcula la longitud del tile dependiendo del
+#nivel de zoom
+def getTileLength(zoomLevel,R_EARTH):
+    # ancho del mundo = 2*R_EARTH
+    # el numero de tiles es 2^zoomLevel
+    return (2*R_EARTH)/math.pow(2,zoomLevel)
+
+
+def normalizeCoord(coord,normX,normY):
+	x1,x2,y1,y2 = coord
+	return x1+normX,x2+normX,y1+normY,y2+normY
+
+def cropImage(raster,x1,x2,y1,y2):
+	if (x1==None or x2==None or y1==None or y2==None):
+		 return createBlankTile(TILE_WIDTH,TILE_HEIGHT)
+	height,width,_ = raster.shape
+	x1=int(round(x1));x2=int(round(x2));
+	y1=int(round(y1));y2=int(round(y2));
+	return raster[y1:y2,x1:x2]
+
+
 def calculateCropCoord(a1,a2,Length,tileLength):
-	dif = a2 -a1
+	dif = a2 - a1
 	if (a1>0 and a2<Length):
 		return 0,dif
 	if (a1==0):
 		return tileLength-dif,tileLength
 	if (a2==Length):
 		return 0,dif
-
-def createBlankTile(W,H):
-	tile = np.zeros((W,H,4),dtype='uint8')
-	return tile
-
-#Calcula la longitud del tile dependiendo del
-#nivel de zoom
-def getTileLength(zoomLevel):
-    # ancho del mundo = R_EARTH_X + R_EARTH_Y
-    # el numero de tiles es 2^zoomLevel
-    return (R_EARTH_X + R_EARTH_X)/math.pow(2,zoomLevel)
-
-
-def normalizeCoord(coord,normX,normY):
-	x1,x2,y1,y2 = coord
-	return x1+normX,x2+normX,y1+normY,y2+normY
 
 def tile(request, version, rasterlayer_id, zoom, x, y):
 	try:
@@ -228,7 +264,7 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		ext = rasterlayer.file_format
 		file_name = file_name.replace(ext,"-proj"+ext)
 		fullName = join(file_path,file_name)
-		print(fullName)
+
 		img = tiff.imread(fullName)
 		# se obtiene el estilo
 		layer_styles = Style.objects.filter(layers__id=rasterlayer.id)
@@ -239,31 +275,23 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 			raster = applyStyleRaster(img,colorMap)
 		else:
 			raster = scaleImage(img)
-			tiff.imsave("imagen.tif",raster)
-
 		#calculos
-		tileLength = getTileLength(zoom)
 
-		minLong = x*tileLength - R_EARTH_X 
-		maxLong = minLong + tileLength
-		minLat = y*tileLength  - R_EARTH_Y
-		maxLat = minLat + tileLength
-		print("Hasta aqui todo belleza")
-		print("TMS box",minLong,maxLong,minLat,maxLat)
-		
+		#longitud en metros de un tile
+		minLong,maxLong,minLat,maxLat=tmsTo3857(x,y,zoom);
 
 		# se obtiene el bbox de la capa
 		minX,maxX,minY,maxY = getBBox(rasterlayer)
-		print("Layer BBox:",minX,maxX,minY,maxY)
-		print("---------------------------")
-		print("Empiezan las transformaciones")
 		#calculos
-		
+		print("Posiciones originales")
+		print("TMS box",minLong,maxLong,minLat,maxLat)
+		print("Layer box",minX,maxX,minY,maxY)
+
+
 		#Encerando coordenadas
-		print("Encerando coordenadas")
 		minX,maxX,minY,maxY = normalizeCoord((minX,maxX,minY,maxY),R_EARTH_X,R_EARTH_Y)
 		minLong,maxLong,minLat,maxLat = normalizeCoord((minLong,maxLong,minLat,maxLat),R_EARTH_X,R_EARTH_Y)
-
+		print("Emcerando imagenes")
 		print("TMS box",minLong,maxLong,minLat,maxLat)
 		print("Layer box",minX,maxX,minY,maxY)
 
@@ -275,58 +303,80 @@ def tile(request, version, rasterlayer_id, zoom, x, y):
 		print("TMS box",minLong,maxLong,minLat,maxLat)
 		print("Layer box",minX,maxX,minY,maxY)
 		print("---------------------------")
+
 		# se obtiene la relacion entre el raster y el BBOX 
 		pixelsHeight,pixelsWidth,_ = raster.shape
 		print("H,W",pixelsHeight,pixelsWidth)
 		fX = pixelsWidth/maxX
 		fY = pixelsHeight/maxY
 		print("fX",fX,"fY",fY)
-		# se obtiene el tamanio del tile en pixeles
-		tW = int((maxLong - minLong)*fX)
-		tH = int((maxLat - minLat)*fY)
-		print(tW,tH)
-		if(tH > pixelsHeight or tW> pixelsWidth):
-			tile = createBlankTile(TILE_WIDTH,TILE_HEIGHT)
-			imageData = createImage(tile)
-			return HttpResponse(imageData, content_type="image/png")
-
-
-		# se crea un tile vacio
-		tile = createBlankTile(tW,tH)
-
+		
+		#transformar a pixeles
+		"""
+		tms_px1 = minLong*fX
+		tms_px2 = maxLong*fX
+		tms_py1 = minLat*fY
+		tms_py2 = maxLat*fY
+		"""
+		tile = createBlankTile(TILE_WIDTH,TILE_HEIGHT)
 		print("Calculando area de recorte")
 		tx1,tx2=intersectRanges(minX,maxX,minLong,maxLong)
 		ty1,ty2=intersectRanges(minY,maxY,minLat,maxLat)
-		# si no hay interseccion
-		if tx1==None or tx2==None or ty1==None or ty2==None:
-			# se envia el tile vacio
+		if(tx1==None or tx2==None or ty1==None or ty2==None):
 			imageData = createImage(tile)
 			return HttpResponse(imageData, content_type="image/png")
 
-
-		print("Area de recorte",tx1,tx2,ty1,ty2)
-		# se calcula el area de recorte en pixeles
-		tx1 = int(tx1*fX);tx2 = int(tx2*fX);ty1 = int(ty1*fY);ty2 = int(ty2*fY)
-		print("Area de recorte en pixeles")
-		print(tx1,tx2,ty1,ty2)
-
-		print("Area del tile en coordenadas de imagen")
-		# se intercambia el eje vertical
+		tx1 = tx1*fX; tx2 = tx2*fX;
+		ty1 = ty1*fX; ty2 = ty2*fX;
+		# se intercambia el eje y
 		ty2 = pixelsHeight-ty2
 		ty1 = pixelsHeight-ty1
 		ty2,ty1 = ty1,ty2
-		print(ty1,ty2,tx1,tx2)
-		# se realiza el recorte en la imagen
-		crop = raster[ty1:ty2,tx1:tx2,:]
-		print(crop.shape)
+		print("Area de recorte",tx1,tx2,ty1,ty2)
 
-		# se debe pegar en el tile el area recortada
-		sx1,sx2=calculateCropCoord(tx1,tx2,pixelsWidth,tW)
-		sy1,sy2=calculateCropCoord(ty1,ty2,pixelsHeight,tH)
-		print(sy1,sy2,sx1,sx2)
-		print(tile.shape)
-		print(tile[sy1:sy2,sx1:sx2,:].shape)
-		tile[sy1:sy2,sx1:sx2,:]=crop
+		#hacer el crop
+		crop_img = cropImage(raster,tx1,tx2,ty1,ty2)
+
+		print("tamano del crop",crop_img.shape)
+		# reize a TILE SIZE
+
+		# tile size
+		tW = (maxLong - minLong)*fX
+		tH = (maxLat - minLat)*fY
+
+		
+
+		h,w,_ = crop_img.shape
+		tileFactorX = TILE_WIDTH/tW; tileFactorY= TILE_HEIGHT/tH;
+		crop_w = int(round(w*tileFactorX))
+		crop_h = int(round(h*tileFactorY))
+		crop_w = min(crop_w,TILE_WIDTH)
+		crop_h = min(crop_h,TILE_HEIGHT)
+		crop_img = resize(crop_img,crop_w,crop_h)
+		print("tamano final del crop",crop_img.shape)
+
+
+		print("tile factor",tileFactorX,tileFactorY)
+		
+		tx1 = int(round(tx1*tileFactorX))
+		ty1 = int(round(ty1*tileFactorY))
+		tx2 = tx1 + crop_img.shape[1]
+		ty2 = ty1 + crop_img.shape[0]
+		print("los tx",tx1,tx2,ty1,ty2)
+		pixelsHeight,pixelsWidth,_=raster.shape
+		pixelsHeight = int(round(pixelsHeight*tileFactorY));
+		pixelsWidth = int(round(pixelsWidth*tileFactorX))
+		
+		pixelsWidth = max(tx2,pixelsWidth)
+		pixelsHeight = max(ty2,pixelsHeight)
+
+		print("arg",tx1,tx2,pixelsWidth,TILE_WIDTH)
+		print("arg",ty1,ty2,pixelsHeight,TILE_HEIGHT)
+
+		sx1,sx2=calculateCropCoord(tx1,tx2,pixelsWidth,TILE_WIDTH)
+		sy1,sy2=calculateCropCoord(ty1,ty2,pixelsHeight,TILE_HEIGHT)
+		print("los s",sx1,sx2,sy1,sy2)
+		tile[sy1:sy2,sx1:sx2,:]=crop_img
 		imageData = createImage(tile)
 
 		return HttpResponse(imageData, content_type="image/png")
