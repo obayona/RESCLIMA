@@ -70,6 +70,13 @@ def import_raster_layer(rasterlayer_params):
 	result["percent"]=30
 	current_task.update_state(state='PROGRESS',meta=result)
 
+	#se obtiene el no data value
+	nodata = float('nan')
+	if numBands==1:
+		band = datasource.GetRasterBand(1)
+		nodata = band.GetNoDataValue()
+
+
 	# se obtiene el bbox
 	bbox = getBBox(datasource)
 	if bbox==None:
@@ -98,6 +105,7 @@ def import_raster_layer(rasterlayer_params):
 	rasterlayer.data_date = data_date
 	rasterlayer.categories_string = categories_string
 	rasterlayer.srs_wkt = srs_wkt
+	rasterlayer.noValue = nodata
 	rasterlayer.numBands = numBands
 	rasterlayer.bbox = bbox
 	rasterlayer.type = "raster"
@@ -108,4 +116,5 @@ def import_raster_layer(rasterlayer_params):
 	result["percent"]=100
 	current_task.update_state(state='PROGRESS',meta=result)
 	return result
+
 
