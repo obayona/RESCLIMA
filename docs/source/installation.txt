@@ -8,43 +8,37 @@ Dependencias
 ------------
 Lo primero es instalar las dependencias que son:
 
-+ Django 1.11.6
-+ djangorestframework
-+ Django-dash + dependencias
++ python 3.6.7
++ Django 1.11 
 + GeoDjango + dependencias (geos, proj4)
 + gdal
-+ image
 + PostgreSQL 10
 + Postgis
 + TimescaleDB
 + mapnik
 + lxml
-+ Celery + RabbitMQ
-+ celery_progress
-+ scikit-image
-+ xmltodict
++ Celery 4.2.1 + RabbitMQ
 
-Django 1.11.6
-#############
+
+python 3.6.7
+############
+Se debe descargar el código fuente de python desde https://www.python.org/downloads/release/python-367/
+
+Se descarga un .tgz que se debe descomprimir, dentro de la carpeta realizar lo siguiente 
+
 Instalación::
 
-	$ pip install Django== 1.11.6
+	$ ./configure -with-ssl
+	$ make
+	$ make test
+	$ sudo make install
 
-djangorestframework
-###################
+
+Django 1.11
+###########
 Instalación::
 
-	$ pip install djangorestframework
-
-Django-dash + dependencias
-##########################
-Instalación::
-
-	$ pip install django-dash
-	$ pip install django-autoslug
-	$ pip install django-cleanup
-	$ pip install django-boostrap-components
-	$ pip install easy-thumbnails
+	$ pip install Django== 1.11
 
 GeoDjango + dependencias
 ########################
@@ -63,7 +57,7 @@ En Ubuntu se instalan las dependencias de gdal con::
 Compilación::
 
 	$ cd gdal-2.1.0/
-	$ ./configure --prefix=/usr/ --with-python
+	$ ./configure --prefix=/usr/ --with-python3.6
 	$ make
 
 Instalación::
@@ -73,7 +67,7 @@ Instalación::
 Instalación wrapper de python::
 	
 	$ cd swig/python/
-	$ sudo python setup.py install
+	$ sudo python3.6 setup.py install
 
 Para comprobar que la instalación es correcta, en una consola de python,
 ejecutar::
@@ -321,20 +315,6 @@ Para comprobar el estado del proceso::
 
 El estado debe ser **running**. Con estos pasos celery queda ejecutandose siempre, como un proceso demonio. Si se cambia el codigo de los **tasks** se debe reiniciar celery.
 
-Celery_progress
-###############
-
-	$ pip install celery-progress
-
-Scikit-image
-############
-
-	$ pip install scikit-image
-
-Xmltodict
-#########
-
-	$ pip install xmltodict
 
 Scripts de estaciones meteorológicas
 ####################################
@@ -370,4 +350,7 @@ Si se agregan o eliminan estaciones meteorológicas, se debe reiniciar el proces
 	$ sudo systemctl restart sky2.service
 
 
-
+jsonfield
+simplejson
+psycopg2
+sudo yum install python36u-devel.x86_64

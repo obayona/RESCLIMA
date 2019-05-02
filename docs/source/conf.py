@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.githubpages',
+    #'rst2pdf.pdfbuilder',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -138,6 +139,9 @@ latex_documents = [
     (master_doc, 'resclima.tex', u'resclima Documentation',
      u'Oswaldo Bayona', 'manual'),
 ]
+
+pdf_documents = [(master_doc, 'resclima.tex', u'resclima Documentation',
+     u'Oswaldo Bayona', 'manual'),]
 
 
 # -- Options for manual page output ------------------------------------------

@@ -1,5 +1,0 @@
-sudo apt-get install \
-python3-mapnik \
-gir1 .2-pango-1.0 \
-gir1 .2-rsvg-2.0 \
-python3-gi-cair

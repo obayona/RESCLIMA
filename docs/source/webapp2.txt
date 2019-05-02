@@ -38,12 +38,45 @@ tms
 
 Esta app implementa un protocolo llamado **Tile Map Service** que sirve para dibujar mapas en la web. Este protocolo se usa para dibujar las capas raster en el cliente web. El cliente web utiliza la librería **OpenLayers** que permite crear mapas multicapas y soporta varios protocolos incluyendo TMS.
 
-Dependiendo del nivel de zoom del mapa, se divide la tierra en cuadrantes o TILES. Cuando el zoom es 0, el más lejano, sólo hay 2 tiles. Mientras más zoom, se tienen más tiles para más resolución. **Openlayers** se encarga de pedir al servidor los tiles de las capas raster para poder dibujarlo. OpenLayers realiza una peticion por tile al url **/tms/id_capa/nivel_zoom/x/y.png** donde nivel_zoom es el zoom del mapa, y x,y representan la coordenada del TILE.
+El protocolo divide el mundo en Tiles, dependiendo del nivel de zoom.
+El numero de tiles es (2^(zoom))^2. Por ejemplo con zoom=2 se tendían 16 tiles. Además, como se observa en la figura cada tile tiene una coordenada (x,y).
 
-En la app **tms** básicamente se lee el geotiff y el SLD si se define un estilo, se utilizan los parametros nivel_zoom x,y para recortar y escalar la imagen y retorna una imagen png al cliente, que será usada para dibujar la capa.
+.. image:: _static/tms1.png
 
-Cabe mencionar que se está utilizando el sistema de referencia EPSG:3857 ya que las imagenes geotiff fueron proyectadas a ese **SRC** para mostrarlos en la web.  
-
-
+En el ejemplo anterior. OpenLayers realiza automáticamente 16 peticiones al servidor TMS para obtener las 16 imagenes. El formato del url es **tms/version/id_capa/zoom/x/y.png**. A partir de ahí el servidor TMS recupera la capa y los parametros (zoom, x, y) y devuelve una imagen.
 
 
+El algoritmo para generar la imagen está en **tms/renderer.py** y funciona de la siguiente manera:
+
+1) Recupera la capa y le aplica el estilo. El resultado de esto es un numpy array de shape (filas,columnas,4), es decir una imagen RGBA. Y la resolucion del pixel de 8 bits (0-255).
+
+
+2) A partir de los parámetros (zoom,x,y) se genera un bbox usando la librería **pygeotile**. Y también se recupera el bbox de la capa. Los bbox se representan como vectores de 4 elementos [minX, maxX, minY, maxY]. Se está usando la proyeccion **EPSG:3857** en el cuál los puntos de la tierra se miden en metros. El siguiente gráfico muestra el sistema de coordenadas de EPSG:3857
+
+
+.. image:: _static/tms2.png
+
+El siguiente gráfico muestra un ejemplo de los bbox del tile y de la capa
+
+.. image:: _static/tms3.png
+
+3) Posterior a eso, se transforman todas las coordenadas para que el origen esté en la esquina superior izquierda del planeta
+
+.. image:: _static/tms4.png
+
+4) Luego, se realiza una transformacion en todas las coordenadas para que el origen esté en la esquina superior izquierda de la capa.
+
+.. image:: _static/tms5.png
+
+
+5) Luego se realiza una transformación en todas las coordenadas para que ya no estén en metros sino en pixeles.
+
+6) Se encuentra la intersección entre el bbox del tile y el de la capa y se corta esa imagen.
+
+.. image:: _static/tms6.png
+
+7) La imagen final que retorna el servidor tendrá tamaño (TILE_WIDTH x TILE_HEIGHT). Que son constantes almacenadas en **tms/constants.py**. Por lo que la imagen recortada es escala proporcionalmente al tamaño de la imagen final.
+
+8) Finalmente, se debe calcular en que posicion del tile final colocar la imagen recortada. Y luego se retorna la imagen
+
+.. image:: _static/tms7.png

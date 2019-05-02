@@ -13,8 +13,6 @@ Dentro se encuantran las apps del proyecto que son:
 + timeSeries
 + tms
 + vectorLayers 
-+ dash
-+ d3
 
 A continuación se detalla brevemente cada app:
 
