@@ -1,0 +1,38 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}DATA-CITY | VISUALIZAR TRACK POINTS{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'layer/css/layerview.css' %}" type="text/css">
+{% endblock %}
+
+{% block content %}
+<div id="trackingApp">
+	<!-- Layer list -->
+
+	<div class="row">
+		<div class="col s12">
+			<map_component></map_component>
+		</div>
+	</div>
+		<tracking_component></tracking_component>
+		<!--<currentlayer_component></currentlayer_component>-->
+	<div>
+		<filters_component></filters_component>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts_body  %}
+<script src="{% static "main/js/vue.min.js" %}"></script>
+<script src="{% static "main/js/vue-router.min.js" %}"></script>
+<script src="{% static "main/js/OpenLayers.js" %}"></script>
+<script src="{% static "js/store.js" %}"></script>
+<script src="{% static "js/tracking_component.js" %}"></script>
+<script src="{% static "layer/js/currentlayer_component.js" %}"></script>
+<script src="{% static "layer/js/filters_component.js" %}"></script>
+<script src="{% static "layer/js/map_component.js" %}"></script>
+<script src="{% static "js/maptrack_component.js" %}"></script>
+<script src="{% static "js/main.js" %}"></script>
+{% endblock%}

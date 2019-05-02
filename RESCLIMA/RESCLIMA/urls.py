@@ -64,6 +64,9 @@ urlpatterns = [
     url(r'^censo/update/(?P<pk>\d+)/$', login_required(censo.CensoUpdate.as_view(), login_url='noAccess'), name='censo_update'),
     url(r'^censo/delete/(?P<pk>\d+)/$', login_required(censo.CensoDelete.as_view(), login_url='noAccess'), name='censo_delete'),
     url(r'^censo/show/(?P<pk>\d+)/$', login_required(censo.CensoShow.as_view(), login_url='noAccess'), name='censo_show'),
+    ################################# TRACKING ######################################
+    url(r'^sensor/', include('sensor.urls')),
+    url(r'^trackfiles/', include('tracking.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

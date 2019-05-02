@@ -1,0 +1,48 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | VISUALIZAR SENSORES{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="section">
+		<p class="resclima-header">SENSORES</p>
+		<!-- <h4 class="header">Mis Simulaciones</h4> -->
+		<div class="card-action">
+			<button class="btn waves-effect waves-light green accent-6" type="button" onClick="window.location='/sensor/create';"><i class="material-icons left">add_circle</i>Agregar Sensor</button>
+		</div>
+		{% if object_list %}
+		<table class="bordered">
+			<tbody>
+				<tr>
+				{% for sensor in object_list %}
+						{% if user.is_authenticated	%}
+							<td class="td-resclima-user" style="font-family:monospace">{{ sensor.id }}</td>
+							<td class="td-resclima-user-type" style="font-family:monospace">{{ sensor.name }}</td>
+							<td class="td-resclima-action" style="font-family:monospace">
+									<a href="{% url 'sensor_update' sensor.id %}"><i class="material-icons left">edit</i>Editar</a>
+							</td>
+							<td class="td-resclima-action" style="font-family:monospace">
+									<a href="{% url 'sensor_delete' sensor.id %}" style="color: #FF5252;" ><i class="material-icons left">delete_forever</i>Eliminar</a>
+							</td>
+						{% endif %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{% else %}
+		<div class="wrapper">
+			<div class="container">
+				<p class="no-data">No hay sensores para mostrar</p>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+</div>
+	<div style="height:100px;"></div>
+
+
+{% endblock content %}

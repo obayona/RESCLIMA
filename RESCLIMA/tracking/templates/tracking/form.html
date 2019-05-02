@@ -1,0 +1,117 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title%}RESCLIMA | ARCHIVOS DE TR&Aacute;FICO{% endblock %}
+
+{% block content %}
+<div class="section">
+	<div class="row">
+		<div class="col s12 m12 l6">
+			<div class="card-panel">
+
+				<div class="row">
+					<!-- Simulation Form -->
+					<form method="post" action="." enctype="multipart/form-data" onsubmit="return validateForm()">
+						{% csrf_token %}
+						<div class="row">
+							<!-- HEADER -->
+							<div class="input-field col s12 m12 l12">
+							{% ifequal form.instance.pk None %}
+								<!--Create-->
+								<p class="resclima-header">Nuevo Archivo</p>
+							{% else %}
+								<!--Update-->
+								<p class="resclima-header">Editar Archivo</p>
+							{% endifequal %}
+							</div>
+							<!--Archivos de datos de trafico -->
+							<!-- -->
+							 {{ form.as_p }}
+						<!--	<label class="ml-2 input-field col s12 m12 l12" for="{{ form.name.id_for_label }}">Cargue un archivo .gpx con datos de tr&aacute;fico</label>
+							<div class="input-field col s12 m12 l12" id='id_import_file'>
+								<label class="lable-file-field" for = "{{ form.file.id_for_label }}"></label>
+								<div class="div-field">{{ form.file }}</div>
+							</div>
+							<p class="col s12 m12 l12"><label for="id_date_init">Fecha Inicial:</label>
+    							<input type="date" name="date_init" id="id_date_init"></p>
+							<p class="col s12 m12 l12"><label for="id_date_last">Fecha Final:</label>
+    							<input type="date" name="date_last" id="id_date_last"></p>-->
+							<!--Init date
+							<div class=" col s12 m12 l12">
+								<label for="{{ form.date_init.id_for_label }}">Fecha inicial</label>
+								{{ form.date_init }}
+							</div>-->
+							<!--last_date
+							<div class="col s12 m12 l12">
+								<label for="{{ form.date_last.id_for_label }}">Fecha final</label>
+								{{ form.date_last }}
+							</div>-->
+							<!-- Step -->
+						<!--	<div class="input-field col s12 m12 l12">
+								<label for="{{ form.descripcion.id_for_label }}">Descripci&oacute;n de los datos de tr&aacute;fico</label>
+								{{ form.descripcion }}
+							</div>-->
+						</div>
+						{% ifequal form.instance.pk None %}
+							<!--Create-->
+							<button class="btn waves-effect waves-light green accent-6" type="submit" ><i class="material-icons left">cloud_done</i>Guardar y salir</button>
+						{% else %}
+							<!--Update-->
+							<button class="btn waves-effect waves-light" type="submit"><i class="material-icons left">check_circle</i> Guardar cambios y salir</button>
+						{% endifequal %}
+							<button class="btn waves-effect waves-light red accent-2" type="button" onClick="window.history.back();"><i class="material-icons left">cancel</i>Cancelar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock content %}
+
+{% block script %}
+
+<script>
+function renderError(error){
+	errorMsg.innerHTML = '<div class="red"><b>' + error + '</b></div>'
+	window.scrollTo(0, 0);
+}
+
+function validateFile(){
+	var file_input = document.getElementById("id_import_file");
+	var list_files = file_input.files;
+	var fileName = list_files[0].name
+
+	var parts = fileName.split(".");
+
+	if(parts.length!=2){
+		return "El archivo debe tener extension y no contener puntos en el nombre" 
+	}
+	// se obtiene el nombre y extension del archivo
+	var fname = parts[0].toLowerCase();
+	var extension = parts[1].toLowerCase();
+
+	if(extension!="gpx" & extension!="GPX"){
+		return "La extension debe ser gpx"
+	}
+	return null;
+}
+function validateForm(){
+	var result = checkFile();
+	if(result){
+		renderError(result);
+		return false;
+	}
+	// se desactiva el boton cancelar
+	var cancelButton = document.getElementById("Cancel");
+	cancelButton.disabled = true;
+	return true;
+}
+$(document).ready(function(){
+$('.datepicker').pickadate({
+    selectMonths: false, // Creates a dropdown to control month
+    selectYears: 15, // Creates a dropdown of 15 years to control year
+    format: 'yyyy-mm-dd' });
+})
+</script>
+
+{% endblock %}
