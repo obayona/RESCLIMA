@@ -65,6 +65,7 @@ def applyStyleRaster(img,colorMap,noData):
 	raster = np.zeros((h,w,4),dtype="uint8")
 	
 	colorMap = html2RGB(colorMap)
+	print(colorMap);
 
 	entry = colorMap[0]
 	rgb = entry["color"]
@@ -86,7 +87,8 @@ def applyStyleRaster(img,colorMap,noData):
 	raster[img>quantity]=rgb
 
 	alpha = raster[:,:,3]
-	alpha[img<=noData]=0 #no data lo hace transparente
+	print(noData,"***",(img<=noData).shape)
+	alpha[img<=noData]=255 #no data lo hace transparente
 
 	return raster
 
@@ -338,4 +340,5 @@ def renderTMS(rasterlayer,x,y,zoom):
 	tile[sy1:sy2,sx1:sx2,:]=crop_img
 	imageData = createInMemmoryImage(tile)
 	return imageData
+
 

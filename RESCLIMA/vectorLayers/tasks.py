@@ -1,20 +1,16 @@
 # -*- encoding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
-import os
-import datetime
 from celery import shared_task, current_task
-from django.db import transaction
-from osgeo import ogr
-from main.models import Researcher
-from osgeo import osr
-from django.contrib.gis.geos.geometry import GEOSGeometry
+import datetime
 from django.contrib.gis.geos import Polygon
-import vectorLayers.utils as utils
-#import sys
-#import os
-#sys.path.append(os.path.abspath("/home/belen/github/RESCLIMA/RESCLIMA/vectorLayers"))
+from django.contrib.gis.geos.geometry import GEOSGeometry
+from django.db import transaction
+from main.models import Researcher
+import os
+from osgeo import ogr
+from osgeo import osr
 from vectorLayers.models import VectorLayer, Attribute, Feature, AttributeValue
-
+import vectorLayers.utils as utils
 
 @shared_task
 @transaction.atomic
@@ -194,5 +190,4 @@ def import_vector_layer(vectorlayer_params):
 
 	result["percent"]=100
 	return result
-
 
