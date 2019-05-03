@@ -1,15 +1,11 @@
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from io import BytesIO
-from os.path import join
 from osgeo import ogr, osr
 from PIL import Image
 from pygeotile.tile import Tile
 from rasterLayers.models import RasterLayer
-from style.models import Style
-from style.utils import getColorMap
 from tms.constants import *
 import numpy as np
-import tifffile as tiff
 from tms.styler import getRasterImg
 
 #tms_minX, tms_maxX, tms_minY, tms_maxY 

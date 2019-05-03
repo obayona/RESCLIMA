@@ -1,6 +1,9 @@
 import numpy as np
+from os.path import join
+import tifffile as tiff
 from rasterLayers.models import RasterLayer
-
+from style.models import Style
+from style.utils import getColorMap
 
 #Recupera el archivo raster y lo retorna como
 #una imagen con el estilo ya aplicado. 
