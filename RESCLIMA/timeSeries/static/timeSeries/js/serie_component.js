@@ -257,7 +257,6 @@ Vue.component("serie_component",{
 			for(var i=0;i<measurements.length; i++){
 				var m = measurements[i];
 				station["x_values"].push(m["ts"]);
-				console.log(m["ts"]);
 				station["y_values"].push(m["value"]);
 			}
 			station["state"]="loaded";
