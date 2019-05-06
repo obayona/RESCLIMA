@@ -44,8 +44,7 @@ def import_shapefile(request):
 	elif request.method == "POST":
 		result = {}
 		try:
-			# se ejecuta la tarea de Celery
-			result = importer.import_compress_data(request)
+			result = importer.import_shapefile(request)
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);
@@ -110,7 +109,17 @@ def edit_vectorlayer(request,vectorlayer_id):
 def delete_vectorLayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
-		vectorlayer.delete()
+
+		file_path = vectorlayer.file_path
+		file_name = vectorlayer.file_name
+		full_path = join(file_path,file_name)
+
+		try:
+			os.remove(full_path)
+			vectorlayer.delete()
+		except Exception as e:
+			return HttpResponse(status=500)
+
 		return redirect('vector_list')
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
@@ -189,4 +198,5 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 

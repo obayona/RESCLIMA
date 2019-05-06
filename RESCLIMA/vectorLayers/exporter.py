@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 import os, os.path, tempfile, zipfile
+from os.path import join
 import shutil, traceback
 from osgeo import ogr
-from vectorLayers.models import VectorLayer, Attribute, Feature, AttributeValue
-import vectorLayers.utils as utils
+from vectorLayers.models import VectorLayer
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from osgeo import osr
 from django.http import HttpResponse
@@ -16,78 +16,76 @@ retorna un HttpResponse con el
 archivo
 """
 def export_shapefile(vectorlayer):
-	# crea un directorio temporal
+
+	file_path = vectorlayer.file_path
+	file_name = vectorlayer.file_name
+	full_path = join(file_path,file_name)
+
+	encoding = vectorlayer.encoding
+	srs_wkt = vectorlayer.srs_wkt
+	geom_type = vectorlayer.geom_type
+
+	f = open(full_path,"r", encoding=encoding)
+	geojson = json.loads(f.read())
+	f.close()
+
 	dst_dir = tempfile.mkdtemp()
-	# ruta del shapefile
-	dst_file = os.path.join(dst_dir, vectorlayer.filename)
-	dst_file = dst_file.encode('utf-8')
-	# obtiene el sistema de coordenadas
-	# original de la capa
-	dst_spatial_ref = osr.SpatialReference()
-	dst_spatial_ref.ImportFromWkt(vectorlayer.srs_wkt)
+	shapefile_name = file_name.replace(".json",".shp")
+	dst_file = join(dst_dir, shapefile_name)
 	
-	# con la libreria osr se crea el shapefile
-	driver = ogr.GetDriverByName("ESRI shapefile")
-	datasource = driver.CreateDataSource(dst_file)	
-	layer = datasource.CreateLayer(vectorlayer.filename.encode('utf-8').decode(),dst_spatial_ref)
-
-	# se guardan los atributos de la capa en 
-	# el archivo
-	for attr in vectorlayer.attribute_set.all():
-		field = ogr.FieldDefn(str(attr.name), attr.type)
-		field.SetWidth(attr.width)
-		field.SetPrecision(attr.precision)
-		layer.CreateField(field)
-
-	# En la base de datos, los features de la capa
-	# se guardan con un sistema de coordenadas
-	# con srid = 4326. Los features seran transformados
-	# a su sistema de coordenadas original
+	#sistema de coordenadas 4326
 	src_spatial_ref = osr.SpatialReference()
 	src_spatial_ref.ImportFromEPSG(4326)
+	#sistema de coordenadas de la capa original
+	dst_spatial_ref = osr.SpatialReference()
+	dst_spatial_ref.ImportFromWkt(srs_wkt)
 	coord_transform = osr.CoordinateTransformation(src_spatial_ref, dst_spatial_ref)
-	# se obtiene el tipo de geometria (punto, linea, poligono, etc)
-	geom_field = utils.calc_geometry_field(vectorlayer.geom_type)
 
-	# se recorren los features de la capa vectorial
-	# se tranforman al sistema de referencia original
-	# y se guardan en el archivo
-	for feature in vectorlayer.feature_set.all():
-		geometry = getattr(feature, geom_field)
-		geometry = utils.unwrap_geos_geometry(geometry)
-		dst_geometry = ogr.CreateGeometryFromWkt(geometry.wkt)
-		dst_geometry.Transform(coord_transform)
+	driver = ogr.GetDriverByName("ESRI shapefile")
+	datasource = driver.CreateDataSource(dst_file)	
+	layer = datasource.CreateLayer(name = shapefile_name,
+									srs = dst_spatial_ref,
+									geom_type = geom_type)
+
+
+	for i, attr in enumerate(geojson["attributes"]):	
+		field = ogr.FieldDefn(attr["name"],attr["type"])
+		field.SetWidth(attr["width"])
+		field.SetPrecision(attr["precision"])
+		layer.CreateField(field)
+
+	for i, feature in enumerate(geojson["features"]):
+		geometry = feature.get("geometry",None)
+		if(geometry==None):
+			continue
+		dst_geometry = ogr.CreateGeometryFromJson(json.dumps(geometry))
 		dst_feature = ogr.Feature(layer.GetLayerDefn())
 		dst_feature.SetGeometry(dst_geometry)
-		# se le agregan los valores no geometricos
-		# al feature
-		for attr_value in feature.attributevalue_set.all():
-			utils.set_ogr_feature_attribute(
-				attr_value.attribute,
-				attr_value.value,
-				dst_feature,
-				vectorlayer.encoding)
+		dst_geometry.Transform(coord_transform)
 
-		# se agrega el feature al archivo
+		properties = feature.get("properties",None)
+		if properties==None:
+			continue
+
+		for field,value in properties.items():
+			field = field.replace("\"","")
+			field = field.replace("'","")
+			dst_feature.SetField(field,value)
+
 		layer.CreateFeature(dst_feature)
 		dst_feature.Destroy()
 
 	datasource.Destroy()
 
-	# se crea un zip y se envia el archivo
-
-	vectorlayer_name = os.path.splitext(vectorlayer.filename)[0]
-	zip_dst = dst_dir + "_zip";
-	# se crea un zip con los archivos del shapefile
+	zip_dst = file_name.replace(".json","_zip");
 	zip_dst = shutil.make_archive(zip_dst, 'zip', dst_dir)
-	# se elimina la carpeta temporal
 	shutil.rmtree(dst_dir)
-	# se lee el zip y se lo envia al usuario
 	zip_file = open(zip_dst,"rb")
 
 	f = FileWrapper(zip_file)
 	response = HttpResponse(f, content_type="application/zip")
-	response['Content-Disposition'] = "attachment; filename=" + vectorlayer_name + ".zip"
+	zip_name = file_name.replace(".json",".zip")
+	response['Content-Disposition'] = "attachment; filename=" + zip_name
 	
 	return response
 
@@ -99,29 +97,12 @@ que   contiene un  geojson y lo
 retorna 
 """
 def export_geojson(vectorlayer):
-	geojson = {}
-	geojson["type"] = "FeatureCollection";
-	bbox = vectorlayer.bbox;
-	geojson["bbox"] = bbox.geojson;
-	geojson["crs"] = {"type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }}
-	geojson["features"] = []
-		
-	geom_field = utils.calc_geometry_field(vectorlayer.geom_type)
-	for feature in vectorlayer.feature_set.all():
-		geometry = getattr(feature, geom_field)
-		geometry = utils.unwrap_geos_geometry(geometry)
-		dst_geometry = ogr.CreateGeometryFromWkt(geometry.wkt)
-		feature_json = {}
-		feature_json["type"]="Feature";
-		geometry_json = dst_geometry.ExportToJson();
-		feature_json["geometry"] = json.loads(geometry_json);
-		feature_json["properties"] = {};
-		geojson["features"].append(feature_json);
-		for attr_value in feature.attributevalue_set.all():
-			attr = attr_value.attribute;
-			attr_name = attr_value.attribute.name;
-			value = attr_value.value;
-			value = utils.getAttrValue(attr,value,vectorlayer.encoding)
-			feature_json["properties"][attr_name] = value;
-	return json.dumps(geojson,ensure_ascii=False)
+	file_path = vectorlayer.file_path
+	file_name = vectorlayer.file_name
+	full_path = join(file_path,file_name)
+	encoding = vectorlayer.encoding
 
+	f = open(full_path,"r", encoding=encoding)
+	geojson = f.read()
+	f.close()
+	return geojson
