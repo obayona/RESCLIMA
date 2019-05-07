@@ -145,7 +145,7 @@ def importStyle(request,vectorlayer):
 		sld_string = transformSLD(sld_string);
 
 		f.close();
-		f = open(fullName,'w');
+		f = open(fullName,'w',encoding="utf-8");
 		f.write(sld_string);
 		f.close();
 
@@ -200,6 +200,7 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 
 
 

@@ -130,6 +130,9 @@ function getCategoriesString(){
 	return categories_string;
 }
 
+function isASCII(str) {
+    return /^[\x00-\x7F]*$/.test(str);
+}
 
 function getPartsOfFile(filename){
 	var re = /(?:\.([^.]+))?$/;
@@ -153,6 +156,11 @@ function checkFiles(){
 	filename = null;
 	for(var i=0; i<list_files.length; i++){
 		var f = list_files[i];
+
+		if(!isASCII(f.name)){
+			return "El nombre del archivo no debe tener caracteres especiales";
+		}
+
 		var parts = getPartsOfFile(f.name);
 		if(parts.length!=2){
 			return "Los archivos deben tener una extension" 
@@ -234,6 +242,7 @@ $(document).ready(function() {
 	var formImport = $("#shapefileForm");
 	formImport.submit(formSubmit);
 });
+
 
 
 

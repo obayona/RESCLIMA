@@ -71,6 +71,10 @@ function renderError(error){
 	window.scrollTo(0, 0);
 }
 
+function isASCII(str) {
+    return /^[\x00-\x7F]*$/.test(str);
+}
+
 function getPartsOfFile(filename){
 	var re = /(?:\.([^.]+))?$/;
 	parts = re.exec(filename);
@@ -81,6 +85,10 @@ function checkFile(){
 	var file_input = document.getElementById("id_import_file");
 	var list_files = file_input.files;
 	var fileName = list_files[0].name
+
+	if(!isASCII(fileName)){
+		return "El nombre del archivo no debe tener caracteres especiales"
+	}
 
 	var parts = getPartsOfFile(fileName);
 	if(parts.length!=2){

@@ -126,6 +126,11 @@ function getCategoriesString(){
 	categories_string = categories_string.slice(0, -1);
 	return categories_string;
 }
+
+function isASCII(str) {
+    return /^[\x00-\x7F]*$/.test(str);
+}
+
 function getPartsOfFile(filename){
 	var re = /(?:\.([^.]+))?$/;
 	parts = re.exec(filename);
@@ -137,6 +142,10 @@ function checkFile(){
 	var file_input = document.getElementById("id_import_file");
 	var list_files = file_input.files;
 	var fileName = list_files[0].name
+
+	if(!isASCII(fileName)){
+		return "El nombre del archivo no debe contener caracteres especiales";
+	}
 
 	var parts = getPartsOfFile(fileName);
 	if(parts.length!=2){

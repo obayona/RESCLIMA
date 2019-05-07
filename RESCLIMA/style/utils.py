@@ -78,7 +78,7 @@ def getColorMap(style):
     file_path = style.file_path;
     file_name = style.file_name;
     fullName = join(file_path,file_name);
-    f = open(fullName,'r');
+    f = open(fullName,'r', encoding="utf_8");
     sld = f.read()
     colorMap = parseRasterSLD(sld)
     return colorMap  

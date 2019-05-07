@@ -168,10 +168,10 @@ def importStyle(request):
 		fullName = join(path,fileName)
 		f = request.FILES['file']
 
-		sld_string = f.read();		
+		sld_string = f.read();
 		sld_string = transformSLD(sld_string);
 		f.close();
-		f = open(fullName,'w');
+		f = open(fullName,'w',encoding="utf_8");
 		f.write(sld_string);
 		f.close();
 

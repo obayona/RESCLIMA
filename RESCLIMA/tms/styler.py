@@ -120,3 +120,4 @@ def html2RGB(colorMap):
 		entry["color"]=np.array(rgb_color)
 		
 	return colorMap
+
