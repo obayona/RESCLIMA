@@ -10,12 +10,13 @@ En esta app se define todo lo necesario para administrar series de tiempo. La si
 
 .. image:: _static/timeSeries.png
 
+#ESTO DEBE SER ACTUALIZADO!!!
 
 Cómo se observa, se define la tabla **Variable** que sirven para almacenar las variables que miden las estaciones, por ejemplo temperatura, humedad relativa, etc. Además esta tabla hereda de **FilterSearchTable** para que sea buscable por texto y categorías, es decir, cuando se busca series de tiempo, se buscan variables. 
 
 También se define la tabla **StationType** para almacenar los tipos de estaciones que se soportan. Actualmente se soportan 2 tipos: HOBO MX2300 y BloomSKy SKY2. Las estaciones HOBO son manuales por lo que para recuperar las mediciones un operador debe extraer un archivo csv directamente de la estación, entonces ese archivo es subido a la plataforma. Las estaciones SKY2 son automáticas, ellas suben sus mediciones a la nube y mediante un API se descargan los datos y son guardados en la base de datos. Existe una relación muchos a muchos entre **StationType** y **Variable** para modelar que una estación puede medir varias variables y que una variable puede ser medida por varias estaciones.
 
-La tabla **Station** sirve para guardar la información de una estación meteoroloógica. En **location** se guarda la ubicación usando un tipo de dato POINT de postgis. **SerialNum** es el numero serial de la estación, en el caso de las estaciones HOBO, en el archivo csv que se genera se encuentra el número serial y con eso se identifica a qué estación pertenecen esas mediciones. En el caso de que la estación sea automática (SKY2) en **frequency** se guarda la fecuencia con la que se piden los datos en minutos, y en **token** se guarda el token de autenticación del API para descargar los datos.
+La tabla **Station** sirve para guardar la información de una estación meteorológica. En **location** se guarda la ubicación usando un tipo de dato POINT de postgis. **SerialNum** es el numero serial de la estación, en el caso de las estaciones HOBO, en el archivo csv que se genera se encuentra el número serial y con eso se identifica a qué estación pertenecen esas mediciones. En el caso de que la estación sea automática (SKY2) en **frequency** se guarda la fecuencia con la que se piden los datos en minutos, y en **token** se guarda el token de autenticación del API para descargar los datos.
 
 En **Measurement** se guardan las mediciones. Es un **HyperTable** de **timeScaleDB**. **timeScaleDB** es una extensión de postgis para administrar series de tiempo. Un **HyperTable** es una abtracción, internamente está formada por varias tablas normales de postgres, pero para el usuario final se comporta como una tabla normal por lo que se puede usar SQL para trabajar con un **HyperTable**. La ventaja de un **HyperTable** es que los datos se distribuyen en varias tablas por lo que las consultas son más veloces y hay menos riesgo de que la tabla se quede bloqueada.
 
@@ -80,3 +81,32 @@ El siguiente gráfico muestra un ejemplo de los bbox del tile y de la capa
 8) Finalmente, se debe calcular en que posicion del tile final colocar la imagen recortada. Y luego se retorna la imagen
 
 .. image:: _static/tms7.png
+
+
+vectorLayers
+------------
+Esta app sirve para administrar las capas vectoriales. Se define el modelo VectorLayer, mostrado a continuación,
+
+..  list-table:: Atributos del modelo VectorLayer
+    :widths: 25  75
+    :header-rows: 1
+
+    * - Atributo
+      - Descripción
+    * - geom_type
+      - Es el tipo de geometría de la capas. Las capas vectoriales son homogéneas. Es decir, hay capas sólo de puntos, sólo de polígonos, sólo de líneas, etc.
+    * - encoding
+      - Es el encoding del texto de las capas.
+
+La app permite subir, visualizar, descargar, editar y eliminar capas vectoriales.
+
+Para subir un capa vectorial se utiliza un proceso de Celery y se realiza lo siguiente. Mediante un formulario, un usuario sube un archivo shapefile, entonces, el proceso realiza ciertas validaciones; obtiene los metadatos de Layer (abstact, title, dates, etc);  calcula el bbox de la capa; finalmente, convierte el shapefile en geojson y guarda ese archivo en el directorio definido en la variable **VECTOR_FILES_PATH** de settings.py.
+
+
+Una capa vectorial es un archivo que almacena datos geográficos, definiendo geometrías usando vectores. Una capa vectorial consiste de: un sistema de coordenadas geográfico, un conjunto de Features, los cuales tienen una geometría (punto, línea, polígono, etc) que describe su forma, y una tabla con atributos no geográficos. La siguiente figura muestra un esquema de una capa vectorial. Como se observa en el esquema, una capa debe definir su sistema de coordenadas mediante un código srid o mediante texto well-known-text (WKT). Cómo se mencionó anteriormente las geometrías son homogéneas, en el esquema se muestran solo puntos. Para definir otras geometrías como polígonos o líneas se puede usar WKT. También se observa que los Features tienen atributos no geográficos asociados tales como el nombre de una provincia o el número de habitantes. 
+
+.. image:: _static/shapefile.png
+
+Un shapefile almacena toda esta información en 4 archivos con extensión .dbf .shp .shx .prj que describen los atributos no geográficos, los features, un indice y la proyeccion respectivamente. El proceso de subida valida el shapefile y lo transforma en geojson que es un archivo más simple y además OpenLayers acepta geojsons para dibujar una capa vectorial. Además, OpenLayers acepta SLD, de esta forma se visualizan las capas vectoriales.
+
+Para descargar una capa, se convierte a shapefile nuevamente y se lo envía al usuario.
