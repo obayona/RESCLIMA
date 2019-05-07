@@ -52,7 +52,6 @@ def import_raster(request):
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);
-			print("El error es: "+str(e))
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
 
