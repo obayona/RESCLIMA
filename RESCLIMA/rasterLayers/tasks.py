@@ -98,8 +98,6 @@ def import_raster_layer(rasterlayer_params):
 	rasterlayer = RasterLayer()
 	rasterlayer.file_path = path
 	rasterlayer.file_name = fileName
-	rasterlayer.file_format = extension
-	# proyected
 	rasterlayer.title = title
 	rasterlayer.abstract = abstract
 	rasterlayer.data_date = data_date
@@ -116,5 +114,6 @@ def import_raster_layer(rasterlayer_params):
 	result["percent"]=100
 	current_task.update_state(state='PROGRESS',meta=result)
 	return result
+
 
 

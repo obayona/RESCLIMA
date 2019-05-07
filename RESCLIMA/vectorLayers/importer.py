@@ -25,6 +25,7 @@ def import_shapefile(request):
 	encoding  = request.POST["encoding"]
 	title = request.POST["title"]
 	abstract = request.POST["abstract"]
+	author = request.POST["author"]
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
 	owner = request.user.researcher.id
@@ -47,6 +48,7 @@ def import_shapefile(request):
 	vectorlayer_params["encoding"] = encoding
 	vectorlayer_params["title"] = title
 	vectorlayer_params["abstract"] = abstract
+	vectorlayer_params["author"] = author
 	vectorlayer_params["date_str"] = date_str
 	vectorlayer_params["categories_string"] = categories_string
 	vectorlayer_params["owner"] = owner
@@ -154,4 +156,5 @@ def saveFilesInTemporalFolder(temp_dir,list_files):
 			f.close()
 
 		ftemp.close()
+
 

@@ -1,3 +1,4 @@
+
 # -*- encoding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task, current_task
@@ -26,6 +27,7 @@ def import_vector_layer(vectorlayer_params):
 	encoding  = vectorlayer_params["encoding"]
 	title = vectorlayer_params["title"]
 	abstract = vectorlayer_params["abstract"]
+	author = vectorlayer_params["author"]
 	date_str = vectorlayer_params["date_str"]
 	data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d')
 	categories_string = vectorlayer_params["categories_string"]
@@ -124,6 +126,7 @@ def import_vector_layer(vectorlayer_params):
 	vectorlayer.abstract=abstract
 	vectorlayer.data_date=data_date
 	vectorlayer.categories_string=categories_string
+	vectorlayer.author=author
 	vectorlayer.owner=owner
 	vectorlayer.type="vector"
 	vectorlayer.bbox = bbox
@@ -180,4 +183,5 @@ def calculateBBox(minXs, minYs, maxXs, maxYs):
 		(maxX,maxY),(maxX,minY),(minX,minY))
 	bbox = Polygon(coords)
 	return bbox
+
 

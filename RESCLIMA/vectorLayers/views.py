@@ -69,6 +69,7 @@ def updateVectorLayer(vectorlayer,request):
 	try:
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
+		author = request.POST["author"]
 		date_str = request.POST["data_date"] # fecha como string
 		# fecha como objeto datetime
 		data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d') 
@@ -77,6 +78,7 @@ def updateVectorLayer(vectorlayer,request):
 		# se actualiza la capa
 		vectorlayer.title = title;
 		vectorlayer.abstract = abstract;
+		vectorlayer.author = author;
 		vectorlayer.data_date = data_date;
 		vectorlayer.categories_string = categories_string;
 		vectorlayer.save()
@@ -198,5 +200,6 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 
 

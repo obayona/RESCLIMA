@@ -57,7 +57,6 @@ def import_data(request):
 	fullName = join(path,fileName)
 	# se codifica a utf-8 el nombre del archivo
 	fullName = fullName.encode('utf-8')
-	print(fullName)
 	# se guarda el archivo
 	
 	# si el objeto tiene el atributo temporary_file_path
@@ -103,4 +102,5 @@ def import_data(request):
 	result["error"] = None
 	result["task_id"] = task.id
 	return result
+
 

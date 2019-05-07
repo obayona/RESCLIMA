@@ -1,5 +1,5 @@
 import numpy as np
-from os.path import join
+from os.path import join, splitext
 import tifffile as tiff
 from rasterLayers.models import RasterLayer
 from style.models import Style
@@ -13,7 +13,10 @@ from style.utils import getColorMap
 def getRasterImg(rasterlayer):
 	file_path = rasterlayer.file_path
 	file_name = rasterlayer.file_name
-	ext = rasterlayer.file_format
+
+	parts = splitext(file_name)
+
+	ext = parts[1]
 	file_name = file_name.replace(ext,"-proj"+ext)
 	
 	fullName = join(file_path,file_name)

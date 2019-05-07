@@ -5,7 +5,7 @@ from main.models import Researcher
 # Create your models here.
 class Layer(FilterSearchTable):
 	title = models.CharField(max_length=50,null=True)
-	abstract = models.TextField(max_length=500,null=True)
+	abstract = models.TextField(max_length=1000,null=True)
 	data_date = models.DateField(blank=True,null=True)
 	upload_date = models.DateTimeField(auto_now_add=True)
 	
