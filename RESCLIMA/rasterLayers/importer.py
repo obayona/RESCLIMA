@@ -35,6 +35,7 @@ def import_data(request):
 	list_files = request.FILES.getlist('import_file')
 	title = request.POST["title"]
 	abstract = request.POST["abstract"]
+	author = request.POST["author"]
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
 	owner = request.user.researcher.id
@@ -94,6 +95,7 @@ def import_data(request):
 	rasterlayer_params["abstract"] = abstract
 	rasterlayer_params["date_str"] = date_str
 	rasterlayer_params["categories_string"] = categories_string
+	rasterlayer_params["author"] = author
 	rasterlayer_params["owner"] = owner
 
 	task = import_raster_layer.delay(rasterlayer_params)
@@ -102,5 +104,6 @@ def import_data(request):
 	result["error"] = None
 	result["task_id"] = task.id
 	return result
+
 
 

@@ -52,6 +52,7 @@ def import_raster(request):
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);
+			print("El error es: "+str(e))
 			return HttpResponse(json.dumps(result),content_type='application/json')
 
 
@@ -75,6 +76,7 @@ def updateRasterLayer(rasterlayer,request):
 	try:
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
+		author = request.POST["author"]
 		id_style = request.POST["style"]
 		date_str = request.POST["data_date"] # fecha como string
 		# fecha como objeto datetime
@@ -83,6 +85,7 @@ def updateRasterLayer(rasterlayer,request):
 
 		rasterlayer.title = title
 		rasterlayer.abstract = abstract
+		rasterlayer.author = author
 		rasterlayer.data_date = data_date
 		rasterlayer.categories_string = categories_string
 		rasterlayer.save()
@@ -219,4 +222,5 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 

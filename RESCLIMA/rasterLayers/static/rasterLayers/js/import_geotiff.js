@@ -126,7 +126,11 @@ function getCategoriesString(){
 	categories_string = categories_string.slice(0, -1);
 	return categories_string;
 }
-
+function getPartsOfFile(filename){
+	var re = /(?:\.([^.]+))?$/;
+	parts = re.exec(filename);
+	return parts
+}
 // revisa las condiciones de los
 // archivos
 function checkFile(){
@@ -134,8 +138,7 @@ function checkFile(){
 	var list_files = file_input.files;
 	var fileName = list_files[0].name
 
-	var parts = fileName.split(".");
-
+	var parts = getPartsOfFile(fileName);
 	if(parts.length!=2){
 		return "El archivo debe tener extension y no contener puntos en el nombre" 
 	}
@@ -202,6 +205,7 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+
 
 
 
