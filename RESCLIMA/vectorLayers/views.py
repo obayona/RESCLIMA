@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from vectorLayers.models import VectorLayer
 from search.models import Category
 from style.models import Style
-from style.utils import transformSLD
+from style.utils import transformSLD, loadStyle, removeStyle
 from RESCLIMA import settings
 import datetime
 import time
@@ -184,21 +184,18 @@ def import_style(request,vectorlayer_id):
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		style.delete();
-		return HttpResponse("OK");
+		removeStyle(style)
+		return HttpResponseRedirect("/vector");
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()
 
 def export_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		file_path = style.file_path;
-		file_name = style.file_name;
-		fullName = join(file_path,file_name);
-		f = open(fullName,'r');
-		sld = f.read()
+		sld = loadStyle(style)
 		return HttpResponse(sld)
 	except Exception as e:
+		print(e)
 		return HttpResponseNotFound()
 
 

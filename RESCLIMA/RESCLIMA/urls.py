@@ -35,7 +35,7 @@ urlpatterns = [
 	url(r'^admin/', include(admin.site.urls)),
 	url(r'^search/',include("search.urls")),
 	url(r'^layer/',include("layer.urls")),
-	url(r'^vector/', include("vectorLayers.urls")),
+	url(r'^vector/', include("vectorLayers.urls",namespace="vector")),
 	url(r'^series/', include("timeSeries.urls")),
 	url(r'^raster/', include("rasterLayers.urls")),
 	url(r'^tms/', include("tms.urls")),
@@ -67,3 +67,4 @@ urlpatterns = [
 ]
 
 urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

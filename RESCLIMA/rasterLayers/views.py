@@ -16,7 +16,7 @@ from RESCLIMA import settings
 from search.models import Category
 import simplejson as json
 from style.models import Style
-from style.utils import transformSLD,getColorMap
+from style.utils import transformSLD,getColorMap,loadStyle, removeStyle
 import time
 from wsgiref.util import FileWrapper
 
@@ -201,11 +201,7 @@ def import_style(request):
 def delete_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		file_path = style.file_path;
-		file_name = style.file_name;
-		fullName = join(file_path,file_name)
-		os.remove(fullName)
-		style.delete()
+		removeStyle(style)
 		return HttpResponseRedirect("/raster")
 	except Style.DoesNotExist:
 		return HttpResponseNotFound()  
@@ -213,11 +209,7 @@ def delete_style(request,style_id):
 def export_style(request,style_id):
 	try:
 		style = Style.objects.get(id=style_id)
-		file_path = style.file_path
-		file_name = style.file_name
-		fullName = join(file_path,file_name)
-		f = open(fullName,'r')
-		sld = f.read()
+		sld = loadStyle(style)
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
