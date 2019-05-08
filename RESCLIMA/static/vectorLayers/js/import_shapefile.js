@@ -136,8 +136,10 @@ function isASCII(str) {
 
 function getPartsOfFile(filename){
 	var re = /(?:\.([^.]+))?$/;
-	parts = re.exec(filename);
-	return parts
+	extension = re.exec(filename)[0];
+	name = filename.replace(extension,"")
+	extension = extension.replace(".","")
+	return [name,extension]
 }
 
 // revisa las condiciones de los
