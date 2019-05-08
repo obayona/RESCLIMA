@@ -147,6 +147,49 @@ Vue.component("tracking_component",{
 								<p>{{sensor.description}}</p>
 								<!-- La fecha de la toma de datos del sensor-->
 								<h6>{{sensor.data_date}}</h6>
+								<!--TimePicker para cambiar la forma como se grafican los puntos -->
+								<div class="row">
+									<div id="init_date" class="col s6">
+									<input class="col s12" type='date'></input>
+										<p class="col s6 range-field">
+											<label>Horas</label>
+											<input type="range" 
+											min="0" 
+											max="24" 
+											value="0"
+											v-on:input=""/>
+										</p>
+										<p class="col s6 range-field">
+											<label>Minutos</label>
+											<input type="range" 
+											min="0" 
+											max="60" 
+											value="0"
+											v-on:input=""/>
+										</p>
+									</div>	
+									<div id="last_date" class="col s6">
+									<input class="col s12" type='date'></input>
+										<p class="col s6 range-field">
+											<label>Horas</label>
+											<input type="range" 
+											min="0" 
+											max="24" 
+											value="0"
+											v-on:input=""/>
+										</p>
+										<p class="col s6 range-field">
+											<label>Minutos</label>
+											<input type="range" 
+											min="0" 
+											max="60" 
+											value="0"
+											v-on:input=""/>
+										</p>
+									</div>		
+									<button 
+									v-on:click="changeDate(sensor)">Actualizar</button>							
+								</div>
 								<!-- Contenedor con opciones de la capa -->
 								<!-- Solo se muestra si el estado de la capa es loaded-->
 								<div class="layerOptions" v-if="sensor.state=='loaded'">
@@ -286,6 +329,13 @@ Vue.component("tracking_component",{
 			var opacity = layer["opacity"];
 			var openlayer_layer = layer["openlayer_layer"];
 			openlayer_layer.setOpacity(1-opacity/100);
+		},
+		/*
+		Metodo para cambiar la ruta de un sensor
+		segun la fecha
+		*/
+		changeDate(sensor){
+			console.log(event.srcElement)
 		},
 		/*
 		Metodo para realizar un zoom a la capa

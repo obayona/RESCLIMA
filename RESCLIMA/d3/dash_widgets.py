@@ -37,6 +37,7 @@ class BaseBarChartWidget(BaseChartWidget):
     media_js = (
         'js/d3.v3.min.js',  # Main D3 script
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_bar_chart.js',
     )
 
@@ -51,6 +52,7 @@ class BaseGroupedBarChartWidget(BaseChartWidget):
 
     media_js = (
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_grouped_bar_chart.js',
         'js/interactiveRedirecting.js',
     )
@@ -68,6 +70,7 @@ class BaseTimeSeriesWidget(BaseChartWidget):
         'js/d3.v3.min.js',  # Main D3 script
         'js/d3.queue.min.js', # D3 Queue
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_time_series.js',    
     )
 
@@ -84,6 +87,7 @@ class BaseMultiTimeSeriesWidget(BaseChartWidget):
         'js/d3.v3.min.js',  # Main D3 script
         'js/d3.queue.min.js', # D3 Queue
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_multi_time_series.js',
     )
 
@@ -98,6 +102,7 @@ class BasePieChartWidget(BaseChartWidget):
 
     media_js = (
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_pie_chart.js',
         'js/treemap-squared-0.5.min.js',
     )
@@ -115,6 +120,7 @@ class BaseLineChartWidget(BaseChartWidget):
         'js/d3.v3.min.js',  # Main D3 script
         'js/d3.queue.min.js', # D3 Queue
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_line_chart.js',
         'js/interactiveRedirecting.js',
     )
@@ -130,6 +136,7 @@ class BaseTreeMapWidget(BaseChartWidget):
 
     media_js = (
         'js/plotly-latest.min.js', #plotly new Script
+        'js/util.js',
         'js/plotly_tree_map.js',  # Helper script
         'js/treemap-squared-0.5.min.js',
     )

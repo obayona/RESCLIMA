@@ -2,21 +2,14 @@
 // ************************* Simple function ************************
 // ******************************************************************
 
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
-
-function isEmpty(str) {
-	if (!str) { return true; }
-	else { return false }
-}
-
 function getChartPluginSize(str) {
   return parseInt(str[str.length-1]);
 }
 
+/**
+ * Function that returns the chart's size
+ * @param {Size of the chart} size 
+ */
 function getChartViewBox(size) {
 	if (size == 4) { return { sizew : 310, sizeh : 210} }
 	else if (size == 5) { return { sizew : 370, sizeh : 285} }
@@ -29,11 +22,25 @@ function checkDate(start_date, end_date) {
   else { return false; }
 }
 
+/**
+ * Function that gets the id accordign a tag
+ * @param {container's id} container 
+ * @param {tag use to tracnsform the id} htmltag 
+ */
 function getDivId(container, htmltag){
 	var idtxt =  container.slice(6,container.length)
 	return htmltag+"-"+idtxt;
 }
 
+/**
+ * Function that draws a d3 based tree map
+ * @param {data of movements} movements 
+ * @param {data of cars} livianos 
+ * @param {data of trucks} pesados 
+ * @param {data for labels} values 
+ * @param {html element that contains the chart} barDiv 
+ * @param {size of the chart} size 
+ */
 function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size){
 	var shapes = [];
 	var annotations = [];
@@ -142,7 +149,15 @@ function transform_back_to_tree(movements, livianos, pesados,values, barDiv,size
 		})
 }
 
-
+/**
+ * Function that draws a tree map
+ * @param {data of movements} movements 
+ * @param {data of cars} livianos 
+ * @param {data of trucks} pesados 
+ * @param {data for labels} values 
+ * @param {html element that contains the chart} barDiv 
+ * @param {size of the chart} size
+ */
 function plotlyTreeMap(container, source, start_date, end_date, size) {
     if (!checkDate(start_date, end_date)) {
       // Una de las fechas ingresadas no es valida
@@ -172,6 +187,16 @@ function plotlyTreeMap(container, source, start_date, end_date, size) {
 
 }
 
+/**
+ * Function that changes the chart form treempa to a barchart
+ * @param {data of movements} movements 
+ * @param {data of cars} livianos 
+ * @param {data of trucks} pesados 
+ * @param {label values} values 
+ * @param {container's id} container 
+ * @param {basediv of the chart's id} baseDiv 
+ * @param {size of the chart} size 
+ */
 function changeButton(movements, livianos, pesados,values,container,baseDiv,size){
 	var barDiv = document.getElementById(getDivId(baseDiv.id,'i'));
 	var treeDiv = document.getElementById(getDivId(baseDiv.id,"itree"));
@@ -187,6 +212,15 @@ function changeButton(movements, livianos, pesados,values,container,baseDiv,size
 	
 }
 
+/**
+ * Function that changes the tree map to barchart
+ * @param {data of movements} movements 
+ * @param {data of cars} livianos 
+ * @param {data of trucks} pesados 
+ * @param {data for labels} values 
+ * @param {html container} barDiv 
+ * @param {size of the chart} size 
+ */
 function transform_to_bars(movements, livianos, pesados,values, barDiv,size){
 
 	var values = values.map(v => v.slice(7, v.length))
@@ -258,13 +292,19 @@ function transform_to_bars(movements, livianos, pesados,values, barDiv,size){
 }
 
 
-
+/**
+ * Function that changes the data of the chart according to a date
+ * @param {id of input that has the date} id_first_date 
+ * @param {id of input that has the last date data} id_last_date 
+ * @param {container's id} container 
+ * @param {api endpoint} source 
+ * @param {size of the graph} size 
+ */
 function changeMapedOnDate(id_first_date,id_last_date,container, source, size){
 	value = $("#"+id_first_date).val();
 	value_new = $("#"+id_last_date).val()
   start_date = value == ""? null: new Date(value).toISOString().slice(0,10) 
   end_date = value_new == "" ? null : new Date(value_new).toISOString().slice(0,10)   
-	console.log(start_date)
 	if(start_date!==null && end_date!==null){
 		plotlyTreeMap(container, source, start_date, end_date, size)
 	}

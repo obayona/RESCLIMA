@@ -2,10 +2,18 @@
 // ************************* Simple function ************************
 // ******************************************************************
 
+/**
+ * Function that transform the size input to return an int
+ * @param {Size of the chart on the plugin it could be 7x7, 6x6, ... in str} str 
+ */
 function getChartPluginSize(str) {
     return parseInt(str[str.length-1]);
   }
   
+  /**
+   * Funcion that sets the size of the graph
+   * @param {Size of the graph container} size 
+   */
   function getTimeChartViewBox(size) {
 	if (size == 4) { return { sizew : 320, sizeh : 220} }
 	else if (size == 5) { return { sizew : 385, sizeh : 290} }
@@ -13,17 +21,25 @@ function getChartPluginSize(str) {
 	else { return { sizew : 560,  sizeh : 440} }
   }
   
-  function isEmpty(str) {
-      if (!str) { return true; }
-      else { return false }
-  }
-  
+  /**
+   * Function that looks if the date is correctly saved
+   * @param {start date to look for data} start_date 
+   * @param {final date to look for data} end_date 
+   */
   function checkDate(start_date, end_date) {
      if (!isEmpty(start_date) && !isEmpty(end_date)) { return true; }
     else { return false; }
   }
   
-  
+  /**
+   * Function that draws the TimeSeries
+   * @param {id of the container} container 
+   * @param {size of the container it could be 5x5, 4x4 ...} size 
+   * @param {api endpoin} source 
+   * @param {label located on the range line} rangeLabel 
+   * @param {start date to look for data} start_date 
+   * @param {final date to look for data} end_date 
+   */
   function plotlyTimeSeries(container, size, source, rangeLabel, start_date, end_date) {
     if (!checkDate(start_date, end_date)) {
       // Una de las fechas ingresadas no es valida

@@ -15,31 +15,18 @@ def sensor():
         sensorlist.append(option)
     return sensorlist
 
-
-'''class TrackFileForm(forms.ModelForm):
-    file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': False}), required=False)
-    class Meta:
-        model = TracksFile
-        fields = ["descripcion"]
-    date_init = forms.DateField(
-        widget=forms.DateInput(format=('%YY-%mm-%d'), 
-                               attrs={'class':'datepicker', 
-                               'placeholder':'Select a date'}))
-    date_last = forms.DateField(
-        widget=forms.DateInput(format=('%YY-%mm-%d'), 
-                               attrs={'class':'datepicker', 
-                               'placeholder':'Select a date'}))
-'''
+class CustomModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+         return obj.name
 
 class TrackFileForm(forms.ModelForm):
 
-    #sensor = forms.ChoiceField(label='Sensor', widget=forms.Select, choices=sensor())
     file = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple':False}),required=True)
     
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user','')
         super(TrackFileForm, self).__init__(*args, **kwargs)
-        self.fields['sensor']=forms.ModelChoiceField(queryset=Sensor.objects.all())
+        self.fields['sensor']=CustomModelChoiceField(queryset=Sensor.objects.all())
 
     class Meta:
         model = TracksFile

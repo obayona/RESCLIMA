@@ -6,6 +6,10 @@ function getChartPluginSize(str) {
     return parseInt(str[str.length-1]);
   }
   
+  /**
+   * 
+   * @param {Size of the chart } size 
+   */
   function getMultiChartViewBox(size) {
 	if (size == 4) { return { sizew : 320, sizeh : 220} }
 	else if (size == 5) { return { sizew : 400, sizeh : 290} }
@@ -24,6 +28,10 @@ function getChartPluginSize(str) {
     else { return false; }
   }
 
+  /**
+   * Function that sets the rangelabel on a multitimeseries that uses temp data
+   * @param {The string representation of the data} source 
+   */
   function define_Name(source){
     var comp = source.slice(-4);
     if(comp=='tmax') { return 'Máximo'}
@@ -31,6 +39,17 @@ function getChartPluginSize(str) {
     else {return "Promedio"}
   }
   
+  /**
+   * Function that draws a multi time series
+   * @param {the container's id} container 
+   * @param {the size of the container, it is a string} size 
+   * @param {api endpoint} source 
+   * @param {api endpoint for one of the timeseries} origin 
+   * @param {api endpoint for third tiemseries} outset 
+   * @param {label to be put on range axis} rangeLabel 
+   * @param {initial date to look for data} start_date 
+   * @param {final date to look for data} end_date 
+   */
   function plotlyMultiTimeSeries(container, size, source, origin, outset, rangeLabel, start_date, end_date) {
     if (!checkDate(start_date, end_date)) {
       // Una de las fechas ingresadas no es valida

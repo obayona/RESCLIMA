@@ -19,9 +19,12 @@ import json
 from geojson import Polygon
 import traceback
 import xml.etree.ElementTree as ET
+import os
+import shutil
 
 import RESCLIMA.settings as settings
 from layer.utils import getLayerBBox
+from tracking.helpers import *
 
 def view_tracks(request):
 	sensores = Sensor.objects.all()
@@ -41,14 +44,15 @@ class TrackFileCreate(CreateView):
 	def form_valid(self, form):
 		file_instance =form.save(commit=False)
 		file_instance.user = self.request.user
-		file_instance.sensor = Sensor.objects.all().filter(id=form.fields['sensor'])
+		file_instance.sensor = form.cleaned_data['sensor']
 		file_instance.save()
-
 		for f in self.request.FILES.getlist('file'):
 			try:
-				file_instance = TracksFile(tracking=file_instance, file=f)
+				file_instance = TracksFile(file=f,sensor=file_instance.sensor)
 				file_name = default_storage.save(f.name, f)
 				file_instance.save()
+				new_file = file_directory_path("", form)
+				shutil.move(os.path.abspath("media/gpxfile/"+f.name), new_file)
 			except Exception as e:
 				traceback.print_exc()
 
@@ -74,15 +78,16 @@ class TrackFileUpdate(UpdateView):
 	def form_valid(self, form):
 		track_instance =form.save(commit=False)
 		track_instance.user = self.request.user
-		print(form.fields['sensor'])
-		file_instance.sensor = Sensor.objects.all().filter(id=form.fields['sensor'])
+		track_instance.sensor = form.cleaned_data['sensor']
 		track_instance.save()
 
 		for f in self.request.FILES.getlist('file'):
 			try:
-				file_instance = TracksFile(tracking=track_instance, file=f)
+				track_instance = TracksFile(tracking=track_instance, file=f)
 				file_name = default_storage.save(f.name, f)
-				file_instance.save()
+				track_instance.save()
+				new_file = file_directory_path("", form)
+				shutil.move(os.path.abspath("media/gpxfile/"+f.name), new_file)
 			except:
 				traceback.print_exc()
 
