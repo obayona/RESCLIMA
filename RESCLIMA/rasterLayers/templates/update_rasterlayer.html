@@ -32,8 +32,15 @@
 						<!-- Resumen -->
 						<div class="row">
 							<div class="input-field col s12">
-								<textarea name="abstract" id="id_abstract" width="100%" rows="10" cols="40" data-length="500" required="" class="materialize-textarea">{{rasterlayer.abstract}}</textarea>
+								<textarea name="abstract" id="id_abstract" width="100%" rows="10" cols="40" data-length="1000" required="" class="materialize-textarea">{{rasterlayer.abstract}}</textarea>
 								<label for="id_abstract">Resumen</label>
+							</div>
+						</div>
+						<!-- Autor --> 
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" name="author" required="" id="id_author" value="{{rasterlayer.author}}" data-length="50">
+								<label for="id_author">Autor</label>
 							</div>
 						</div>
 						<!-- Fecha -->
@@ -62,7 +69,6 @@
 						<!--Estilos -->
 						<div class="row">
 							<div class="col s12">
-								{% if styles %}
 								<div><label>Estilos</label></div>
 								<select id = "id_style" name = "style">
 									<option value="null">Ninguno</option>
@@ -74,7 +80,6 @@
 										{% endif %}
 									{% endfor %}
 								</select>
-								{% endif %}
 							</div>
 						</div>
 
@@ -182,3 +187,4 @@
 	});
 </script>
 {% endblock %}
+

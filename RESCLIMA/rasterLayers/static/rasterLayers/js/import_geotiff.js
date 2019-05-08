@@ -127,6 +127,15 @@ function getCategoriesString(){
 	return categories_string;
 }
 
+function isASCII(str) {
+    return /^[\x00-\x7F]*$/.test(str);
+}
+
+function getPartsOfFile(filename){
+	var re = /(?:\.([^.]+))?$/;
+	parts = re.exec(filename);
+	return parts
+}
 // revisa las condiciones de los
 // archivos
 function checkFile(){
@@ -134,8 +143,11 @@ function checkFile(){
 	var list_files = file_input.files;
 	var fileName = list_files[0].name
 
-	var parts = fileName.split(".");
+	if(!isASCII(fileName)){
+		return "El nombre del archivo no debe contener caracteres especiales";
+	}
 
+	var parts = getPartsOfFile(fileName);
 	if(parts.length!=2){
 		return "El archivo debe tener extension y no contener puntos en el nombre" 
 	}
@@ -202,6 +214,7 @@ $(document).ready(function() {
 	var formImport = $("#rasterForm");
 	formImport.submit(formSubmit);
 });
+
 
 
 

@@ -15,10 +15,9 @@ Lo primero es instalar las dependencias que son:
 + PostgreSQL 10
 + Postgis
 + TimescaleDB
-+ mapnik
 + lxml
 + Celery 4.2.1 + RabbitMQ
-
++ otros
 
 python 3.6.7
 ############
@@ -118,12 +117,6 @@ Reiniciar PostgreSQL::
 
 	$ sudo systemctl restart postgresql-10.service
 
-Mapnik
-######
-Mpanik en una librería para renderizar mapas. Instalación::
-
-	$ sudo pip install mapnik
-
 
 lmxl
 ####
@@ -144,6 +137,14 @@ Para instalar Celery::
 	$ sudo pip install Celery
 
 Para instalar RabittMQ, seguir las instrucciones de este enlace https://www.rabbitmq.com/install-rpm.html
+
+Otros
+#################
+Se debe actualizar la documentación!!! 
+Si falta instalar librerías que no se mencionan aquí se deben instalar con pip::
+		
+		$ sudo pip install <<package>>
+
 
 Configuración
 -------------

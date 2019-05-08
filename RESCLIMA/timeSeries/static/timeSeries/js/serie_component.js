@@ -257,7 +257,6 @@ Vue.component("serie_component",{
 			for(var i=0;i<measurements.length; i++){
 				var m = measurements[i];
 				station["x_values"].push(m["ts"]);
-				console.log(m["ts"]);
 				station["y_values"].push(m["value"]);
 			}
 			station["state"]="loaded";
@@ -291,7 +290,11 @@ Vue.component("serie_component",{
 			var container = this.container;
 			var data = container.data;
 			var n_traces = data.length;
+			//change dates according to time zone
+			for (var i = 0; i < station["x_values"].length; i++) {
 
+				station["x_values"][i] = new Date(Date.parse(station["x_values"][i]+"+0000"));
+			}
 			station["trace_index"]=n_traces;
 			// se crea el trace
 			var trace = {

@@ -32,8 +32,15 @@
 						<!-- Resumen -->
 						<div class="row">
 							<div class="input-field col s12">
-								<textarea name="abstract" id="id_abstract" width="100%" rows="10" cols="40" data-length="500" required="" class="materialize-textarea">{{vectorlayer.abstract}}</textarea>
+								<textarea name="abstract" id="id_abstract" width="100%" rows="10" cols="40" data-length="1000" required="" class="materialize-textarea">{{vectorlayer.abstract}}</textarea>
 								<label for="id_abstract">Resumen</label>
+							</div>
+						</div>
+						<!-- Titulo --> 
+						<div class="row">
+							<div class="input-field col s12">
+								<input type="text" name="author" required="" id="id_author" value="{{vectorlayer.author}}" data-length="50">
+								<label for="id_author">Author</label>
 							</div>
 						</div>
 						<!-- Fecha -->
@@ -181,3 +188,4 @@
 	});
 </script>
 {% endblock %}
+

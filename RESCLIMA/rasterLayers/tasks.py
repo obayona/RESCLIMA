@@ -18,6 +18,7 @@ def import_raster_layer(rasterlayer_params):
 	extension = rasterlayer_params["extension"]
 	title = rasterlayer_params["title"]
 	abstract = rasterlayer_params["abstract"]
+	author = rasterlayer_params["author"]
 	# fecha como string
 	date_str = rasterlayer_params["date_str"]
 	# fecha como objeto datetime
@@ -98,8 +99,6 @@ def import_raster_layer(rasterlayer_params):
 	rasterlayer = RasterLayer()
 	rasterlayer.file_path = path
 	rasterlayer.file_name = fileName
-	rasterlayer.file_format = extension
-	# proyected
 	rasterlayer.title = title
 	rasterlayer.abstract = abstract
 	rasterlayer.data_date = data_date
@@ -109,6 +108,7 @@ def import_raster_layer(rasterlayer_params):
 	rasterlayer.numBands = numBands
 	rasterlayer.bbox = bbox
 	rasterlayer.type = "raster"
+	rasterlayer.author = author
 	rasterlayer.owner = owner
 	rasterlayer.save()
 	
@@ -116,5 +116,7 @@ def import_raster_layer(rasterlayer_params):
 	result["percent"]=100
 	current_task.update_state(state='PROGRESS',meta=result)
 	return result
+
+
 
 

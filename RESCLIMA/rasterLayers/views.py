@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import os
-from os.path import join
 import datetime
-import time
-import rasterLayers.importer as importer
-import simplejson as json
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from wsgiref.util import FileWrapper
-from django.contrib.auth.decorators import login_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from RESCLIMA import settings
+from django.views.decorators.csrf import csrf_protect
+from main.models import Researcher
+import os
+from os.path import join
+import rasterLayers.importer as importer
 from rasterLayers.models import RasterLayer
+from RESCLIMA import settings
+from search.models import Category
+import simplejson as json
 from style.models import Style
 from style.utils import transformSLD,getColorMap
-from search.models import Category
-from main.models import Researcher
-from django.views.decorators.csrf import csrf_protect
+import time
+from wsgiref.util import FileWrapper
 
 
 limit = 10
@@ -53,10 +53,7 @@ def import_raster(request):
 		except Exception as e:
 			result["error"]=str(e);
 			return HttpResponse(json.dumps(result),content_type='application/json')
-		'''
-		result = importer.import_data(request)
-		return HttpResponse(json.dumps(result),content_type='application/json')
-		'''
+
 
 def export_rasterLayer(request,rasterlayer_id):
 	rasterlayer = RasterLayer.objects.get(id=rasterlayer_id)
@@ -78,6 +75,7 @@ def updateRasterLayer(rasterlayer,request):
 	try:
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
+		author = request.POST["author"]
 		id_style = request.POST["style"]
 		date_str = request.POST["data_date"] # fecha como string
 		# fecha como objeto datetime
@@ -86,6 +84,7 @@ def updateRasterLayer(rasterlayer,request):
 
 		rasterlayer.title = title
 		rasterlayer.abstract = abstract
+		rasterlayer.author = author
 		rasterlayer.data_date = data_date
 		rasterlayer.categories_string = categories_string
 		rasterlayer.save()
@@ -169,10 +168,10 @@ def importStyle(request):
 		fullName = join(path,fileName)
 		f = request.FILES['file']
 
-		sld_string = f.read();		
+		sld_string = f.read();
 		sld_string = transformSLD(sld_string);
 		f.close();
-		f = open(fullName,'w');
+		f = open(fullName,'w',encoding="utf_8");
 		f.write(sld_string);
 		f.close();
 
@@ -222,4 +221,5 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
 

@@ -130,17 +130,25 @@ function getCategoriesString(){
 	return categories_string;
 }
 
+function isASCII(str) {
+    return /^[\x00-\x7F]*$/.test(str);
+}
+
+function getPartsOfFile(filename){
+	var re = /(?:\.([^.]+))?$/;
+	parts = re.exec(filename);
+	return parts
+}
+
 // revisa las condiciones de los
 // archivos
 function checkFiles(){
 	var file_input = document.getElementById("id_import_files");
 	var list_files = file_input.files;
 
-	var required_extensions = ["shp", "shx", "dbf", "prj"];
-	var zip_extension = ["zip"]
+	var required_extensions = ["shp", "shx", "dbf", "prj"];	
 	var has_extension = {};
-	var has_zip_extension = {};
-	has_zip_extension["zip"] = false;
+
 	for(var i=0; i<required_extensions.length; i++){
 		var extension = required_extensions[i];
 		has_extension[extension] = false
@@ -148,9 +156,14 @@ function checkFiles(){
 	filename = null;
 	for(var i=0; i<list_files.length; i++){
 		var f = list_files[i];
-		var parts = f.name.split(".");
+
+		if(!isASCII(f.name)){
+			return "El nombre del archivo no debe tener caracteres especiales";
+		}
+
+		var parts = getPartsOfFile(f.name);
 		if(parts.length!=2){
-			return "Los archivos deben tener extension ni contener puntos en el nombre" 
+			return "Los archivos deben tener una extension" 
 		}
 		// se obtiene el nombre y extension del archivo
 		var fname = parts[0].toLowerCase();
@@ -166,20 +179,8 @@ function checkFiles(){
 		if (required_extensions.includes(extension)){
 			has_extension[extension] = true;
 		}
-		else if (zip_extension.includes("zip")){
-			has_zip_extension["zip"] = true;
-		}
 		else{
 			return "No se admite archivo con extension " + extension;
-		}
-	}
-	// se valida que los archivos requeridos existan
-	if(!has_zip_extension["zip"]){
-		for(var i=0; i<required_extensions.length; i++){
-			var extension = required_extensions[i];
-			if(!has_extension[extension]){
-				return "Archivo perdido requerido ."+extension
-			}
 		}
 	}
 
@@ -241,6 +242,8 @@ $(document).ready(function() {
 	var formImport = $("#shapefileForm");
 	formImport.submit(formSubmit);
 });
+
+
 
 
 

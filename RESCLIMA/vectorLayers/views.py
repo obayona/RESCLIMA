@@ -44,8 +44,7 @@ def import_shapefile(request):
 	elif request.method == "POST":
 		result = {}
 		try:
-			# se ejecuta la tarea de Celery
-			result = importer.import_compress_data(request)
+			result = importer.import_shapefile(request)
 			return HttpResponse(json.dumps(result),content_type='application/json')
 		except Exception as e:
 			result["error"]=str(e);
@@ -70,6 +69,7 @@ def updateVectorLayer(vectorlayer,request):
 	try:
 		title = request.POST["title"]
 		abstract = request.POST["abstract"]
+		author = request.POST["author"]
 		date_str = request.POST["data_date"] # fecha como string
 		# fecha como objeto datetime
 		data_date = datetime.datetime.strptime(date_str, '%Y-%m-%d') 
@@ -78,6 +78,7 @@ def updateVectorLayer(vectorlayer,request):
 		# se actualiza la capa
 		vectorlayer.title = title;
 		vectorlayer.abstract = abstract;
+		vectorlayer.author = author;
 		vectorlayer.data_date = data_date;
 		vectorlayer.categories_string = categories_string;
 		vectorlayer.save()
@@ -110,7 +111,17 @@ def edit_vectorlayer(request,vectorlayer_id):
 def delete_vectorLayer(request,vectorlayer_id):
 	try:
 		vectorlayer = VectorLayer.objects.get(id=vectorlayer_id)
-		vectorlayer.delete()
+
+		file_path = vectorlayer.file_path
+		file_name = vectorlayer.file_name
+		full_path = join(file_path,file_name)
+
+		try:
+			os.remove(full_path)
+			vectorlayer.delete()
+		except Exception as e:
+			return HttpResponse(status=500)
+
 		return redirect('vector_list')
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
@@ -134,7 +145,7 @@ def importStyle(request,vectorlayer):
 		sld_string = transformSLD(sld_string);
 
 		f.close();
-		f = open(fullName,'w');
+		f = open(fullName,'w',encoding="utf-8");
 		f.write(sld_string);
 		f.close();
 
@@ -189,4 +200,7 @@ def export_style(request,style_id):
 		return HttpResponse(sld)
 	except Exception as e:
 		return HttpResponseNotFound()
+
+
+
 
