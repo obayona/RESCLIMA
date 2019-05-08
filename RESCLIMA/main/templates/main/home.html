@@ -1,3 +1,4 @@
+
 {% extends 'main/base.html' %}
 {% load static %}
 
@@ -7,6 +8,23 @@
 {% block content %}
 	<!-- START MAIN -->
 <div id="main">
+		<div style="padding-top:1%;">
+			<a class="waves-effect waves-light blue-text btn-flat modal-trigger"  onclick="$('#help').modal('open');" > <i class="small material-icons icon-blue">help_outline</i>Ayuda</a>
+<div id="help" class="modal">
+    <div class="modal-content">
+      <h4 style="color:#2196f3;">Ayuda</h4>
+	<p>Para poder buscar datos en la plataforma se requiere llenar al menos uno de los siguientes campos:</p>
+	<p><b>Qu&eacute: </b>aqu&iacute se puede escribir una palabra clave para la b&uacutesqueda, y/o seleccionar categor&iacuteas, haciendo clic sobre ellas.</p>
+	<p><b>D&oacutende: </b>si desea que los datos pertenezcan a una determinada zona geogr&aacutefica, coloque el cursor sobre el mapa y arr&aacutestrelo para dibujar un &aacuterea. </p>
+	<p><b>Cu&aacutendo: </b>configure la fecha de inicio y/o fin si desea que los datos est&eacuten dentro de un intervalo. Si s&oacutelo se configura la fecha de inicio, la plataforma mostrar&aacute resultados hasta la fecha actual. Si s&oacutelo se configura la fecha de finalización, los resultados mostrados datar&aacuten hasta la fecha especificada.</p>
+	<p><b>C&oacutemo: </b>seleccione si quiere buscar mapas o datos de estaciones meteorol&oacutegicas.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cerrar</a>
+    </div>
+</div>
+		</div>
+
 	<div id="searchForm" class="container">
 		<div class="section">
 			<div class="row">
@@ -89,6 +107,13 @@
 	<script src="{% static "main/js/series_component.js" %}"></script>
 	<script src="{% static "main/js/main.js" %}"></script>
 	<script src="{% static "main/js/axios.min.js" %}"></script>
+<script>
+$(document).ready(function(){
+    // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
+    $('#help').modal();
+  });
+
+</script>
 
 
 {% endblock%}

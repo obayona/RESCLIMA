@@ -151,3 +151,4 @@ RASTER_FILES_PATH = "/home/manager/rasters/"
 VECTOR_FILES_PATH = "/home/manager/vector/"
 TEMPORARY_FILES_PATH = "/home/manager/tmp/"
 
+PROJECT_PATH = os.path.dirname(os.path.dirname(__file__))

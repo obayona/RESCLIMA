@@ -430,10 +430,12 @@ def parseGenericFile(genericParams):
 			# la tercera linea contiene los headers
 			if(i==3):
 				headers = getColumns(line);
-				if len(headers)!=14:
+				print(headers)
+				#En este caso debe haber 1 col de fecha + 10 variables
+				if len(headers)!=11:
 					# se borra el archivo
 					os.remove(fileName)
-					msg = "Error: el archivo debe tener ocho columnas, "
+					msg = "Error: el archivo debe tener once columnas, "
 					ms = msg + "se tienen "+str(len(headers)) + " columnas"+str(headers)
 					result["error"]=ms
 					current_task.update_state(state='FAILURE',meta=result)
@@ -445,7 +447,8 @@ def parseGenericFile(genericParams):
 				header_date = headers[0]
 				index = header_date.find("GMT")
 				time_zone_str = header_date[index:].strip(' \t\n\r')
-				offset_str = time_zone_str[4:7]
+				offset_str = time_zone_str[3:5]
+				print(offset_str)
 				offset = int(offset_str)
 				# se crea el string del timezone
 				if(offset<0):

@@ -1,4 +1,5 @@
 from lxml import etree
+import os
 from os.path import join
 from style.models import Style
 import traceback
@@ -71,14 +72,26 @@ def parseRasterSLD(sld):
     return result
 
 
+def loadStyle(style):
+	file_path = style.file_path
+	file_name = style.file_name
+	fullName = join(file_path,file_name)
+	f = open(fullName,'r',encoding="utf-8")
+	sld = f.read()
+	return sld
+
+
+def removeStyle(style):
+	file_path = style.file_path;
+	file_name = style.file_name;
+	fullName = join(file_path,file_name)
+	os.remove(fullName)
+	style.delete()
+
 # retorna un diccionario con la informacion
 # del color, el label, opacity y quantity del
 # archivo sld de un style de tipo raster
 def getColorMap(style):
-    file_path = style.file_path;
-    file_name = style.file_name;
-    fullName = join(file_path,file_name);
-    f = open(fullName,'r', encoding="utf_8");
-    sld = f.read()
+    sld = loadStyle(style)
     colorMap = parseRasterSLD(sld)
     return colorMap  

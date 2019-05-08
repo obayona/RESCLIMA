@@ -12,11 +12,8 @@ from osgeo import ogr
 from osgeo import osr
 from vectorLayers.models import VectorLayer
 from RESCLIMA import settings
-import json
+import simplejson
 import shutil
-
-# modificar funciones para exportar
-# probar con mas capas
 
 @shared_task
 @transaction.atomic
@@ -93,7 +90,13 @@ def import_vector_layer(vectorlayer_params):
 		maxXs.append(env[1])
 		maxYs.append(env[3])
 
-		feature_json = feature.ExportToJson(as_object=True)
+		try:
+			feature_json = feature.ExportToJson(as_object=True)
+		except Exception as e:
+			errorMsg = "El feature %d tiene valores NaN o infinitos"%(i)
+			updateResult(errorMsg = errorMsg,
+			percent_progress = None)
+
 		geojson["features"].append(feature_json)
 
 		percent_progress = 10 + (float(i)/N)*70.0
@@ -106,9 +109,13 @@ def import_vector_layer(vectorlayer_params):
 	file_path = settings.VECTOR_FILES_PATH
 	file_name = createFileName(vectorlayer_name)
 	full_path = join(file_path,file_name)
-	f = open(full_path,"w")
-	f.write(json.dumps(geojson,ensure_ascii=False))
-	f.close()
+	try:
+		f = open(full_path,"w",encoding=encoding)
+		f.write(simplejson.dumps(geojson,ensure_ascii=False))
+		f.close()
+	except Exception as e:
+		updateResult(errorMsg = "Error al guardar el archivo, intente con otro encoding",
+			percent_progress = None)
 
 
 	# se actualiza el progreso
@@ -183,5 +190,6 @@ def calculateBBox(minXs, minYs, maxXs, maxYs):
 		(maxX,maxY),(maxX,minY),(minX,minY))
 	bbox = Polygon(coords)
 	return bbox
+
 
 

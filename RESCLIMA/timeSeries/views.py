@@ -418,8 +418,13 @@ de muestra para datos de otras
 estaciones
 """
 def samplefile(request):
-	with open('../data/stations/other_station_format.csv', 'rb') as sample:
-		response = HttpResponse(sample.read())
-		response = HttpResponse(content_type='text/csv')
-		response['Content-Disposition'] = 'attachment;filename=other_station_format.csv'
-		return response
+	destpath = '/home/manager/RESCLIMA/data/stations/other_station_format.csv'
+	#with open(destpath, 'rb') as sample:
+		#response = HttpResponse(sample.read())
+	data = open(destpath,'r').read()
+	print(data)
+	response = HttpResponse(data)
+	#response = HttpResponse(data, mimetype='text/csv' )
+	response = HttpResponse(content_type='text/csv')
+	response['Content-Disposition'] = 'attachment;filename=other_station_format.csv'
+	return response
