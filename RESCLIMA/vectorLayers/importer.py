@@ -29,14 +29,11 @@ def import_shapefile(request):
 	date_str = request.POST["data_date"]
 	categories_string = request.POST["categories_string"]
 	owner = request.user.researcher.id
-	print("holaaaaaaaa")
-	new_log = open("new_log.txt","a")	
+		
 	for f in list_files:
 		# se obtiene el nombre y extension del archivo
 		parts = os.path.splitext(f.name)
 		fname = parts[0]
-		new_log.write(fname)
-	new_log.close()	
 	try:
 		required_extensions = [".shp", ".shx", ".dbf", ".prj"]
 		checkExtensionFilesExists(list_files,required_extensions)

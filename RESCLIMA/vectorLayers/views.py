@@ -25,7 +25,7 @@ limit = 10
 def list_vectorlayers(request):
 	researcher = request.user.researcher
 	researcher = researcher.id
-	layers = VectorLayer.objects.filter(owner=researcher).order_by("upload_date")
+	layers = VectorLayer.objects.filter(owner=researcher).order_by("-upload_date")
 	page = request.GET.get('page', 1)
 	paginator = Paginator(layers, limit)
 	try:

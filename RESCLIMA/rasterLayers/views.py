@@ -16,7 +16,7 @@ from RESCLIMA import settings
 from search.models import Category
 import simplejson as json
 from style.models import Style
-from style.utils import transformSLD,getColorMap,loadStyle, removeStyle
+from style.utils import transformSLD,getColorMap,loadStyle
 import time
 from wsgiref.util import FileWrapper
 
@@ -26,7 +26,7 @@ limit = 10
 def list_rasterlayers(request):
 	researcher = request.user.researcher
 	researcher = researcher.id
-	layers = RasterLayer.objects.filter(owner=researcher).order_by("upload_date")
+	layers = RasterLayer.objects.filter(owner=researcher).order_by("-upload_date")
 	styles = Style.objects.filter(type="raster", owner=researcher)
 	page = request.GET.get('page', 1)
 	paginator1 = Paginator(layers, limit)
