@@ -57,8 +57,8 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
       d3.json(SOURCE_URL, function(error, data) {
         data.forEach(function(item){
               item.enabled = true;
-              valuesX.push(item.value)
-              valuesY.push(item.key)
+              valuesY.push(item.value)
+              valuesX.push(item.key)
         })
 
         var trace1 = {
@@ -83,7 +83,7 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
               xaxis: {
                 zeroline : true,
                 title: domainLabel,
-                tickangle: 0
+                tickangle: -45,
               },
               yaxis: {
                 title: rangeLabel,
@@ -93,7 +93,7 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
               bargap :0.05,
                 width: two_sizes.sizew,
                 height: two_sizes.sizeh,
-
+                barmode: 'stack',
                 margin: {
                   l: 40,
                   r: 20,
@@ -104,10 +104,10 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
             };
 
         Plotly.newPlot(barDiv, data,layout);
-
+        Plotly.Plots.resize(barDiv);
         barDiv.on('plotly_click', function(data){
           var selected_path = data
-          //applyInteractivity(source,selected_path)
+
           redirect(selected_path.points[0].data.source)
         });
 
@@ -172,7 +172,7 @@ SOURCE_URL = setBarSource(sid, source, start_date, end_date);
          bargap :0.05,
            width: two_sizes.sizew,
            height: two_sizes.sizeh,
-
+           barmode: 'stack',
            margin: {
              l: 40,
              r: 20,
@@ -183,7 +183,7 @@ SOURCE_URL = setBarSource(sid, source, start_date, end_date);
        };
 
    Plotly.update(barDiv, data,layout);
-
+   Plotly.Plots.resize(barDiv);
    })
 }
 
@@ -236,7 +236,6 @@ function redirect(source){
     }
   })
 }
-
 
 
 

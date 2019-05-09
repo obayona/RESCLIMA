@@ -13,6 +13,7 @@ import datetime
 import json
 import shutil
 import tempfile
+import traceback
 
 '''
 Vista  que  retorna una  Pagina home 
@@ -213,10 +214,6 @@ def query_measurements(variable_id,station_id,
 	# del json se obtiene la variable_id (readings[variable_id])
 	select_stm = 'SELECT readings::json->%s as measurements, ts, count(*) OVER() AS full_count '
 	from_stm = 'FROM "timeSeries_measurement" as m '
-	# se recuperan los measurements de la estacion 
-	# cuyo readings contenga el id de la variable (variable_id)
-	# readings={"variable_id":valor_variable}
-	#where_stm = 'WHERE "idStation_id"=%s and readings like \'%%"'+variable_id+'":%%\''
 	where_stm = 'WHERE "idStation_id"=%s AND readings::jsonb ? %s'	
 	# parametros de los placeholders query
 	params = [variable_id,station_id,variable_id]
@@ -423,3 +420,20 @@ def samplefile(request):
 		response = HttpResponse(content_type='text/csv')
 		response['Content-Disposition'] = 'attachment;filename=other_station_format.csv'
 		return response
+
+"""
+Vista que devuelve la informacion de
+las estaciones disponibles
+"""
+def available_stations(request):
+	try:
+		stations = Station.objects.values('id')
+		var_stations = {}
+		sta = []
+		for station in stations:
+			sta.append(station["id"])
+		var_stations["stations"] = sta
+		return HttpResponse(json.dumps(var_stations),content_type='application/json')
+	except Exception as e:
+		print(traceback.format_exc())
+		return HttpResponse(status=404)

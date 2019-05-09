@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 import json
 import collections
-
+import traceback
 
 # Grafico de barras para los investigadores de ESPOL
 # Response format: {key, value}
@@ -36,7 +36,8 @@ class Medicion(viewsets.ViewSet):
 			avg = [0] * 9
 			# Agrupo por id de variable.
 			for i in range(len(ms)):
-				r = json.dumps(ms[i].readings)
+				v = json.dumps(ms[i].readings)
+				r = json.loads(v.replace("'\'",""))
 				r = json.loads(r)
 				if("1" in r):
 					avg[0] = avg[0] + r["1"] # Temperatura
