@@ -379,8 +379,7 @@ def parseGenericFile(genericParams):
 	# se itera el archivo
 	try:
 		for i,line in enumerate(f,1):
-			print("Holaaaaaaaaaaaaaaaaaaaaaa")
-			print(line)
+	
 			# si se lee la primera linea del archivo
 			# se recupera el numero serial de la estacion
 			if(i==1):
@@ -394,15 +393,16 @@ def parseGenericFile(genericParams):
 				else:
 					# se borra el archivo
 					os.remove(fileName)
-					result["error"]="Error: no se especifica el numero de serie o ID de la estacion"
+					result["error"]="Error: no se especifica el numero de serie o ID de la estacion " + line
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
-				# se valida que la estacion existe en la base de datos
+				# se valida que la estacion existe en la base de datos y que haya solo UNA
 				results=Station.objects.filter(serialNum=serialNum);
 				if(results.count()!=1):
 					# se borra el archivo
 					os.remove(fileName)
+
 					result["error"]="Error: no se encontro la estacion "+serialNum
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
@@ -468,7 +468,8 @@ def parseGenericFile(genericParams):
 			# si la linea es mayor que la 3
 			# se obtienen las mediciones
 			measures = getColumns(line)
-			if(len(measures)!=14):
+			
+			if(len(measures)!=11):
 				# se borra el archivo
 				os.remove(fileName)
 				result["error"]="Error: falta una columna en la linea "+str(i)
@@ -491,13 +492,11 @@ def parseGenericFile(genericParams):
 			# en la columna 1 esta temperatura y en la 6, la humedad relativa
 			#variables_index = [1,6]
 			measures_dict = {}
-			measures_len = len(measures)
-			for j in (1,measures_len):
+			measures_len = len(measures)-1
+			for j in range(1,measures_len):
 				measure = measures[j]
 				measure = measure.strip(' \t\n\r')
 				variable = variables[j] 
-				if measure == "":
-					continue;
 
 				idVariable = variable.id;
 				datatype = variable.datatype;
