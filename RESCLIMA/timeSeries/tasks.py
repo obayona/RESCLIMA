@@ -379,7 +379,8 @@ def parseGenericFile(genericParams):
 	# se itera el archivo
 	try:
 		for i,line in enumerate(f,1):
-		
+			print("Holaaaaaaaaaaaaaaaaaaaaaa")
+			print(line)
 			# si se lee la primera linea del archivo
 			# se recupera el numero serial de la estacion
 			if(i==1):
