@@ -313,6 +313,7 @@ Vue.component("serie_component",{
 		atributo "visible" de la estacion
 		*/
 		showHideTrace(station){
+			console.log(station);
 			station["visible"]=!station["visible"];
 			var container = this.container;
 			var data = container.data;
