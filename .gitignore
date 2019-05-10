@@ -178,3 +178,5 @@ migrations/*
 RESCLIMA/static/*
 RESCLIMA/media/
 .Rhistory
+static/
+/static/

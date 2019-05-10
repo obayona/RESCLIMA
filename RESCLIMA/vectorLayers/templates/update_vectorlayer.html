@@ -75,12 +75,12 @@
 									<li>
 										<p>
 											{{style.title}}
-											<a href="{% url "delete_style" style.id %}">Eliminar</a>
+											<a href="{% url "vector:delete_style" style.id %}">Eliminar</a>
 										</p>
 									</li>
 								{% endfor %}
 								</ul>
-								<a href="{% url "import_style" vectorlayer.id %}">Agregar estilo</a>
+								<a href="{% url "vector:import_style" vectorlayer.id %}">Agregar estilo</a>
 							</div>
 						</div>
 
@@ -188,4 +188,5 @@
 	});
 </script>
 {% endblock %}
+
 

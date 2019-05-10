@@ -333,7 +333,7 @@ var RasterLayer = function(map,layer){
 	function createLegend(layer_style,legend_json){
 		var legend = layer_style["legend"];
 		legend.splice(0,legend.length);
-
+		console.log(legend_json,"esto me llego de estilo")
 		for (i=0;i<legend_json.length;i++){
 			var row = legend_json[i];
 			// se guarda el color y el label
@@ -549,6 +549,7 @@ Vue.component("map_component",{
 		}
 	},
 })
+
 
 
 
