@@ -21,6 +21,6 @@
         "Capas vectoriales"]
     },
     "donde":{
-        "¿Dónde se almacenan los archivos ?": "Los directorios a modificar para los archivos tasks se encuentran en DATACITY/simulation/task.py. Puede cambiar las rutas donde se almacenen los archivos de capas rasters, shapefiles y capas vectoriales se encuentran en DATACITY/RESCLIMA/RESCLIMA/settings.py"
+        "¿Dónde se almacenan los archivos ?": "Los directorios a modificar para los archivos tasks se encuentran en RESCLIMA/NOMBRE_DE_APP/task.py. Puede cambiar las rutas donde se almacenen los archivos de capas rasters, shapefiles y capas vectoriales se encuentran en ./RESCLIMA/RESCLIMA/settings.py"
     }
 }

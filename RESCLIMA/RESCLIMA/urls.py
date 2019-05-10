@@ -18,8 +18,6 @@ from django.contrib import admin
 from main.views import *
 from django.contrib.auth.views import logout
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from .api import router
-from main import logistica, censo, clima
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
@@ -29,7 +27,6 @@ urlpatterns = [
 	url(r'^logout/$', logout, {'next_page': '/'}, name='logout'),
 	url(r'^noAccess/$', noAccess, name="noAccess"),
 	url(r'^get-task-info/',get_task_info,name="taskInfo"),
-    url(r'^api/', include(router.urls)),
     url(r'^celery-progress/', include('celery_progress.urls')),
 	url(r'^profile/$', profile, name="profile"),
 	url(r'^admin/', include(admin.site.urls)),
