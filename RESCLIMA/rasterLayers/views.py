@@ -16,7 +16,7 @@ from RESCLIMA import settings
 from search.models import Category
 import simplejson as json
 from style.models import Style
-from style.utils import transformSLD,getColorMap,loadStyle
+from style.utils import transformSLD,getColorMap,loadStyle,removeStyle
 import time
 from wsgiref.util import FileWrapper
 
