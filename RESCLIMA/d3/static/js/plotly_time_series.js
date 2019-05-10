@@ -202,7 +202,7 @@ function getMeasurements(variable,container){
   var stations = variable["stations"];
   var station = {}
 	for(var i=0; i<stations.length; i++){
-    station["id"] = stations[i]
+    station.id = stations[i]
 		getStationMeasurements(variable,station,container);
 	}
 }
@@ -214,7 +214,6 @@ function getStationMeasurements(variable,station,container){
   this.limit = 100,
       offset = 0,
       max_offset =-1;
-  var measures = {"limit":this.limit, "offset":this.offset, "max_offset":max_offset,'size':variable.size}
 	// se crea el url			
 	var url = "/series/measurements/?";
 	url += "variable_id="+variable["id"];
@@ -228,16 +227,16 @@ function getStationMeasurements(variable,station,container){
 	url+="&limit="+this.limit;
   url+="&offset="+this.offset
 	var request = $.get(url);
-	station["state"]="loading";
+  station["state"]="loading";
 	request.done(function(response){
 		var measurements = response["measurements"];
 		// se actualiza
 		var full_count = response["full_count"];
 		self.max_offset = full_count - self.limit;
 		if(full_count>0){
-			self.assingMeasurements(station,measurements);
+      assingMeasurements(station,measurements);
                             	// dibuja el plot
-                            	self.addTrace(variable,station,container);
+                            	addTrace(variable,station,container);
 		}
 	});
 	request.fail(function(response){
@@ -245,14 +244,15 @@ function getStationMeasurements(variable,station,container){
 
   });
   
-
+  
 }
 /*
 Asigna la serie de tiempo a la estacion
 */
 function assingMeasurements(station,measurements){
-	station["x_values"] = [];
-	station["y_values"] = [];
+  console.log(station["id"])
+  station["x_values"] = [];
+  station["y_values"] = [];
 	for(var i=0;i<measurements.length; i++){
 		var m = measurements[i];
 		station["x_values"].push(m["ts"]);
@@ -264,6 +264,8 @@ function assingMeasurements(station,measurements){
 Inicializa el plot usando la libreria Plotly
 */
 function initializePlot(variable, container,size){
+  var measures = {"limit":100, "offset":0, "max_offset":-1,'size':variable.size}
+  addnextOptions(measures,container,variable)
 	var data = []
   var y_title = variable["unit"]+ " ( " + variable["symbol"] + " )";
   var two_sizes = getTimeChartViewBox(getChartPluginSize(size));
@@ -297,14 +299,15 @@ function addTrace(variable,station,container){
 	//change dates according to time zone
 	for (var i = 0; i < station["x_values"].length; i++) { 
 		station["x_values"][i] = new Date(Date.parse(station["x_values"][i]+"+0000"));
-	}
+  }
+
 	station["trace_index"]=n_traces;
 	// se crea el trace
 	var trace = {
 		x:station["x_values"],
 		y:station["y_values"],
 		type: 'scatter',
-		name: 'Estacion '+station["id"],
+		name: 'Estacion '+station['id'],
 		line:{color:station["color"]},
 		visible:station["visible"]
 	};
@@ -349,24 +352,29 @@ function next(measures,container,variable){
   getMeasurements(variable,container);
 }
 
+/**
+ * 
+ * @param {*} metadata 
+ * @param {*} container 
+ * @param {*} variable 
+ */
 function addnextOptions(metadata,container,variable){
- 
   var next = $('<div/>', {
     'id':'next',
     'class':'col s4',
     'style':'center;cursor:pointer;font-weight:bold;',
-    'html':'<a><i class="material-icons">chevron_right</i></a>',
-    'click':next(metadata,container,variable),
+    'html':'<a href="#!"><i class="material-icons">chevron_right</i></a>',
+    'click':function(){ next(metadata,container,variable);},
     'mouseenter':function(){ $(this).css('color', 'blue'); },
     'mouseleave':function(){ $(this).css('color', 'black'); }
-  }).appendTo($(container).filter('#optionStations'));
+  }).appendTo("#"+container.id+'-optionStations');
 
   $('<div/>', {
     'id':'myDiv',
     'class':'col s4',
     'style':'center;cursor:pointer;font-weight:bold;',
-    'html':'<a><i class="material-icons">chevron_left</i></a>',
-    'click':prev(metadata,container,variable),
+    'html':'<a href="#!"><i class="material-icons">chevron_left</i></a>',
+    'click':function(){ prev(metadata,container,variable);},
     'mouseenter':function(){ $(this).css('color', 'blue'); },
     'mouseleave':function(){ $(this).css('color', 'black'); }
   }).appendTo($(container).filter('#optionStations'));
