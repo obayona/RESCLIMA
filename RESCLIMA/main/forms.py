@@ -42,20 +42,4 @@ from . models import *
 		super(UserForm, self).__init__(*args, **kwargs)
 		self.fields['username'].help_text = None"""
 
-class LogisticaForm(forms.ModelForm):
-	class Meta:
-		model = Logistica
-		fields = ('__all__')
-	file = forms.FileField(required=True)
 
-class ClimaForm(forms.ModelForm):
-	class Meta:
-		model = Clima
-		fields = ('__all__')
-	file = forms.FileField(required=True)
-
-class CensoForm(forms.ModelForm):
-	class Meta:
-		model = Censo
-		fields = ('__all__')
-	file = forms.FileField(required=True)

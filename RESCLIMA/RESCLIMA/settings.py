@@ -48,21 +48,6 @@ INSTALLED_APPS = (
 	'timeSeries',
 	'tms',
 	'main',
-	'simulation',
-    	'rest_framework',
-    	'easy_thumbnails',
-    	'dash',
-    	'dash.contrib.apps.public_dashboard',
-    	'dash.contrib.layouts.bootstrap2',
-    	'dash.contrib.plugins.dummy',
-    	'dash.contrib.plugins.image',
-    	'dash.contrib.plugins.memo',
-    	'dash.contrib.plugins.rss_feed',
-    	'dash.contrib.plugins.url',
-    	'dash.contrib.plugins.video',
-    	'dash.contrib.plugins.weather',
-    	'd3',
-    	'django_cleanup'
 )
 
 MIDDLEWARE_CLASSES = (

@@ -41,29 +41,6 @@ urlpatterns = [
 	url(r'^tms/', include("tms.urls")),
 	url(r'^help/$', helpfaq, name='help'),
     url(r'^help/jsonquestion/$', jsonfaqs, name='jsonquestion' ),
-	url(r'^dashboards/$', products, name='products'),
-    url(r'^simulation/', include("simulation.urls")),
-    url(r'^plot/', include('d3.urls')),
-    url(r'^dashboard/', include('dash.urls')),
-    url(r'^dashboard/', include('dash.contrib.apps.public_dashboard.urls')),
-	    ################################ LOGISTICA #################################
-    url(r'^data/create/$', logistica.LogisticaCreate, name='logistica_create'),
-    url(r'^data/$', login_required(logistica.LogisticaList.as_view(), login_url='noAccess'), name='logistica_list'),
-    url(r'^data/update/(?P<pk>\d+)/$', login_required(logistica.LogisticaUpdate.as_view(), login_url='noAccess'), name='logistica_update'),
-    url(r'^data/delete/(?P<pk>\d+)/$', login_required(logistica.LogisticaDelete.as_view(), login_url='noAccess'), name='logistica_delete'),
-    url(r'^data/show/(?P<pk>\d+)/$', login_required(logistica.LogisticaShow.as_view(), login_url='noAccess'), name='logistica_show'),
-    ################################ CLIMA #################################
-    url(r'^clima/create/$', clima.ClimaCreate, name='clima_create'),
-    url(r'^clima/$', login_required(clima.ClimaList.as_view(), login_url='noAccess'), name='clima_list'),
-    url(r'^clima/update/(?P<pk>\d+)/$', login_required(clima.ClimaUpdate.as_view(), login_url='noAccess'), name='clima_update'),
-    url(r'^clima/delete/(?P<pk>\d+)/$', login_required(clima.ClimaDelete.as_view(), login_url='noAccess'), name='clima_delete'),
-    url(r'^clima/show/(?P<pk>\d+)/$', login_required(clima.ClimaShow.as_view(), login_url='noAccess'), name='clima_show'),
-    ################################ CENSO #################################
-    url(r'^censo/create/$', censo.CensoCreate, name='censo_create'),
-    url(r'^censo/$', login_required(censo.CensoList.as_view(), login_url='noAccess'), name='censo_list'),
-    url(r'^censo/update/(?P<pk>\d+)/$', login_required(censo.CensoUpdate.as_view(), login_url='noAccess'), name='censo_update'),
-    url(r'^censo/delete/(?P<pk>\d+)/$', login_required(censo.CensoDelete.as_view(), login_url='noAccess'), name='censo_delete'),
-    url(r'^censo/show/(?P<pk>\d+)/$', login_required(censo.CensoShow.as_view(), login_url='noAccess'), name='censo_show'),
 ]
 
 urlpatterns += staticfiles_urlpatterns() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
