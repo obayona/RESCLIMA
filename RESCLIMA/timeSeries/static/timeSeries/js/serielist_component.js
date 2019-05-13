@@ -110,6 +110,7 @@ Vue.component("serielist_component",{
 				station["y_values"]=[];
 				station["visible"]=true;
 				station["state"]="uninitialized";
+				station["div_status"]="unloaded";
 				// se obtiene un color
 				var color = colors.shift();
 				station["color"]=color;

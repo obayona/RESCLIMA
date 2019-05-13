@@ -204,12 +204,12 @@ def parseHOBOFile(hoboParams):
 			# la tercera linea contiene los headers
 			if(i==3):
 				headers = getColumns(line);
-				if len(headers)!=14:
+				
+				if (len(headers)<12 or len(headers)>15):
 					# se borra el archivo
 					os.remove(fileName)
-					msg = "Error: el archivo debe tener ocho columnas, "
-					ms = msg + "se tienen "+str(len(headers)) + " columnas"
-					result["error"]=ms
+					msg = "Error: el archivo debe tener entre 12 y 15 columnas, "
+					ms = msg + "se tienen "+str(len(headers)) + " columnas "
 					current_task.update_state(state='FAILURE',meta=result)
 					return result
 
@@ -222,10 +222,11 @@ def parseHOBOFile(hoboParams):
 				offset_str = time_zone_str[4:7]
 				offset = int(offset_str)
 				# se crea el string del timezone
+				# Para Etc/GMT, los signos deben invertirse
 				if(offset<0):
-					local_tz_str = "Etc/GMT-" + str(abs(offset));
-				elif(offset >0):
 					local_tz_str = "Etc/GMT+" + str(abs(offset));
+				elif(offset >0):
+					local_tz_str = "Etc/GMT-" + str(abs(offset));
 				else:
 					local_tz_str="UTC";
 
@@ -241,7 +242,7 @@ def parseHOBOFile(hoboParams):
 			if(len(measures)!=14):
 				# se borra el archivo
 				os.remove(fileName)
-				result["error"]="Error: falta una columna en la linea "+str(i)
+				result["error"]="Error: número de columas incorrecto en la linea "+local_tz_str
 				current_task.update_state(state='FAILURE',meta=result)
 				return result
 			# se recupera la fecha hora de la primera columna
@@ -266,7 +267,7 @@ def parseHOBOFile(hoboParams):
 				measure = measure.strip(' \t\n\r')
 				variable = variables[i]
 
-				if measure == "":
+				if measure == "" or measure == " ":
 					continue;
 
 				idVariable = variable.id;
@@ -453,9 +454,9 @@ def parseGenericFile(genericParams):
 				offset = int(offset_str)
 				# se crea el string del timezone
 				if(offset<0):
-					local_tz_str = "Etc/GMT-" + str(abs(offset));
-				elif(offset >0):
 					local_tz_str = "Etc/GMT+" + str(abs(offset));
+				elif(offset >0):
+					local_tz_str = "Etc/GMT-" + str(abs(offset));
 				else:
 					local_tz_str="UTC";
 

@@ -11,5 +11,7 @@ urlpatterns = [
 	url(r'^measurements/download/$', download_measurements, name="ts_download_measurements"),
 	url(r'^otherstation/$',others_stations, name="others"),
 	url(r'^otherstation/samplefile/$',samplefile, name="sample"),
+	url(r'^station/info/(?P<station_id>\w+)/$',station_info, name="station_info"),
+
 ]
 
