@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
 from timeSeries.models import StationType, Station, Variable
@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.auth.decorators import login_required
 from timeSeries.tasks import parseHOBOFile, parseGenericFile
 from RESCLIMA import settings
+from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
 import os
 import time
@@ -427,3 +428,15 @@ def samplefile(request):
 	response = HttpResponse(data,content_type='text/csv')
 	response['Content-Disposition'] = 'attachment; filename=other_station_format.csv'
 	return response
+
+def station_info(request,station_id):
+	"""
+	Vista que da la informacion asociada a una estacion
+	"""
+	if request.method=="GET":
+		station = get_object_or_404(Station, pk=int(station_id))
+		station_data = {'lat':station.location.x,'lon':station.location.y,'brand':station.stationType.brand,'model':station.stationType.model}
+		return JsonResponse(station_data)
+
+	else:
+		return HttpResponse(status=400)
