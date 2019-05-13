@@ -83,6 +83,11 @@ def import_vector_layer(vectorlayer_params):
 		if(geometry==None):
 			continue
 
+		if(geometry.Is3D()):
+			errorMsg = "No se soportan geometrías en 3D"
+			return updateResult(errorMsg = errorMsg,
+			percent_progress = None)
+
 		geometry.Transform(coord_transform)
 		env = geometry.GetEnvelope()
 		minXs.append(env[0])
@@ -94,13 +99,13 @@ def import_vector_layer(vectorlayer_params):
 			feature_json = feature.ExportToJson(as_object=True)
 		except Exception as e:
 			errorMsg = "El feature %d tiene valores NaN o infinitos"%(i)
-			updateResult(errorMsg = errorMsg,
+			return updateResult(errorMsg = errorMsg,
 			percent_progress = None)
 
 		geojson["features"].append(feature_json)
 
 		percent_progress = 10 + (float(i)/N)*70.0
-		updateResult(errorMsg = None, percent_progress = 10)
+		updateResult(errorMsg = None, percent_progress = percent_progress)
 
 
 	bbox = calculateBBox(minXs, minYs, maxXs, maxYs)
@@ -114,7 +119,8 @@ def import_vector_layer(vectorlayer_params):
 		f.write(simplejson.dumps(geojson,ensure_ascii=False))
 		f.close()
 	except Exception as e:
-		updateResult(errorMsg = "Error al guardar el archivo, intente con otro encoding",
+		print(e)
+		return updateResult(errorMsg = "Error al guardar el archivo, intente con otro encoding",
 			percent_progress = None)
 
 

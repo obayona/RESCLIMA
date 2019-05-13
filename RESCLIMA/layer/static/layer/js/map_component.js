@@ -93,10 +93,18 @@ function getExtent(bbox_json){
 	var coords = polygon.geometry.components[0]
 	coords = coords.components
 	var minX,minY,maxX,maxY
-	minX = coords[0]["x"]
-	minY = coords[0]["y"]
-	maxX = coords[2]["x"]
-	maxY = coords[2]["y"]
+	if (coords.length==5){
+		minX = coords[0]["x"]
+		minY = coords[0]["y"]
+		maxX = coords[2]["x"]
+		maxY = coords[2]["y"]
+	}
+	if(coords.length==2){
+		minX = coords[0]["x"]
+		minY = coords[0]["y"]
+		maxX = minX
+		maxY = minY
+	}
 	return [minX,minY,maxX,maxY]
 }
 
@@ -123,6 +131,7 @@ var VectorLayer = function(map,layer){
 
 	// Metodo que renderiza la capa
 	function renderFeatureLayer(data){ 	
+		console.log("Los datos",data,typeof(data))
 		var id_layer = layer["id"]
 
 		//se obtiene el extent de la capa
