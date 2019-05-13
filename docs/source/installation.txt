@@ -186,6 +186,8 @@ Ahora se debe crear la hypertabla de TimescaleDB. Los detalles de esto se los ve
 
 	$ ALTER TABLE "timeSeries_measurement" DROP COLUMN id_m;
 	$ ALTER TABLE "timeSeries_measurement" DROP COLUMN ts;
+	$ ALTER TABLE "timeSeries_measurement" ADD COLUMN id_m SERIAL;
+	$ ALTER TABLE "timeSeries_measurement" ADD COLUMN ts TIMESTAMP; 
 	$ ALTER TABLE "timeSeries_measurement" ADD CONSTRAINT ts PRIMARY KEY (ts,id_m);
 
 Finalmente se crea la hypertabla::
