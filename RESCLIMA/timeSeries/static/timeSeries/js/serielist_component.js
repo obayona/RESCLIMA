@@ -115,8 +115,12 @@ Vue.component("serielist_component",{
 				var color = colors.shift();
 				station["color"]=color;
 				colors.push(color);
+				//se obtiene info de marca y modelo del servidor
+				var station_new = this.addStationBrand(station);
+				console.log("HOLA");
+
 				// se agrega la estacion a la variable
-				variable["stations"].push(station);
+				variable["stations"].push(station_new);
 			}
 			variable["state"]="uninitialized";
 
@@ -134,7 +138,32 @@ Vue.component("serielist_component",{
 			// store compartido
 			shared:store		
 		}
-	}
+	},
+		methods:{
+                addStationBrand(station){
+                        var url = "/series/station/info/"+station["id"];
+                        var request = $.get(url);
+                        var my_station = station;
+                        var self = this;
+                        request.done(function(data){
+                                my_station["lat"]=data["lat"];
+                                my_station["lon"]=data["lon"];
+                                my_station["brand"]=data["brand"];
+                                my_station["model"]= data["model"];
+
+                        });
+                        request.fail(function(data){
+                                consolge.log("FAILLLL");
+                                station["lat"]="";
+                                station["lon"]="";
+                                station["brand"]="Estación";
+                                station["model"]="";
+                        });
+                       return my_station;
+
+                }
+        }
+
 })
 
 

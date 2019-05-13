@@ -73,14 +73,16 @@ Vue.component("serie_component",{
 											<!--Si la traza de la estacion esta cargada -->
 											<!-- se muestra el legend item -->
 											<div class="legendItem" v-bind:station-label="variable.id+station.id"
-											 v-if="station.state == 'loaded'"
-											 v-bind:style="[station.visible?{'opacity':'1'}:{'opacity':'0.5'}]"
-											 v-on:click.prevent="showHideTrace(station)">
-												<strong class="legendSymbol"
-													v-bind:style="{'background':station.color}">
-												</strong>
-											
-											</div>
+                                                 v-if="station.state == 'loaded'"
+                                                 v-bind:style="[station.visible?{'opacity':'1'}:{'opacity':'0.5'}]"
+                                                 v-on:click.prevent="showHideTrace(station)">
+                                                        <strong class="legendSymbol"
+                                                                v-bind:style="{'background':station.color}">
+                                                        </strong>
+                                                        <span>{{station.brand}} {{station.model}}</span>
+
+                                                </div>
+
 										</div>
 									</div>
 								</div>
@@ -133,23 +135,6 @@ Vue.component("serie_component",{
 		// se obtiene la informacion de las variables
 		this.getVariableInfo(variable);
 		
-		window.addEventListener('load', () => {
-         // se corre cuando el DOM ha cargado completamente
-         	var length = this.variable.stations.length;
-			for(var i=0;i< length;i++){
-				var station_id = variable.stations[i].id;
-				
-				//se obtiene el contenedor de la etiqueta de la estacion
-				var labels = document.querySelectorAll('[station-label="'+id_variable+station_id+'"]'); 
-				if(labels.length==0){
-					return;
-				}
-				this.station_div = labels[0];
-				this.addStationName(this.variable.stations[i]);
-				
-			}	
-    	});
-    	
 		
 	},
 
@@ -330,36 +315,6 @@ Vue.component("serie_component",{
 			Plotly.addTraces(container,[trace]);
 		},
 
-		/*Funcion que muestra la marca y modelo de una estacion, 
-		dentro del div donde va el plot*/
-		addStationName(station){
-			if(station["div_status"]!="loaded"){
-				var station_div = this.station_div;
-				var url = "/series/station/info/"+station.id;
-				var request = $.get(url);
-				var self = this;
-				request.done(function(data){
-					station["lat"]=data["lat"];
-					station["lon"]=data["lon"];
-					station["brand"]=data["brand"];
-					station["model"]= data["model"];
-					
-					// se rellena el div
-					var span = document.createElement("span");
-					var node = document.createTextNode(station["brand"]+" "+station["model"]);
-					span.appendChild(node);
-					station_div.appendChild(span);
-					station["div_status"]="loaded";
-					//station_div.innerHTML+='<i class="tiny material-icons icon-blue">arrow_drop_down</i>';
-
-					
-				});
-				request.fail(function(data){
-					return;
-				});
-			}
-				
-		},
 		/*
 		Muestra u oculta una traza del plot,
 		dependiendo del valor de verdad del
