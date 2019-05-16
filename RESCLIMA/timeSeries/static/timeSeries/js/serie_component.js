@@ -222,6 +222,7 @@ Vue.component("serie_component",{
 		*/
 		getStationMeasurements(variable,station){
 			var self = this;
+			var station = station;
 			// se crea el url			
 			var url = "/series/measurements/?";
 			url += "variable_id="+variable["id"];
@@ -246,6 +247,11 @@ Vue.component("serie_component",{
 					self.assingMeasurements(station,measurements);
                     // dibuja el plot
                     self.addTrace(variable,station);
+				}
+				else{
+					//ya no hay mas datos para cargar
+					//volver a no inicializado para que no se quede con la animacion de cargando
+					station["state"] = "uninitialized";
 				}
 
 			});
@@ -360,4 +366,3 @@ Vue.component("serie_component",{
 		}
 	}
 })
-
