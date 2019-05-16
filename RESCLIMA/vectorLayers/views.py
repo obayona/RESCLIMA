@@ -122,7 +122,7 @@ def delete_vectorLayer(request,vectorlayer_id):
 		except Exception as e:
 			return HttpResponse(status=500)
 
-		return HttpResponseRedirect("/vector")
+		return redirect('vector:vector_list')
 	except VectorLayer.DoesNotExist:
 		return HttpResponseNotFound()
 

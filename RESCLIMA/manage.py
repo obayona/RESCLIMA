@@ -3,7 +3,6 @@ import os
 import sys
 
 sys.path.append("/usr/bin")
-print(sys.path)
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "RESCLIMA.settings")
 

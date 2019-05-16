@@ -110,13 +110,13 @@ Vue.component("serielist_component",{
 				station["y_values"]=[];
 				station["visible"]=true;
 				station["state"]="uninitialized";
-				station["div_status"]="unloaded";
 				// se obtiene un color
 				var color = colors.shift();
 				station["color"]=color;
 				colors.push(color);
 				//se obtiene info de marca y modelo del servidor
 				var station_new = this.addStationBrand(station);
+				console.log("HOLA");
 
 				// se agrega la estacion a la variable
 				variable["stations"].push(station_new);
@@ -164,5 +164,4 @@ Vue.component("serielist_component",{
         }
 
 })
-
 
