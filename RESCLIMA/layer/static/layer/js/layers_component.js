@@ -40,12 +40,14 @@ Vue.component("layers_component",{
 						<label>Buscar mapa:</label>
 							<div class="row">
 							<i class="col s1 material-icons prefix">search</i>								
-							<input class="col s9" type="text"/>	
+								<input class="col s9" type="text"
+								v-model="search_name" v-on:change="filterOnLayers"/>	
 							</div>
 					  	</div>
 						<div v-for="layer in shared.layers"
 						class="layerItem"
-						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]">
+						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]"
+						:id=layer.id>
 							<!-- Si la capa tiene estado uninitialized-->
 							<!-- Se muestran animaciones-->
 							<div v-if="layer.state=='uninitialized'">
@@ -136,7 +138,6 @@ Vue.component("layers_component",{
 		var height = navbar.getBoundingClientRect()["height"];
 		height = Math.ceil(height);
 		layerContainer.style.top = String(height) + "px";
-
 		/* Se lee el parametro "layers" del queryString
 		del url, el cual tiene el siguiente formato:
 		layers=id_capa1|id_capa2|...|id_capaN */
@@ -181,6 +182,7 @@ Vue.component("layers_component",{
 		return {
 			shared:store,
 			open:true,
+			search_name:null,
 		}
 	},
 	methods:{
@@ -306,6 +308,14 @@ Vue.component("layers_component",{
 			}else{
 				this.shared.currentLayer = null;
 			}
+		},
+		filterOnLayers(){
+			var busqueda = this.search_name.toLowerCase()
+			this.shared.layers.forEach(function(layer){
+				if(layer.title.toLowerCase().includes(busqueda)){
+					document.getElementById(layer.id).style.display = "block";					
+				}else{document.getElementById(layer.id).style.display = "none";}
+			});	
 		}
 	}
 })
