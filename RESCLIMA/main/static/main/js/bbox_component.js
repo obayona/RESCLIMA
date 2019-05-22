@@ -6,7 +6,7 @@ Vue.component("bbox_component",{
 			<div class="col s1">
 			</div>
 			<div class="col s10">
-				<div id="bbox_container" style="text-align:center;"></div>
+				<div class="col s12" id="bbox_container"></div>
 			</div>
 			<div class="col s1">
 			</div>

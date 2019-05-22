@@ -10,8 +10,8 @@ var BboxSelector = function(container,callback){
 	// el toolbox de opciones
 	var menu_container = document.createElement("div");
 	menu_container.style.backgroundColor = "#CEDBDA";
-	menu_container.style.width = "700px";
-	menu_container.style.display="inline-block";
+	menu_container.className = "col s12 mapstyle";
+	menu_container.style.width = window.innerWidth*0.7 + "px";;
 	menu_container.style.zIndex = "1";
 	menu_container.style.padding = "10px";
 
@@ -29,10 +29,11 @@ var BboxSelector = function(container,callback){
 	menu_container.appendChild(newAreaBtn);
 
 	var map_container = document.createElement("div");
-	map_container.style.width = "700px";
-	map_container.style.display="inline-block";
+	map_container.style.width = window.innerWidth*0.7 + "px";
+	map_container.className = "col s12 mapstyle";
 	map_container.style.height = "300px";
 	map_container.style.zIndex = "-1";
+	map_container.style.padding = "10px";
 	container.appendChild(menu_container);
 	container.appendChild(map_container);
 	container.style.zIndex = "2";

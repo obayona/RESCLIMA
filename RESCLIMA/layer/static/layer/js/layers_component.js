@@ -36,6 +36,13 @@ Vue.component("layers_component",{
 						<!-- Contenedor de la capa -->
 						<!-- se intera sobre el array shared.layers -->
 						<!-- Si la capa es igual a currentLayer, se pinta-->
+						<div class="ml-2 search-wrapper">
+						<label>Buscar mapa:</label>
+							<div class="row">
+							<i class="col s1 material-icons prefix">search</i>								
+							<input class="col s9" type="text"/>	
+							</div>
+					  	</div>
 						<div v-for="layer in shared.layers"
 						class="layerItem"
 						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]">
@@ -75,7 +82,10 @@ Vue.component("layers_component",{
 									{{layer.title}}
 								</h5>
 								<!-- El resumen de la capa -->
-								<p>{{layer.abstract}}</p>
+								<details>
+  									<summary>Descripci&oacute;n</summary>
+  									<p>{{layer.abstract}}</p>
+								</details>
 								<!-- La fecha de la capa-->
 								<h6>{{layer.data_date}}</h6>
 
