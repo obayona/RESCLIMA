@@ -4,86 +4,30 @@
 {% block title%}RESCLIMA | DASHBOARDS CLIMA{% endblock %}
 
 {% block content %}
+
 <div class="section">
     <div id='mainViews'>
-        <div class='row'>
-            <div class="card">
-              <div class="card-content">
-                <h4 class="text-grey text-lighten-4">Informaci&oacute;n Climatol&oacute;gica</h4>
-              </div>
-              <div class="card-tabs">
-                <ul class="tabs tabs-fixed-width">
-                  <li class="tab"><a class="active" href="#test4pob">Precipitaci&oacute;n</a></li>
-                  <li class="tab"><a href="#test5pob">ONI</a></li>
-                  <li class="tab"><a href="#test6pob">RR</a></li>
-                </ul>
-              </div>
-              <div class="card-content grey lighten-4">
-                <div id="test4pob">
-                    <div class="row">
-                        <div class="col s5">
-                            <h4>Descripci&oacute;n</h4>
-                            <h5>
-                                Datos obtenidos sobre temperatura anual promedio
-                                m&aacute;xima y m&iacute;nima.
-                            </h5>
-                        </div>
-                        <div class="col s7 center" id="pobInit">
-                            <span class="text-center" id="chart-cli1Graf"></span>
-                        </div>
-                    </div>
-    
-                </div>
-                <div id="test5pob">
-                    <div class="row">
-                        <div class="col s5">
-                        <h4>Descripci&oacute;n</h4>
-                        <h5>
-                            Datos referentes al factor de Riesgo
-                        </h5>
-                        </div>
-                        <div class="col s7 center" id="pobInit">
-                            <span class="text-center" id="chart-cli2Graf"></span>
+        <clima_component></clima_component>
 
-                        </div>
-                    </div>
-                </div>
-                <div id="test6pob">
-                    <div class="row">
-                        <div class="col s5">
-                        <h4>Descripci&oacute;n</h4>
-                        <h5>
-                            Datos referentes al &iacute;ndice oce&aacute;nico del niño (ONI)
-                        </h5>
-                        </div>
-                        <div class="col s7 center" id="pobInit">
-                            <span class="text-center" id="chart-cli3Graf"></span>
-
-                        </div>
-                    </div>            
-                </div>
-              </div>
-            </div>
-        </div>
     <div>
-    <button class="mt-2 btn waves-effect waves-light" type="button" onClick="window.history.back();"><i class="material-icons left">keyboard_backspace</i>Atrás</button>
+    {% if user.is_authenticated %}
+        <a class="waves-effect waves-light btn" href="/dashboard" style="color: light blue;"><i class="material-icons left">keyboard_backspace</i>Atr&aacute;s</a>
+    {% else %}
+        <a class="waves-effect waves-light btn" href="dashboard/admin/" style="color: light blue;"><i class="material-icons left">keyboard_backspace</i>Atr&aacute;s</a>
+    {% endif %}
 </div>
 
 {% endblock content %}
+{% block scripts_body %}
 
-{% block scripts %}
+	<script type= "text/javascript" src="{% static "main/js/vue.min.js" %}"></script>
+	<script type= "text/javascript" src="{% static "main/js/vue-router.min.js" %}"></script>
     <script type= "text/javascript" src="{% static 'js/d3.v3.min.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/d3.queue.min.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly-latest.min.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly_multi_time_series.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly_time_series.js'%}" ></script>
     <script type= "text/javascript" src="{% static 'js/plotly_grouped_bar_chart.js'%}" ></script>
-<script>
-    $(document).ready(function(){
-        plotlyMultiTimeSeries("chart-cli1Graf", "d3_multi_time_series_7x7", "d3_time_series_tmax", "d3_time_series_tmin", "d3_time_series_tmean", "C", null, null);
-        plotlyGroupedBarChart("chart-cli2Graf", "d3_grouped_bar_chart", null, null,"Precipitacion", "d3_grouped_bar_chart_7x7");
-        plotlyTimeSeries("chart-cli3Graf", "d3_time_series_7x7", "d3_time_series_oni", "ONI", null, null)
-    })
+    <script type= "text/javascript" src="{% static 'js/clima_component.js'%}" ></script>
 
-</script>
-{% endblock scripts %}
+{% endblock scripts_body %}

@@ -73,6 +73,11 @@ TIME_SERIES_CHOICES = (
   (None, 'Selecciona una opción'),
   ('d3_time_series_oni', 'Oceanic Niño Index (ONI)'),
   ('d3_time_series_rr', 'Relative Risk (RR)'),
+  ('variable_id=11','Estaciones Meteorologicas: Indice UV vs Tiempo'),
+  ('variable_id=10','Estaciones Meteorologicas: Presion vs Tiempo'),
+  ("variable_id=7" ,"Estaciones Meteorologicas: Luminancia vs Tiempo"),
+  ("variable_id=2" ,"Estaciones Meteorologicas: Humedad relativa vs Tiempo"),
+  ("variable_id=1" ,"Estaciones Meteorologicas: Tempearatura vs Tiempo"),
 )
 
 # Z_TIME_SERIES_CHOICES = ((None, 'Selecciona una opción'),)
@@ -184,7 +189,7 @@ class MultiTimeSeriesForm(forms.Form, DashboardPluginFormBase):
     source = forms.ChoiceField(label=_("Tabla/API"), choices=MULTI_TIME_SERIES_CHOICES, required=True)
     origin = forms.ChoiceField(label=_("Tabla/API"), choices=MULTI_TIME_SERIES_CHOICES, required=True)
     outset = forms.ChoiceField(label=_("Tabla/API"), choices=MULTI_TIME_SERIES_CHOICES, required=True)
- 
+
 # Formulario para Pie Chart
 class PieChartForm(forms.Form, DashboardPluginFormBase):
 

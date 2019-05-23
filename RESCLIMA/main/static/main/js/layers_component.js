@@ -21,7 +21,12 @@ Vue.component("layers_component",{
 						<div class="card">
 							<div class="card-content">
 								<span class="card-title">
-									<input
+									<input v-if="layer.selected" 
+									type="checkbox"
+									v-bind:id="layer.id"
+									v-bind:value="layer.selected"
+									v-on:input="selectLayer(layer)" checked >
+									<input v-else
 									type="checkbox"
 									v-bind:id="layer.id"
 									v-bind:value="layer.selected"
@@ -103,6 +108,7 @@ Vue.component("layers_component",{
 			// maximo offset, al principio
 			// se tiene un valor negativo
 			max_offset:-1,
+			selected_layers : {},
 			shared:store
 		}
 	},
@@ -115,10 +121,11 @@ Vue.component("layers_component",{
 			this.limit = 10,
 			this.offset = 0,
 			this.max_offset = -1,
+			this.selected_layers = {};
 			this.searchLayers();
 		},
 		searchLayers(){
-			this.selected_count = 0
+			this.selected_count = Object.keys(this.selected_layers).length;
 			// se obtienen los parametros de busqueda
 			var data = this.shared.getPostData()
 			if(data==null){
@@ -131,6 +138,7 @@ Vue.component("layers_component",{
 			// se agrega el limit y el offset
 			data["limit"] = self.limit;
 			data["offset"] = self.offset;
+			data["csrfmiddlewaretoken"] =  "{{csrf_token}}",
 			headers = {'X-CSRFToken': this.shared.getCookie("csrftoken")}
 			// se realiza la peticion ajax
 			data = JSON.stringify(data);
@@ -153,9 +161,15 @@ Vue.component("layers_component",{
 				// se copian los resultados en el
 				// array layers
 				var layers = self.shared.layers;
+				console.log(self.selected_layers)
+				console.log(layers)
 				layers.splice(0, layers.length);
+
 				for (var i=0;i< results.length; i++){
 					layers.push(results[i]);
+					if(results[i].id.toString() in self.selected_layers){
+						results[i].selected = true;
+					}
 				}
 				// se cambia el estado
 				self.state = "searched";
@@ -166,20 +180,30 @@ Vue.component("layers_component",{
 			
 		},
 		selectLayer(layer){
+			
 			layer.selected = !layer.selected;
-			if(layer.selected==true) 
+			if(layer.selected==true) {
 				this.selected_count +=1;
-			if(layer.selected==false)
+				this.selected_layers[layer.id.toString()] = layer.id; 
+			}
+			if(layer.selected==false){
 				this.selected_count -=1;
+				delete this.selected_layers[layer.id.toString()];
+			}
 		},
 		visualizeLayers(){
 			// abrea una nueva pestania para 
 			// visualizar las capas
 			var query_str = ""
-			for(var i=0; i<this.shared.layers.length; i++){
+			/*for(var i=0; i<this.shared.layers.length; i++){
 				var layer = this.shared.layers[i];
 				if (layer["selected"])
 					query_str = query_str + String(layer["id"])+"|"
+			}*/
+			for (const [key, value] of Object.entries(this.selected_layers)) {
+				console.log(key)
+				console.log(value)
+				query_str = query_str + key + "|"
 			}
 			query_str = query_str.slice(0, -1);
 
@@ -226,5 +250,3 @@ Vue.component("layers_component",{
 	}
 
 })
-
-

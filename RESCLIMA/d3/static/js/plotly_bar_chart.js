@@ -1,13 +1,6 @@
 // ******************************************************************
 // ************************* Simple function ************************
 // ******************************************************************
-
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
-
 function getChartPluginSize(str) {
   return parseInt(str[str.length-1]);
 }
@@ -19,22 +12,36 @@ function getBarChartViewBox(size) {
 	else { return { sizew : 500,  sizeh : 400} }
 }
 
-function isEmpty(str) {
-	if (!str) { return true; }
-	else { return false }
-}
-
 function checkDate(start_date, end_date) {
    if (!isEmpty(start_date) && !isEmpty(end_date)) { return true; }
   else { return false; }
 }
 
+/**
+ * Sets the Barchart api endpoint to look for the data
+ * @param {id of the chart's widget} sid
+ * @param {type of chart and data} source 
+ * @param {*} start_date 
+ * @param {*} end_date 
+ */
 function setBarSource(sid, source, start_date, end_date) {
 	if (!sid) { return "/api/" + source + "/" + start_date + "/" + end_date + "/"; }
 	else { return "/api/" + source + "/" + sid; }
 }
 
-
+/**
+ * Function that draws a bar chart
+ * @param {*} container 
+ * @param {*} source 
+ * @param {*} start_date 
+ * @param {*} end_date 
+ * @param {*} domainLabel 
+ * @param {*} rangeLabel 
+ * @param {*} color 
+ * @param {*} hover 
+ * @param {*} sid 
+ * @param {*} size 
+ */
 function plotlyBarChartSample(container, source, start_date, end_date, domainLabel, rangeLabel, color, hover, sid, size){
     if (!checkDate(start_date, end_date)) {
         // Una de las fechas ingresadas no es valida
@@ -50,8 +57,8 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
       d3.json(SOURCE_URL, function(error, data) {
         data.forEach(function(item){
               item.enabled = true;
-              valuesX.push(item.value)
-              valuesY.push(item.key)
+              valuesY.push(item.value)
+              valuesX.push(item.key)
         })
 
         var trace1 = {
@@ -76,7 +83,7 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
               xaxis: {
                 zeroline : true,
                 title: domainLabel,
-                tickangle: 0
+                tickangle: -45,
               },
               yaxis: {
                 title: rangeLabel,
@@ -86,7 +93,7 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
               bargap :0.05,
                 width: two_sizes.sizew,
                 height: two_sizes.sizeh,
-
+                barmode: 'stack',
                 margin: {
                   l: 40,
                   r: 20,
@@ -97,16 +104,29 @@ function plotlyBarChartSample(container, source, start_date, end_date, domainLab
             };
 
         Plotly.newPlot(barDiv, data,layout);
-
+        Plotly.Plots.resize(barDiv);
         barDiv.on('plotly_click', function(data){
           var selected_path = data
-          //applyInteractivity(source,selected_path)
+
           redirect(selected_path.points[0].data.source)
         });
 
         })
 }
 
+/**
+ * Function that updates the data according to a change of date
+ * @param {*} container 
+ * @param {*} source 
+ * @param {*} start_date 
+ * @param {*} end_date 
+ * @param {*} domainLabel 
+ * @param {*} rangeLabel 
+ * @param {*} color 
+ * @param {*} hover 
+ * @param {*} sid 
+ * @param {*} size 
+ */
 function plotlyUpdateChart(container, source, start_date, end_date, domainLabel, rangeLabel, color, hover, sid, size){
   var barDiv = document.getElementById(container);
   // Check source
@@ -152,7 +172,7 @@ SOURCE_URL = setBarSource(sid, source, start_date, end_date);
          bargap :0.05,
            width: two_sizes.sizew,
            height: two_sizes.sizeh,
-
+           barmode: 'stack',
            margin: {
              l: 40,
              r: 20,
@@ -163,10 +183,23 @@ SOURCE_URL = setBarSource(sid, source, start_date, end_date);
        };
 
    Plotly.update(barDiv, data,layout);
-
+   Plotly.Plots.resize(barDiv);
    })
 }
 
+/**
+ * Function that helps to change the chart type from barchart to stack chart
+ * @param {*} id_first_date 
+ * @param {*} id_last_date 
+ * @param {*} container 
+ * @param {*} source 
+ * @param {*} domainLabel 
+ * @param {*} rangeLabel 
+ * @param {*} color 
+ * @param {*} hover 
+ * @param {*} sid 
+ * @param {*} size 
+ */
 function changeBarOnDate(id_first_date,id_last_date, container, source,domainLabel, rangeLabel, color, hover, sid, size){
 
   value = $("#"+id_first_date).val();
@@ -178,6 +211,10 @@ function changeBarOnDate(id_first_date,id_last_date, container, source,domainLab
   }
 }
 
+/**
+ * Function that checks the category that an API endpoint is related to
+ * @param {*} source the url of the api endpoint
+ */
 function redirect(source){
   var logistica = ['LMS','EN','NO','ON','OE','NE','logistica']
   var clima = ['measurement','oni','rr','tmean','tmax','tmin','grouped']
@@ -199,7 +236,6 @@ function redirect(source){
     }
   })
 }
-
 
 
 

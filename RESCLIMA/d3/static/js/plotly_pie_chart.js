@@ -2,12 +2,6 @@
 // ************************* Simple function ************************
 // ******************************************************************
 
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
-
 function getChartPluginSize(str) {
   return parseInt(str[str.length-1]);
 }
@@ -19,11 +13,11 @@ function getChartViewBox(size) {
 	else { return {sizew:400,sizeh:400} }
 }
 
-function isEmpty(str) {
-	if (!str) { return true; }
-	else { return false }
-}
-
+/**
+ * Function that gets the id accordign a tag
+ * @param {container's id} container 
+ * @param {tag use to tracnsform the id} htmltag 
+ */
 function getDivId(container, htmltag){
 	var idtxt =  container.slice(6,container.length)
 	return htmltag+"-"+idtxt;
@@ -39,7 +33,14 @@ function setSourcePieChart(sid, source, start_date, end_date) {
 	else { return "/api/" + source + "/" + sid; }
 }
 
-
+/**
+ * Function that changes the chart to a pie chart
+ * @param {data to render the chart} valuesP 
+ * @param {labels for the data} labelsP 
+ * @param {htmml element} pieDiv 
+ * @param {chart's size} size 
+ * @param {api endpoint} source 
+ */
 function transform_back_to_pie_chart(valuesP, labelsP,pieDiv, size,source){
   
   var colorScheme = ["#FF8A65", "#4DB6AC","#FFF176","#BA68C8","#00E676","#AED581","#9575CD","#7986CB","#E57373","#A1887F","#90A4AE","#64B5F6"];
@@ -99,7 +100,16 @@ function transform_back_to_pie_chart(valuesP, labelsP,pieDiv, size,source){
   });
 }
 
-
+/**
+ * Function thar draws the pie Chart
+ * @param {container's id} container 
+ * @param {api endpoint} source 
+ * @param {initial date to look for data} start_date 
+ * @param {final date to look for data} end_date 
+ * @param {graph size} size 
+ * @param {SUMO simulation id} sid 
+ * @param {description of the graph} description 
+ */
 function plotlyPieChartSample(container, source, start_date, end_date, size, sid,description){
     if (!checkDate(start_date, end_date)) {
         // Una de las fechas ingresadas no es valida
@@ -124,6 +134,15 @@ function plotlyPieChartSample(container, source, start_date, end_date, size, sid
       })
 }
 
+/**
+ * 
+ * @param {values for the graph} valuesP 
+ * @param {labels of the values for the graph} labelsP 
+ * @param {container id} container
+ * @param {html element} baseDiv 
+ * @param {graph's size} size
+ * @param {api endpoint} source 
+ */
 function changeButton(valuesP,labelsP, container,baseDiv,size, source){
 
   var bars = document.getElementById("ibarp-"+baseDiv.id.slice(6,baseDiv.id.length));
@@ -140,7 +159,13 @@ function changeButton(valuesP,labelsP, container,baseDiv,size, source){
 	});	
 }
 
-
+/**
+ * 
+ * @param {values for the graph} valuesP 
+ * @param {labels of the values for the graph} labelsP 
+ * @param {html element} barDiv 
+ * @param {graph's size} size 
+ */
 function transform_to_bars(valuesP, labelsP, barDiv,size){
 
 	//var values = values.map(v => v.slice(7, v.length))
@@ -200,7 +225,11 @@ function transform_to_bars(valuesP, labelsP, barDiv,size){
 	Plotly.newPlot(barDiv,data,layout);
 }
 
-
+/**
+ * Function to redirect accordin to a a click event
+ * @param {source of the data} source 
+ * @param {path selected} selected_path 
+ */
 function applyInteractivity(source, selected_path){
   //TODO function that activates on click event and redirection to
   // another chart below the current ones according to the data that is presented
@@ -212,7 +241,15 @@ function applyInteractivity(source, selected_path){
   }   
 }
 
-//More efficient method to update the plot
+/**
+ * More efficient method to update the graphs
+ * @param {container id} container 
+ * @param {api endpoint} source 
+ * @param {start date to look for data} start_date 
+ * @param {end date to look for data} end_date 
+ * @param {SUMO simulation id} sid 
+ * @param {size of the chart} size 
+ */
 function updatePieDate(container, source, start_date, end_date, sid, size){
   SOURCE_URL = setSourcePieChart(sid, source, start_date, end_date);
   var pieDiv = document.getElementById(container);
@@ -275,6 +312,16 @@ function updatePieDate(container, source, start_date, end_date, sid, size){
   })
 }
 
+/**
+ * Function that updates the data according to a date
+ * @param {id of the input that has the first date} id_first_date 
+ * @param {id of the input that has the last date to look for data} id_last_date 
+ * @param {container's id} container 
+ * @param {api endpoint} source 
+ * @param {container's size} size 
+ * @param {SUMO simulation id} sid 
+ * @param {description of the graph} description 
+ */
 function changePieDate(id_first_date,id_last_date, container, source, size, sid,description){
   value = $("#"+id_first_date).val();
   value_new = $("#"+id_last_date).val()

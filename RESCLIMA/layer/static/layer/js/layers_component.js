@@ -36,9 +36,18 @@ Vue.component("layers_component",{
 						<!-- Contenedor de la capa -->
 						<!-- se intera sobre el array shared.layers -->
 						<!-- Si la capa es igual a currentLayer, se pinta-->
+						<!--<div class="ml-2 search-wrapper">
+						<label>Buscar mapa:</label>
+							<div class="row">
+							<i class="col s1 material-icons prefix">search</i>								
+								<input class="col s9" type="text"
+								v-model="search_name" v-on:change="filterOnLayers"/>	
+							</div>
+					  	</div>-->
 						<div v-for="layer in shared.layers"
 						class="layerItem"
-						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]">
+						v-bind:style="[shared.currentLayer.id==layer.id?{'background':'#EFEBE9','border-width': '3px'}:{}]"
+						:id=layer.id>
 							<!-- Si la capa tiene estado uninitialized-->
 							<!-- Se muestran animaciones-->
 							<div v-if="layer.state=='uninitialized'">
@@ -75,7 +84,10 @@ Vue.component("layers_component",{
 									{{layer.title}}
 								</h5>
 								<!-- El resumen de la capa -->
-								<p>{{layer.abstract}}</p>
+								<details>
+  									<summary>Descripci&oacute;n</summary>
+  									<p>{{layer.abstract}}</p>
+								</details>
 								<!-- La fecha de la capa-->
 								<h6>{{layer.data_date}}</h6>
 
@@ -126,7 +138,6 @@ Vue.component("layers_component",{
 		var height = navbar.getBoundingClientRect()["height"];
 		height = Math.ceil(height);
 		layerContainer.style.top = String(height) + "px";
-
 		/* Se lee el parametro "layers" del queryString
 		del url, el cual tiene el siguiente formato:
 		layers=id_capa1|id_capa2|...|id_capaN */
@@ -171,6 +182,7 @@ Vue.component("layers_component",{
 		return {
 			shared:store,
 			open:true,
+			search_name:null,
 		}
 	},
 	methods:{
@@ -296,6 +308,19 @@ Vue.component("layers_component",{
 			}else{
 				this.shared.currentLayer = null;
 			}
+		},
+		filterOnLayers(){
+			var busqueda = this.search_name.toLowerCase()
+			this.shared.layers.forEach(function(layer){
+				if(layer.title.toLowerCase().includes(busqueda)){
+					var openlayer_layer = layer["openlayer_layer"];
+					openlayer_layer.setOpacity(1);
+					document.getElementById(layer.id).style.display = "block";					
+				}else{
+					var openlayer_layer = layer["openlayer_layer"];
+					openlayer_layer.setOpacity(0);
+					document.getElementById(layer.id).style.display = "none";}
+			});	
 		}
 	}
 })

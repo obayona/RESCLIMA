@@ -8513,4 +8513,29 @@ tr.group:hover {
   padding-top: 20px;
 }
 
+/*-------------------------------------------
+    Mapas
+--------------------------------------------*/
+@media only screen and (max-width: 600px){
+  .mapstyle{
+    width: '450 px'
+  }
+}
 
+@media only screen and (max-width: 900px){
+  .mapstyle{
+    width: '750 px'
+  }
+}
+
+@media only screen and (max-width: 1200px){
+  .mapstyle{
+    width: '1000 px'
+  }
+}
+
+@media only screen and (max-width: 1800px){
+  .mapstyle{
+    width: '1200 px'
+  }
+}

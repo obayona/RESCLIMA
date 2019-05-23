@@ -12,6 +12,7 @@ urlpatterns = [
 	url(r'^otherstation/$',others_stations, name="others"),
 	url(r'^otherstation/samplefile/$',samplefile, name="sample"),
 	url(r'^station/info/(?P<station_id>\w+)/$',station_info, name="station_info"),
+	url(r'^stations/$', search_stations, name="stations_data"),
 
 ]
 

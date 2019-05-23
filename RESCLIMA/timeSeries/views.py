@@ -14,6 +14,7 @@ import datetime
 import json
 import shutil
 import tempfile
+import traceback
 
 '''
 Vista  que  retorna una  Pagina home 
@@ -440,3 +441,16 @@ def station_info(request,station_id):
 
 	else:
 		return HttpResponse(status=400)
+
+def search_stations(request):
+	try:
+		stations = Station.objects.values('id')
+		var_stations = {}
+		sta = []
+		for station in stations:
+			sta.append(station["id"])
+		var_stations["stations"] = sta
+		return HttpResponse(json.dumps(var_stations),content_type='application/json')
+	except Exception as e:
+		print(traceback.format_exc())
+		return HttpResponse(status=404)

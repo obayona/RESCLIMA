@@ -20,6 +20,7 @@ var BboxSelector = function(container,callback){
 	instruction.innerHTML = "Dibuje un &aacute;rea";
 	var newAreaBtn = document.createElement("input");
 	newAreaBtn.type = "button";
+	newAreaBtn.className = "ml-2"
 	newAreaBtn.value = unescape("Dibuje nueva %E1rea");
 	newAreaBtn.style.display = 'none';
 	newAreaBtn.addEventListener("click",function(event){
@@ -27,6 +28,23 @@ var BboxSelector = function(container,callback){
 	});
 	menu_container.appendChild(instruction);
 	menu_container.appendChild(newAreaBtn);
+
+	var icon = document.createElement("i")
+	icon.className ="material-icons"
+	icon.innerHTML ="add_location"
+
+	var newLocatPosBtn = document.createElement("a");
+	//newLocatPosBtn.type = "button";
+	newLocatPosBtn.id = "bboxButton";
+	newLocatPosBtn.value = unescape("aquí");
+	newLocatPosBtn.className ="right btn-floating  pink lighten-4";
+	newLocatPosBtn.setAttribute("data-toggle","tooltip");
+	newLocatPosBtn.setAttribute("title","mi ubicación");
+	newLocatPosBtn.addEventListener("click",function(event){
+		handlePermission();
+	});
+	newLocatPosBtn.appendChild(icon)
+	menu_container.appendChild(newLocatPosBtn);
 
 	var map_container = document.createElement("div");
 	map_container.style.width = "700px";
@@ -138,6 +156,33 @@ var BboxSelector = function(container,callback){
 			b = bounds.clone().transform(map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326"))
 			callback(b)
 		}
+	}
+
+	var geoSettings = {
+		enableHighAccuracy: true,
+		timeout: 5000,
+		maximumAge: 0
+	};
+
+	function setInitLocation(position){
+		var crds = position.coords;
+		var zoom = 10;
+		var lonLat = new OpenLayers.LonLat(crds.longitude,crds.latitude).transform(
+			new OpenLayers.Projection("EPSG:4326"), map.getProjectionObject());
+		map.setCenter(lonLat, zoom);
+	}
+	function error(err) {
+		console.warn('ERROR(' + err.code + '): ' + err.message);
+	  };
+
+	function handlePermission() {
+		navigator.permissions.query({name:'geolocation'}).then(function(result) {
+		if (result.state == 'prompt' || result.state == 'granted' ) {
+			var position = navigator.geolocation.getCurrentPosition(setInitLocation,error,geoSettings);
+		  } else if (result.state == 'denied') {
+			geoBtn.style.display = 'inline';
+		  }
+		});
 	}
 }
 

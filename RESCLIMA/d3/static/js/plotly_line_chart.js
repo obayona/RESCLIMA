@@ -2,12 +2,6 @@
 // ************************* Simple function ************************
 // ******************************************************************
 
-function toTitleCase(str) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
-
 function getChartPluginSize(str) {
   return parseInt(str[str.length-1]);
 }
@@ -35,19 +29,24 @@ function setLineOrigin(sid, origin, start_date, end_date) {
 	else { return "/api/" + origin + "/" + sid; }
 }
 
-function isEmpty(str) {
-	if (!str) { return true; }
-	else { return false }
-}
-
 function checkDate(start_date, end_date) {
     if (!isEmpty(start_date) && !isEmpty(end_date)) { return true; }
    else { return false; }
  }
 
- /**Funcion que genera stack charts que pueden transformarse en line charts segun un evento
-  * de click, falta agregar funcionalidad de cambio y funcionalidad de conexion entre series de tiempo
-  * 
+ /**
+  * Function that draws a line chart
+  * @param {id of the container} container 
+  * @param {start date to look for data} start_date 
+  * @param {final date to look for data} end_date 
+  * @param {source api} source 
+  * @param {origin data} origin 
+  * @param {label to x axis} domainLabel 
+  * @param {label for y axis} rangeLabel 
+  * @param {chart's size} size 
+  * @param {SUMO simulation id} sid 
+  * @param {custom olor for the chart} color 
+  * @param {custom color for the hover} hover 
   */
 function plotlyLineChart(container, start_date, end_date, source, origin, domainLabel, rangeLabel, size, sid, color, hover) {
     if (!checkDate(start_date, end_date)) {
@@ -126,6 +125,17 @@ function plotlyLineChart(container, start_date, end_date, source, origin, domain
         })
 }
 
+/**
+ * Function to have ALF line chart
+  * @param {id of the container} container 
+  * @param {start date to look for data} start_date 
+  * @param {final date to look for data} end_date 
+  * @param {source api} source 
+  * @param {label to x axis} domainLabel 
+  * @param {label for y axis} rangeLabel 
+  * @param {chart's size} size 
+  * @param {SUMO simulation id} sid 
+ */
 function plotly_ALF_line_chart(container, start_date, end_date, source, domainLabel="años", rangeLabel="Personas", size, sid){
 
   SOURCE_URL = setLineSource(sid, source, start_date, end_date);
@@ -194,7 +204,20 @@ function plotly_ALF_line_chart(container, start_date, end_date, source, domainLa
 
 }
 
-
+/**
+ * 
+ * @param {id of the input tha has the data for the first date to look for data} id_first_date 
+ * @param {id of the input that has the last date data} id_last_date 
+  * @param {id of the container} container 
+  * @param {source api} source 
+  * @param {origin data} origin 
+  * @param {label to x axis} domainLabel 
+  * @param {label for y axis} rangeLabel 
+  * @param {chart's size} size 
+  * @param {SUMO simulation id} sid 
+  * @param {custom olor for the chart} color 
+  * @param {custom color for the hover} hover 
+ */
 function changeLineDate(id_first_date,id_last_date, container, source, origin, domainLabel, rangeLabel, size, sid, color, hover){
   value = $("#"+id_first_date).val();
   value_new = $("#"+id_last_date).val()
@@ -217,7 +240,6 @@ function plotly_Housing_line_chart(container, start_date, end_date, source, doma
           years.push(item.key)
       });
       var trace1 = {
-        //          name : domainLabel,
         x: years,
         y: lhousing,
         fill: 'tozeroy',
